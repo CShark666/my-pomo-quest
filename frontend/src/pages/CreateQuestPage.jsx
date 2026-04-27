@@ -1,9 +1,9 @@
 import { Sidebar } from "./Sidebar";
 
-export function HomePage() {
+export function CreateQuestPage() {
   return (
     <>
-      Welcome to Pomo-Quest home page!
+      CreateQuestPage
       <Sidebar />
     </>
   );

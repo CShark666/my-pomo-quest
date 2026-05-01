@@ -1,0 +1,41 @@
+.quest-item {
+    width: 560px;
+    padding: 5px;
+    background-color: rgba(5, 5, 5, 0.411);
+}
+
+.info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.quest-progress-bar {
+    display: flex;
+    align-items: center;
+
+}
+
+.total-time {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: brown;
+    color: white;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    font-size: larger;
+}
+
+.interval-points {
+    display: flex;
+}
+
+.interval-item {
+    background-color: brown;
+    color: white;
+    padding: 10px;
+    margin-left: 5px;
+    border-radius: 5px;
+}

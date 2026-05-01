@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route index element={<HomePage />} />
         <Route path="quest/create" element={<CreateQuestPage />} />
-        <Route path="quest/:id" element={<QuestPage />} />
+        <Route path="quest" element={<QuestPage />} />
       </Routes>
     </BrowserRouter>
   );

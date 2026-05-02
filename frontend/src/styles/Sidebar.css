@@ -1,7 +1,21 @@
-.sidebar{
+.sidebar {
     display: flex;
 }
+
 .sidenav {
+    display: none;
+    opacity: 0;
+    transform: translateX(-16px);
+    transition: all 0.3s;
+
+    transition-behavior: allow-discrete;
+}
+
+.sidenav.true {
+    display: block;
+    opacity: 1;
+    transform: none;
+
     height: 100%;
     width: 160px;
     position: fixed;
@@ -11,6 +25,13 @@
     background-color: #111;
     overflow-x: hidden;
     padding-top: 20px;
+}
+
+@starting-style{
+    .sidenav.true{
+        opacity: 0;
+        transform: translateX(-16px);
+    }
 }
 
 .sidenav a {
@@ -25,8 +46,8 @@
     color: #f1f1f1;
 }
 
-.sidebar-btn{
-margin: 0px;
+.sidebar-btn {
+    margin: 0px;
 }
 
 @media screen and (max-height: 450px) {

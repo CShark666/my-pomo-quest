@@ -1,7 +1,8 @@
 .quest-item {
     width: 560px;
-    padding: 5px;
-    background-color: rgba(5, 5, 5, 0.411);
+    padding: 3px;
+    background-color: rgba(33, 33, 33, 0.333);
+    border-radius: 5px;
 }
 
 .info {

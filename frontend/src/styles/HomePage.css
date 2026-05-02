@@ -1,0 +1,16 @@
+.link-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px;
+}
+
+.circle {
+    width: 233px;
+    height: 233px;
+    border-radius: 100%;
+    background-color: rgba(160, 160, 160, 0.164);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

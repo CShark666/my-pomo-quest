@@ -23,15 +23,17 @@ export function Sidebar() {
     <div className="sidebar">
       {toggleBtn()}
       {open && (
-        <div className="sidenav">
+        <div className={`sidenav ${open}`}>
           {toggleBtn()}
           <div>
-            <a href="">Profile</a>
+            <Link to="user/:id">Profile</Link>
           </div>
-          <Link to="quest/create">PomoQuest</Link>
-          <Link to="/">History</Link>
-          <Link to="/">Stats</Link>
-          <Link to="/">Habits</Link>
+          <Link to="/">Home</Link>
+          <Link to="/quest/:id">Current Quest</Link>
+          <Link to="/quest/create">New Quest</Link>
+          <Link to="/user/:id/history">History</Link>
+          <Link to="/user/:id/stats">Stats</Link>
+          <Link to="/user/:id/habits">Habits</Link>
         </div>
       )}
     </div>

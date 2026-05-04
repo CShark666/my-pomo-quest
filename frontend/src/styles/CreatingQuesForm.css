@@ -1,0 +1,25 @@
+.quest-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quest-form {
+    width: 225px;
+}
+
+.category-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.time-input-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-input {
+    width: 49px;
+}

@@ -30,10 +30,6 @@ export function Sidebar() {
           </div>
           <Link to="/">Home</Link>
           <Link to="/quest/">Pomo-Quest</Link>
-          <Link to="/quest/create">New Quest</Link>
-          <Link to="/user/:id/history">History</Link>
-          <Link to="/user/:id/stats">Stats</Link>
-          <Link to="/user/:id/habits">Habits</Link>
         </div>
       )}
     </div>

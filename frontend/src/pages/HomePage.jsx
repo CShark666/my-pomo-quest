@@ -8,9 +8,9 @@ export function HomePage() {
       <Sidebar />
       <h1>Welcome to Pomo-Quest home page!</h1>
       <div className="link-box">
-        <Link to="/quest/create">
+        <Link to="/quest/">
           <div className="circle">
-            <p>Create new quest</p>
+            <h2>Pomo-quest</h2>
           </div>
         </Link>
       </div>

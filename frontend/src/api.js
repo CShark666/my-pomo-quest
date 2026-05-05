@@ -1,17 +1,3 @@
-// import { axios } from "axios";
-
-const testQuest = {
-  id: 33,
-  title: "test",
-  category: "hobby",
-  status: "inProgress",
-  totalTimeInMs: 7200000,
-  timeIntervalInMs: 1200000,
-  amountOfIntervals: 6,
-  remainingTotalTimeInMs: 7200000,
-  breakConfig: { active: true, shortBreak: 300000, longBreak: 900000 },
-};
-
 const STORAGE_KEY = "pomoQuest";
 
 function delay(ms = 300) {
@@ -21,22 +7,26 @@ function delay(ms = 300) {
 export async function getQuest() {
   await delay();
 
-  //   const data = localStorage.getItem(STORAGE_KEY);
-  //   if (!data) return null;
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (!data) return null;
 
-  //   return JSON.parse(data);
-  return testQuest;
+  return JSON.parse(data);
 }
 
 export async function createQuest(quest) {
   await delay();
 
+  let timeInMs = quest.totalTime * 60 * 60 * 1000;
+
   const questWithId = {
     ...quest,
     id: crypto.randomUUID(),
+    status: "inProgress",
+    totalTimeInMs: timeInMs,
+    remainingTotalTimeInMs: timeInMs,
+    timeIntervalInMs: quest.timeInterval * 60 * 1000,
+    breakConfig: { active: true, shortBreak: 300000, longBreak: 900000 },
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(questWithId));
 }
-
-// export async function updateQuest(id, quest) {}

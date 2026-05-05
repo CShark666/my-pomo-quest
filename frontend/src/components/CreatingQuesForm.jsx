@@ -50,9 +50,9 @@ export function CreatingQuesForm({ setCurrentQuest }) {
   return (
     <div className="quest-form-container">
       <div className="quest-form">
-        <div className="category-selector">
-          <p>Category </p>
+        <div className="info-box">
           <select
+            className="category-selector"
             value={input.category}
             onChange={(e) =>
               setInput({
@@ -61,14 +61,15 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               })
             }
           >
+            <option value="" disabled selected>
+              Category
+            </option>
             <option value="test">test</option>
             <option value="work">work</option>
             <option value="study">study</option>
             <option value="workout">workout</option>
             <option value="hobby">hobby</option>
           </select>
-        </div>
-        <div>
           <input
             type="text"
             placeholder="title"
@@ -116,8 +117,12 @@ export function CreatingQuesForm({ setCurrentQuest }) {
             />
           </div>
         </div>
-        <button>Cancel</button>
-        <button onClick={saveQuest}>Get started</button>
+        <div className="buttons">
+          <button className="cancel">Cancel</button>
+          <button className="start" onClick={saveQuest}>
+            Get started
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,25 +1,89 @@
+input {
+    border-radius: 5px;
+    border-style: none;
+    padding: 3px 5px;
+    outline: none;
+    font-size: 15px;
+    color: #FBE8CE;
+}
+
+input:disabled {
+    color: #fbe8ce4b;
+}
+
 .quest-form-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 5px;
+    width: 75vh;
+
+    background-color: #36413b42;
+    color: #FBE8CE;
+    border-radius: 5px;
 }
 
 .quest-form {
-    width: 225px;
+    width: 100%;
+    padding: 5px 15px;
+
 }
 
-.category-selector {
+.info-box {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
+
+.category-selector {
+    border-radius: 5px;
+    border-style: none;
+    padding: 3px 9px;
+    outline: none;
+    font-size: 15px;
+    margin: 3px 0px;
+    color: #FBE8CE;
+}
+
 
 .time-input-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 3px 0px;
 }
 
 .time-input {
     width: 49px;
+}
+
+.buttons button {
+    padding: 9px 16px;
+    cursor: pointer;
+    margin: 5px 10px;
+    border-style: solid;
+    border-radius: 9px;
+    font-size: 15px;
+    color: #FBE8CE;
+}
+
+.cancel {
+    background: rgb(160, 35, 35);
+    border-color: rgb(160, 35, 35);
+}
+
+.start {
+    background: rgb(35, 160, 41);
+    border-color: rgb(35, 160, 41);
+}
+
+.cancel:hover {
+    background: rgb(160, 5, 5);
+    border-color: rgb(160, 35, 35);
+}
+
+.start:hover {
+    background: rgb(35, 130, 11);
+    border-color: rgb(35, 160, 41);
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { createQuest } from "../api";
 import "../styles/CreatingQuesForm.css";
 
@@ -11,6 +12,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
     amountOfIntervals: 0,
   });
   const [disableField, setDisableField] = useState(true);
+  const navigate = useNavigate();
 
   const saveQuest = async () => {
     await createQuest(input);
@@ -118,7 +120,14 @@ export function CreatingQuesForm({ setCurrentQuest }) {
           </div>
         </div>
         <div className="buttons">
-          <button className="cancel">Cancel</button>
+          <button
+            className="cancel"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Cancel
+          </button>
           <button className="start" onClick={saveQuest}>
             Get started
           </button>

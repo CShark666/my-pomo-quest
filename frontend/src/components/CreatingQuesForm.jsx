@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createQuest } from "../api";
 import "../styles/CreatingQuesForm.css";
 
 export function CreatingQuesForm({ setCurrentQuest }) {
@@ -9,6 +10,42 @@ export function CreatingQuesForm({ setCurrentQuest }) {
     timeInterval: 0,
     amountOfIntervals: 0,
   });
+  const [disableField, setDisableField] = useState(true);
+
+  const saveQuest = async () => {
+    await createQuest(input);
+    setCurrentQuest(input);
+  };
+
+  const handleTotalTimeInput = (e) => {
+    setInput({
+      ...input,
+      totalTime: e.target.value,
+    });
+    e.target.value > 0 ? setDisableField(false) : setDisableField(true);
+  };
+
+  const handleTimeIntervalInput = (e) => {
+    const value = e.target.value;
+    const minutes = input.totalTime * 60;
+
+    setInput({
+      ...input,
+      timeInterval: value,
+      amountOfIntervals: minutes / value,
+    });
+  };
+
+  const handleAmountIntervalInput = (e) => {
+    const value = e.target.value;
+    const minutes = input.totalTime * 60;
+
+    setInput({
+      ...input,
+      amountOfIntervals: value,
+      timeInterval: minutes / value,
+    });
+  };
 
   return (
     <div className="quest-form-container">
@@ -49,14 +86,10 @@ export function CreatingQuesForm({ setCurrentQuest }) {
             <p>Total time</p>
             <input
               className="time-input"
-              type="time"
+              type="number"
+              min="0"
               value={input.totalTime}
-              onChange={(e) =>
-                setInput({
-                  ...input,
-                  totalTime: e.target.value,
-                })
-              }
+              onChange={handleTotalTimeInput}
             />
           </div>
           <div className="time-input-box">
@@ -67,12 +100,8 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               min="1"
               max="60"
               value={input.timeInterval}
-              onChange={(e) =>
-                setInput({
-                  ...input,
-                  timeInterval: e.target.value,
-                })
-              }
+              onChange={handleTimeIntervalInput}
+              disabled={disableField}
             />
           </div>
           <div className="time-input-box">
@@ -82,23 +111,13 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               type="number"
               min="1"
               value={input.amountOfIntervals}
-              onChange={(e) =>
-                setInput({
-                  ...input,
-                  amountOfIntervals: e.target.value,
-                })
-              }
+              onChange={handleAmountIntervalInput}
+              disabled={disableField}
             />
           </div>
         </div>
         <button>Cancel</button>
-        <button
-          onClick={() => {
-            setCurrentQuest(input);
-          }}
-        >
-          Get started
-        </button>
+        <button onClick={saveQuest}>Get started</button>
       </div>
     </div>
   );

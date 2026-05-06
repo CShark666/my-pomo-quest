@@ -1,17 +1,10 @@
-import "../styles/Timer.css";
 import { useState, useEffect, useRef } from "react";
+import "../styles/Timer.css";
 
-export function Timer({ duration }) {
-  const [remaining, setRemaining] = useState(duration);
-  const [isRunning, setIsRunning] = useState(false);
+export function Timer({ remaining, setRemaining }) {
+  const [isRunning, setIsRunning] = useState(true);
   const [showWindow, setShowWindow] = useState(false);
   const intervalRef = useRef(null);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRemaining(duration);
-    setIsRunning(true);
-  }, [duration]);
 
   useEffect(() => {
     if (isRunning) {
@@ -19,8 +12,11 @@ export function Timer({ duration }) {
         setRemaining((prev) => {
           if (prev <= 100) {
             setShowWindow(true);
+
             clearInterval(intervalRef.current);
+
             setIsRunning(false);
+            
             return 0;
           }
           return prev - 100;
@@ -31,6 +27,7 @@ export function Timer({ duration }) {
     }
 
     return () => clearInterval(intervalRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning]);
 
   const format = (ms) => {
@@ -67,7 +64,13 @@ export function Timer({ duration }) {
           <div className="dialog-window">
             <span>Well done! You've successfully completed this stage!</span>
             <div>
-              <button onClick={()=>{setShowWindow(false)}}>Start break</button>
+              <button
+                onClick={() => {
+                  setShowWindow(false);
+                }}
+              >
+                Start break
+              </button>
             </div>
           </div>
         </div>

@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { timeFormatter } from "../util/timeFormatter";
 import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
 import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
+  const [timeRemaining, setTimeRemaining] = useState(quest.timeIntervalInMs);
+
+  let intervalPercent = Math.round(
+    (timeRemaining / quest.timeIntervalInMs) * 100,
+  );
+
   return (
     <div className="quest-item">
       <div className="cancel-btn">
@@ -23,13 +30,21 @@ export function QuestItem({ quest }) {
           <div className="interval-points">
             {Array.from({ length: quest.amountOfIntervals }).map((_, i) => (
               <div key={i} className="interval-item">
-                Item {i + 1}
-              </div>
+                  <div
+                    className="interval-progress"
+                    style={{ width: `${intervalPercent}%` }}
+                  >
+                    {intervalPercent}%
+                  </div>
+                </div>
             ))}
           </div>
         </div>
       </div>
-      <Timer duration={quest.timeIntervalInMs} />
+      <Timer
+        remaining={timeRemaining}
+        setRemaining={setTimeRemaining}
+      />
     </div>
   );
 }

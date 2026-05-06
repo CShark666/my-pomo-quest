@@ -30,3 +30,9 @@ export async function createQuest(quest) {
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(questWithId));
 }
+
+export async function cancelQuest(){
+  await delay();
+
+  localStorage.removeItem(STORAGE_KEY);
+}

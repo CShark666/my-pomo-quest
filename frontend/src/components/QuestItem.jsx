@@ -1,10 +1,14 @@
 import { timeFormatter } from "../util/timeFormatter";
 import { Timer } from "./Timer";
+import { CancelButton } from "./CancelButton";
 import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
   return (
     <div className="quest-item">
+      <div className="cancel-btn">
+        <CancelButton />
+      </div>
       <div className="quest-progress-bar">
         <div className="total-time">
           <p>{timeFormatter(quest.remainingTotalTimeInMs)}</p>

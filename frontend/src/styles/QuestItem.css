@@ -1,13 +1,18 @@
 .quest-item {
-    width: 560px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
     padding: 3px;
     background-color: rgba(33, 33, 33, 0.333);
     border-radius: 5px;
 }
-.cancel-btn{
+
+.cancel-btn {
     display: flex;
     justify-content: end;
 }
+
 .info {
     width: 100%;
     display: flex;
@@ -17,11 +22,12 @@
 .quest-progress-bar {
     display: flex;
     align-items: center;
-
+    flex-direction: row;
 }
 
 .total-time {
     display: flex;
+    flex-shrink: 0;
     justify-content: center;
     align-items: center;
     background-color: brown;
@@ -34,12 +40,22 @@
 
 .interval-points {
     display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 2px;
 }
 
 .interval-item {
+    flex: 1 1 60px;
+    min-width: 30px;
+    max-width: 90px;
+    height: 40px;
+
+
     background-color: brown;
     color: white;
-    padding: 10px;
-    margin-left: 5px;
+
     border-radius: 5px;
+
+    text-align: center;
 }

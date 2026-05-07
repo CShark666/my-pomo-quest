@@ -6,10 +6,16 @@ import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
   const [timeRemaining, setTimeRemaining] = useState(quest.timeIntervalInMs);
-
-  let intervalPercent = Math.round(
-    (timeRemaining / quest.timeIntervalInMs) * 100,
+  const [intervalsRemaining, setIntervalRemaining] = useState(
+    Array.from({ length: quest.amountOfIntervals }, () => ({
+      completed: false,
+    })),
   );
+  const [currentIntervalIndex, setCurrentIntervalIndex] = useState(
+    quest.amountOfIntervals - 1,
+  );
+
+  let timerPercent = Math.round((timeRemaining / quest.timeIntervalInMs) * 100);
 
   return (
     <div className="quest-item">
@@ -28,23 +34,34 @@ export function QuestItem({ quest }) {
             <p>Status: {quest.status}</p>
           </div>
           <div className="interval-points">
-            {Array.from({ length: quest.amountOfIntervals }).map((_, i) => (
-              <div key={i} className="interval-item">
+            {intervalsRemaining.map((_, i) => {
+              const intervalPercents = intervalsRemaining[i].completed
+                ? "0%"
+                : "100%";
+              return i == currentIntervalIndex ? (
+                <div key={i} className="interval-item">
                   <div
                     className="interval-progress"
-                    style={{ width: `${intervalPercent}%` }}
+                    style={{ width: `${timerPercent}%` }}
                   >
-                    {intervalPercent}%
+                    {timerPercent}%
                   </div>
                 </div>
-            ))}
+              ) : (
+                <div key={i} className="interval-item">
+                  <div
+                    className="interval-progress"
+                    style={{ width: `${intervalPercents}` }}
+                  >
+                    {intervalPercents}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-      <Timer
-        remaining={timeRemaining}
-        setRemaining={setTimeRemaining}
-      />
+      <Timer remaining={timeRemaining} setRemaining={setTimeRemaining} />
     </div>
   );
 }

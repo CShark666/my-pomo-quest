@@ -193,7 +193,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
                   "no breaks"
                 ) : (
                   <span>
-                    short:{input.breaks.shortBreak} m. / long:{" "}
+                    short: {input.breaks.shortBreak} m. / long:{" "}
                     {input.breaks.longBreak} m.
                   </span>
                 )}

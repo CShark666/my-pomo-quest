@@ -27,8 +27,8 @@ export function QuestItem({ quest }) {
           return copy;
         });
         setCurrentIntervalIndex((prev) => prev - 1);
+        setTimeRemaining(quest.timeIntervalInMs);
       };
-
       handleIntervalsEnd();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

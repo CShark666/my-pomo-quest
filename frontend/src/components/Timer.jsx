@@ -70,7 +70,6 @@ export function Timer({ remaining, setRemaining }) {
                 onClick={() => {
                   setShowWindow(false);
                   setIsRunning(true);
-                  setRemaining(5000);
                 }}
               >
                 Skip break

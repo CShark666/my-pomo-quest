@@ -55,15 +55,15 @@ export function CreatingQuesForm({ setCurrentQuest }) {
         <div className="info-box">
           <select
             className="category-selector"
-            value={input.category}
             onChange={(e) =>
               setInput({
                 ...input,
                 category: e.target.value,
               })
             }
+            defaultValue="Category"
           >
-            <option value="" disabled selected>
+            <option value="Category" disabled>
               Category
             </option>
             <option value="test">test</option>

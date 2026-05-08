@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { timeFormatter } from "../util/timeFormatter";
 import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
@@ -6,7 +6,7 @@ import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
   const [timeRemaining, setTimeRemaining] = useState(quest.timeIntervalInMs);
-  const [intervalsRemaining, setIntervalRemaining] = useState(
+  const [intervalsRemaining, setIntervalsRemaining] = useState(
     Array.from({ length: quest.amountOfIntervals }, () => ({
       completed: false,
     })),
@@ -14,6 +14,25 @@ export function QuestItem({ quest }) {
   const [currentIntervalIndex, setCurrentIntervalIndex] = useState(
     quest.amountOfIntervals - 1,
   );
+
+  useEffect(() => {
+    if (timeRemaining === 0) {
+      const handleIntervalsEnd = () => {
+        setIntervalsRemaining((prev) => {
+          const copy = [...prev];
+          copy[currentIntervalIndex] = {
+            ...copy[currentIntervalIndex],
+            completed: true,
+          };
+          return copy;
+        });
+        setCurrentIntervalIndex((prev) => prev - 1);
+      };
+
+      handleIntervalsEnd();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeRemaining]);
 
   let timerPercent = Math.round((timeRemaining / quest.timeIntervalInMs) * 100);
 

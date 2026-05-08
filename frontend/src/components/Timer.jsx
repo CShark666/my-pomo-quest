@@ -7,28 +7,23 @@ export function Timer({ remaining, setRemaining }) {
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    if (isRunning) {
+    if (isRunning && remaining > 0) {
       intervalRef.current = setInterval(() => {
         setRemaining((prev) => {
           if (prev <= 100) {
+            clearInterval(intervalRef.current);
+            setIsRunning(false);
             setShowWindow(true);
 
-            clearInterval(intervalRef.current);
-
-            setIsRunning(false);
-            
             return 0;
           }
           return prev - 100;
         });
       }, 100);
-    } else {
-      clearInterval(intervalRef.current);
     }
 
     return () => clearInterval(intervalRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRunning]);
+  }, [isRunning, remaining, setRemaining]);
 
   const format = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -70,6 +65,15 @@ export function Timer({ remaining, setRemaining }) {
                 }}
               >
                 Start break
+              </button>
+              <button
+                onClick={() => {
+                  setShowWindow(false);
+                  setIsRunning(true);
+                  setRemaining(5000);
+                }}
+              >
+                Skip break
               </button>
             </div>
           </div>

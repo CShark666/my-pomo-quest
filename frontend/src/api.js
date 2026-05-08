@@ -25,7 +25,6 @@ export async function createQuest(quest) {
     totalTimeInMs: timeInMs,
     remainingTotalTimeInMs: timeInMs,
     timeIntervalInMs: quest.timeInterval * 60 * 1000,
-    breakConfig: { active: true, shortBreak: 300000, longBreak: 900000 },
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(questWithId));

@@ -10,8 +10,10 @@ export function CreatingQuesForm({ setCurrentQuest }) {
     totalTime: 0,
     timeInterval: 0,
     amountOfIntervals: 0,
+    breaks: { disabled: false, shortBreak: 5, longBreak: 10 },
   });
   const [disableField, setDisableField] = useState(true);
+  const [showBreakSettings, setShowBreakSettings] = useState(false);
   const navigate = useNavigate();
 
   const saveQuest = async () => {
@@ -28,7 +30,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
   };
 
   const handleTimeIntervalInput = (e) => {
-    const value = e.target.value;
+    const value = Number(e.target.value);
     const minutes = input.totalTime * 60;
 
     setInput({
@@ -39,7 +41,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
   };
 
   const handleAmountIntervalInput = (e) => {
-    const value = e.target.value;
+    const value = Number(e.target.value);
     const minutes = input.totalTime * 60;
 
     setInput({
@@ -117,6 +119,86 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               onChange={handleAmountIntervalInput}
               disabled={disableField}
             />
+          </div>
+        </div>
+        <div className="break-settings">
+          <button
+            onClick={() => {
+              setShowBreakSettings(!showBreakSettings);
+            }}
+          >
+            Break settings
+          </button>
+          <div className="break-settings__content">
+            {showBreakSettings ? (
+              <div className="break-settings__form">
+                <div className="break-settings__row">
+                  <span>Disable breaks:</span>
+                  <input
+                    type="checkbox"
+                    checked={input.breaks.disabled}
+                    onChange={(e) =>
+                      setInput({
+                        ...input,
+                        breaks: {
+                          ...input.breaks,
+                          disabled: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <div className="break-settings__row">
+                  <span>Short break: </span>
+                  <input
+                    className="break-settings__input"
+                    type="number"
+                    className="time-input"
+                    value={input.breaks.shortBreak}
+                    disabled={input.breaks.disabled}
+                    onChange={(e) =>
+                      setInput({
+                        ...input,
+                        breaks: {
+                          ...input.breaks,
+                          shortBreak: Number(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+                <div className="break-settings__row">
+                  <span>Long break: </span>
+                  <input
+                    className="break-settings__input"
+                    type="number"
+                    className="time-input"
+                    value={input.breaks.longBreak}
+                    disabled={input.breaks.disabled}
+                    onChange={(e) =>
+                      setInput({
+                        ...input,
+                        breaks: {
+                          ...input.breaks,
+                          longBreak: Number(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="break-settings__summary">
+                {input.breaks.disabled ? (
+                  "no breaks"
+                ) : (
+                  <span>
+                    short:{input.breaks.shortBreak} m. / long:{" "}
+                    {input.breaks.longBreak} m.
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="buttons">

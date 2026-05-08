@@ -87,3 +87,31 @@ input:disabled {
     background: rgb(35, 130, 11);
     border-color: rgb(35, 160, 41);
 }
+
+.break-settings {
+    background-color: #36413b42;
+    border-radius: 5px;
+}
+
+.break-settings button {
+    padding: 3px 4px;
+    border-radius: 3px;
+}
+
+.break-settings__content {
+    padding: 5px 10px;
+}
+
+.break-settings__form {}
+
+.break-settings__input {}
+
+.break-settings__row {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 1px 3px 1px;
+}
+
+.break-settings__summary {
+    opacity: 0.5;
+}

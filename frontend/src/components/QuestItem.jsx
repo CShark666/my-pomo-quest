@@ -47,15 +47,15 @@ export function QuestItem({ quest }) {
   return (
     <>
       <div className="quest-item">
-        <div className="cancel-btn">
+        <div className="quest-item__cancel">
           <CancelButton />
         </div>
-        <div className="quest-progress-bar">
-          <div className="total-time">
+        <div className="quest-item__content">
+          <div className="quest-item__total-time">
             <p>{timeFormatter(quest.remainingTotalTimeInMs)}</p>
           </div>
           <div>
-            <div className="info">
+            <div className="quest-item__meta">
               <p>
                 #{quest.id} {quest.title}
               </p>

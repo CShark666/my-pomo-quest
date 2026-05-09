@@ -1,30 +1,6 @@
-import { useState, useEffect, useRef } from "react";
 import "../styles/Timer.css";
 
-export function Timer({ remaining, setRemaining }) {
-  const [isRunning, setIsRunning] = useState(true);
-  const [showWindow, setShowWindow] = useState(false);
-  const intervalRef = useRef(null);
-
-  useEffect(() => {
-    if (isRunning && remaining > 0) {
-      intervalRef.current = setInterval(() => {
-        setRemaining((prev) => {
-          if (prev <= 100) {
-            clearInterval(intervalRef.current);
-            setIsRunning(false);
-            setShowWindow(true);
-
-            return 0;
-          }
-          return prev - 100;
-        });
-      }, 100);
-    }
-
-    return () => clearInterval(intervalRef.current);
-  }, [isRunning, remaining, setRemaining]);
-
+export function Timer({ time }) {
   const format = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60)
@@ -36,48 +12,22 @@ export function Timer({ remaining, setRemaining }) {
   };
 
   return (
-    <>
-      <div className="timer">
-        <div className="time">
-          <div className="hours">
-            <div className="time-card">
-              <p>{format(remaining).minutes}</p>
-            </div>
+    <div className="timer">
+      <div className="time">
+        <div className="hours">
+          <div className="time-card">
+            <p>{format(time).minutes}</p>
           </div>
+        </div>
 
-          <p className="dots">:</p>
+        <p className="dots">:</p>
 
-          <div className="seconds">
-            <div className="time-card">
-              <p>{format(remaining).seconds}</p>
-            </div>
+        <div className="seconds">
+          <div className="time-card">
+            <p>{format(time).seconds}</p>
           </div>
         </div>
       </div>
-      {showWindow && (
-        <div className="overlay">
-          <div className="dialog-window">
-            <span>Well done! You've successfully completed this stage!</span>
-            <div>
-              <button
-                onClick={() => {
-                  setShowWindow(false);
-                }}
-              >
-                Start break
-              </button>
-              <button
-                onClick={() => {
-                  setShowWindow(false);
-                  setIsRunning(true);
-                }}
-              >
-                Skip break
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }

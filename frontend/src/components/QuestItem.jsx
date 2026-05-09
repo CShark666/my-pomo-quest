@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTimer } from "../hooks/useTimer";
 import { timeFormatter } from "../util/timeFormatter";
+import { IntervalsBar } from "./IntervalsBar";
 import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
-import { useTimer } from "../hooks/useTimer";
 import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
@@ -60,32 +61,11 @@ export function QuestItem({ quest }) {
               </p>
               <p>Status: {quest.status}</p>
             </div>
-            <div className="interval-points">
-              {intervalsRemaining.map((_, i) => {
-                const intervalPercents = intervalsRemaining[i].completed
-                  ? "0%"
-                  : "100%";
-                return i == currentIntervalIndex ? (
-                  <div key={i} className="interval-item">
-                    <div
-                      className="interval-progress"
-                      style={{ width: `${timerPercent}%` }}
-                    >
-                      {timerPercent}%
-                    </div>
-                  </div>
-                ) : (
-                  <div key={i} className="interval-item">
-                    <div
-                      className="interval-progress"
-                      style={{ width: `${intervalPercents}` }}
-                    >
-                      {intervalPercents}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <IntervalsBar
+              intervals={intervalsRemaining}
+              currentIntervalIndex={currentIntervalIndex}
+              timerPercent={timerPercent}
+            />
           </div>
         </div>
         <Timer time={remaining} />

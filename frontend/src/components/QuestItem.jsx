@@ -22,6 +22,7 @@ export function QuestItem({ quest }) {
   );
 
   const [showWindow, setShowWindow] = useState(false);
+  const [isBreak, setBreak] = useState(false);
 
   useEffect(() => {
     if (!isRunning) {
@@ -46,7 +47,7 @@ export function QuestItem({ quest }) {
 
   return (
     <>
-      <div className="quest-item">
+      <div className={isBreak ? "quest-item-break" : "quest-item"}>
         <div className="quest-item__cancel">
           <CancelButton />
         </div>
@@ -78,6 +79,7 @@ export function QuestItem({ quest }) {
               <button
                 onClick={() => {
                   setShowWindow(false);
+                  setBreak(true);
                 }}
               >
                 Start break

@@ -39,6 +39,13 @@
 }
 
 
+.quest-item-break .quest-item__total-time,
+.quest-item-break .interval,
+.quest-item-break .interval-progress,
+.quest-item-break .time-card {
+  background-color: rgba(50, 194, 50, 0.26);
+}
+
 
 .overlay {
   position: fixed;

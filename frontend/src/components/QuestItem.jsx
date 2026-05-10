@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useTimer } from "../hooks/useTimer";
 import { timeFormatter } from "../util/timeFormatter";
 import { IntervalsBar } from "./IntervalsBar";
 import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
+import { cancelQuest } from "../api";
 import "../styles/QuestItem.css";
 
 export function QuestItem({ quest }) {
@@ -26,6 +28,8 @@ export function QuestItem({ quest }) {
   const [breakTime, setBreakTime] = useState(
     !quest.breaks.disabled ? Number(quest.breaks.shortBreak) : 0,
   );
+  const [isFinished, setFinished] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleIntervalsEnd = () => {
@@ -38,7 +42,7 @@ export function QuestItem({ quest }) {
         return copy;
       });
       setCurrentIntervalIndex((prev) => prev - 1);
-      setShowWindow(true);
+      currentIntervalIndex <= 0 ? setFinished(true) : setShowWindow(true);
     };
 
     const handleBreakEnd = () => {
@@ -67,6 +71,11 @@ export function QuestItem({ quest }) {
     : 100;
   const isBreaksEnabled = quest.breaks.disabled;
 
+  const endQuest = async () => {
+    await cancelQuest();
+    navigate("/");
+  };
+
   return (
     <>
       <div className={isBreakMode ? "quest-item-break" : "quest-item"}>
@@ -91,7 +100,18 @@ export function QuestItem({ quest }) {
             />
           </div>
         </div>
-        <Timer time={remaining} />
+        {isFinished ? (
+          <>
+            <span>
+              Congratulations! <b>You have completed your quest!</b> You have
+              completed all {quest.amountOfIntervals} stages!
+            </span>
+
+            <button onClick={endQuest}>Back to main page</button>
+          </>
+        ) : (
+          <Timer time={remaining} />
+        )}
       </div>
       {showWindow &&
         (isBreakMode || isBreaksEnabled ? (

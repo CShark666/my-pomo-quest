@@ -17,37 +17,59 @@ export function QuestItem({ quest }) {
     quest.amountOfIntervals - 1,
   );
 
-  const { remaining, isRunning, setIsRunning } = useTimer(
+  const { remaining, isRunning, setIsRunning, setRemaining } = useTimer(
     quest.timeIntervalInMs,
   );
 
   const [showWindow, setShowWindow] = useState(false);
-  const [isBreak, setBreak] = useState(false);
+  const [isBreakMode, setBreakMode] = useState(false);
+  const [breakTime, setBreakTime] = useState(
+    !quest.breaks.disabled ? Number(quest.breaks.shortBreak) : 0,
+  );
 
   useEffect(() => {
-    if (!isRunning) {
-      const handleIntervalsEnd = () => {
-        setIntervalsRemaining((prev) => {
-          const copy = [...prev];
-          copy[currentIntervalIndex] = {
-            ...copy[currentIntervalIndex],
-            completed: true,
-          };
-          return copy;
-        });
-        setCurrentIntervalIndex((prev) => prev - 1);
-        setShowWindow(true);
-      };
-      handleIntervalsEnd();
+    const handleIntervalsEnd = () => {
+      setIntervalsRemaining((prev) => {
+        const copy = [...prev];
+        copy[currentIntervalIndex] = {
+          ...copy[currentIntervalIndex],
+          completed: true,
+        };
+        return copy;
+      });
+      setCurrentIntervalIndex((prev) => prev - 1);
+      setShowWindow(true);
+    };
+
+    const handleBreakEnd = () => {
+      setShowWindow(true);
+      setBreakTime((prev) => {
+        if (prev === quest.breaks.shortBreak) {
+          return quest.breaks.longBreak;
+        }
+        return quest.breaks.shortBreak;
+      });
+    };
+
+    if (isRunning) return;
+
+    if (isBreakMode) {
+      handleBreakEnd();
+      return;
     }
+
+    handleIntervalsEnd();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning]);
 
-  let timerPercent = Math.round((remaining / quest.timeIntervalInMs) * 100);
+  let timerPercent = !isBreakMode
+    ? Math.round((remaining / quest.timeIntervalInMs) * 100)
+    : 100;
+  const isBreaksEnabled = quest.breaks.disabled;
 
   return (
     <>
-      <div className={isBreak ? "quest-item-break" : "quest-item"}>
+      <div className={isBreakMode ? "quest-item-break" : "quest-item"}>
         <div className="quest-item__cancel">
           <CancelButton />
         </div>
@@ -71,31 +93,52 @@ export function QuestItem({ quest }) {
         </div>
         <Timer time={remaining} />
       </div>
-      {showWindow && (
-        <div className="overlay">
-          <div className="dialog-window">
-            <span>Well done! You've successfully completed this stage!</span>
-            <div>
-              <button
-                onClick={() => {
-                  setShowWindow(false);
-                  setBreak(true);
-                }}
-              >
-                Start break
-              </button>
-              <button
-                onClick={() => {
-                  setShowWindow(false);
-                  setIsRunning(true);
-                }}
-              >
-                Skip break
-              </button>
+      {showWindow &&
+        (isBreakMode || isBreaksEnabled ? (
+          <div className="overlay">
+            <div className="dialog-window">
+              <span> The break is over – time to get back to work!</span>
+              <div>
+                <button
+                  onClick={() => {
+                    setShowWindow(false);
+                    setBreakMode(false);
+                    setRemaining(quest.timeIntervalInMs);
+                    setIsRunning(true);
+                  }}
+                >
+                  Start next interval.
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="overlay">
+            <div className="dialog-window">
+              <span>Well done! You've successfully completed this stage!</span>
+              <div>
+                <button
+                  onClick={() => {
+                    setShowWindow(false);
+                    setBreakMode(true);
+                    setRemaining(breakTime);
+                    setIsRunning(true);
+                  }}
+                >
+                  Start break
+                </button>
+                <button
+                  onClick={() => {
+                    setShowWindow(false);
+                    setIsRunning(true);
+                  }}
+                >
+                  Skip break
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
     </>
   );
 }

@@ -26,5 +26,6 @@ export function useTimer(initial = 5000) {
     remaining,
     isRunning,
     setIsRunning,
+    setRemaining
   };
 }

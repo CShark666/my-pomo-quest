@@ -110,7 +110,21 @@ export function QuestItem({ quest }) {
             <button onClick={endQuest}>Back to main page</button>
           </>
         ) : (
-          <Timer time={remaining} />
+          <>
+            <Timer time={remaining} />{" "}
+            {isBreakMode && (
+              <button
+                onClick={() => {
+                  setBreakMode(false);
+                  setRemaining(quest.timeIntervalInMs);
+                  setIsRunning(true);
+                }}
+              >
+                {" "}
+                Skip break
+              </button>
+            )}
+          </>
         )}
       </div>
       {showWindow &&

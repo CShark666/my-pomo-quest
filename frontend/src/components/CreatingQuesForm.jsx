@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { createQuest } from "../api";
 import "../styles/CreatingQuesForm.css";
@@ -7,7 +7,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
   const [input, setInput] = useState({
     category: "",
     title: "",
-    totalTime: 0,
+    totalTime: { hours: 0, minutes: 0 },
     timeInterval: 0,
     amountOfIntervals: 0,
     breaks: { disabled: false, shortBreak: 5, longBreak: 10 },
@@ -16,38 +16,36 @@ export function CreatingQuesForm({ setCurrentQuest }) {
   const [showBreakSettings, setShowBreakSettings] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const handleTimeUpdate = () => {
+      const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
+      totalMinutes > 0 ? setDisableField(false) : setDisableField(true);
+    };
+    handleTimeUpdate();
+  }, [input.totalTime]);
+
   const saveQuest = async () => {
     await createQuest(input);
     setCurrentQuest(input);
   };
 
-  const handleTotalTimeInput = (e) => {
-    setInput({
-      ...input,
-      totalTime: e.target.value,
-    });
-    e.target.value > 0 ? setDisableField(false) : setDisableField(true);
+  const updateTime = (field, value) => {
+    setInput((prev) => ({
+      ...prev,
+      totalTime: {
+        ...prev.totalTime,
+        [field]: Number(value),
+      },
+    }));
   };
 
-  const handleTimeIntervalInput = (e) => {
-    const value = Number(e.target.value);
-    const minutes = input.totalTime * 60;
+  const updateIntervalsInput = (currentField, secondField, value) => {
+    const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
 
     setInput({
       ...input,
-      timeInterval: value,
-      amountOfIntervals: minutes / value,
-    });
-  };
-
-  const handleAmountIntervalInput = (e) => {
-    const value = Number(e.target.value);
-    const minutes = input.totalTime * 60;
-
-    setInput({
-      ...input,
-      amountOfIntervals: value,
-      timeInterval: minutes / value,
+      [currentField]: Number(value),
+      [secondField]: Number(totalMinutes / value),
     });
   };
 
@@ -89,13 +87,27 @@ export function CreatingQuesForm({ setCurrentQuest }) {
         <div className="time-settings">
           <div className="time-input-box">
             <p>Total time</p>
-            <input
-              className="time-input"
-              type="number"
-              min="0"
-              value={input.totalTime}
-              onChange={handleTotalTimeInput}
-            />
+            <div>
+              <input
+                className="time-input"
+                type="number"
+                min="0"
+                value={input.totalTime.hours}
+                onChange={(e) => {
+                  updateTime("hours", e.target.value);
+                }}
+              />
+              <input
+                className="time-input"
+                type="number"
+                min="0"
+                max="59"
+                value={input.totalTime.minutes}
+                onChange={(e) => {
+                  updateTime("minutes", e.target.value);
+                }}
+              />
+            </div>
           </div>
           <div className="time-input-box">
             <p>Time interval</p>
@@ -105,7 +117,13 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               min="1"
               max="60"
               value={input.timeInterval}
-              onChange={handleTimeIntervalInput}
+              onChange={(e) => {
+                updateIntervalsInput(
+                  "timeInterval",
+                  "amountOfIntervals",
+                  e.target.value,
+                );
+              }}
               disabled={disableField}
             />
           </div>
@@ -116,7 +134,13 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               type="number"
               min="1"
               value={input.amountOfIntervals}
-              onChange={handleAmountIntervalInput}
+              onChange={(e) => {
+                updateIntervalsInput(
+                  "amountOfIntervals",
+                  "timeInterval",
+                  e.target.value,
+                );
+              }}
               disabled={disableField}
             />
           </div>

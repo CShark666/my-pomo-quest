@@ -1,33 +1,31 @@
+import { useEffect, useState } from "react";
+import { hasActiveQuest } from "../api.js";
 import { Sidebar } from "./Sidebar";
 import { QuestItem } from "../components/QuestItem";
 import { CreatingQuesForm } from "../components/CreatingQuesForm";
-import { getQuest } from "../api";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
 import "../styles/QuestPage.css";
 
 export function QuestPage() {
-  const [currentQuest, setCurrentQuest] = useState(null);
-  const { id } = useParams();
+  const [isQuestActive, setIsQuestActive] = useState(false);
 
   useEffect(() => {
-    const fetchDate = async () => {
-      const response = await getQuest();
-      setCurrentQuest(response);
+    const fetchQuestStatus = async () => {
+      const isActive = await hasActiveQuest();
+      setIsQuestActive(isActive);
     };
 
-    fetchDate();
+    fetchQuestStatus();
   });
 
   return (
     <>
       <Sidebar />
-      <h1>QuestPage: {id}</h1>
+      <h1>QuestPage:</h1>
       <div className="quest-box">
-        {currentQuest ? (
-          <QuestItem quest={currentQuest} />
+        {isQuestActive ? (
+          <QuestItem />
         ) : (
-          <CreatingQuesForm setCurrentQuest={setCurrentQuest} />
+          <CreatingQuesForm setQuestActive={setIsQuestActive} />
         )}
       </div>
     </>

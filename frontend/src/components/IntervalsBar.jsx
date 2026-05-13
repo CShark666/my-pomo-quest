@@ -1,6 +1,10 @@
 import "../styles/IntervalsBar.css";
 
-export function IntervalsBar({ intervals, currentIntervalIndex, timerPercent }) {
+export function IntervalsBar({
+  intervals,
+  currentIntervalIndex,
+  timerPercent,
+}) {
   return (
     <div className="intervals">
       {intervals.map((interval, i) => {

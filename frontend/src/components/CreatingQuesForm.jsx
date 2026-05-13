@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { createQuest } from "../api";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuesForm({ setCurrentQuest }) {
+export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
   const [input, setInput] = useState({
     category: "",
     title: "",
@@ -26,7 +26,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
 
   const saveQuest = async () => {
     await createQuest(input);
-    setCurrentQuest(input);
+    setIsQuestActive(true);
   };
 
   const updateTime = (field, value) => {

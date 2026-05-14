@@ -18,19 +18,24 @@ export async function getQuest() {
     intervals: Array.from({ length: parsed.amountOfIntervals }, () => ({
       completed: false,
     })),
-
-    currentIntervalIndex: parsed.amountOfIntervals - 1,
     breakStatus: false,
   };
-  
+
+  if (parsed.status === "justCreated") {
+    const newStatus = "justStarted";
+    const newStartedTime = Date.now();
+
+    quest.status = newStatus;
+    quest.currentInterval.started = newStartedTime;
+
+    parsed.status = newStatus;
+    parsed.currentInterval.started = newStartedTime;
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+  }
+
   if (quest.remainingTotalTimeInMs < quest.totalTimeInMs) {
-    const intervalRemaining = Math.floor(
-      quest.remainingTotalTimeInMs / quest.intervalDurationInMs,
-    );
-
-    quest.currentIntervalIndex = intervalRemaining - 1;
-
-    for (let i = quest.currentIntervalIndex; i < quest.intervals.length; i++) {
+    for (let i = quest.currentInterval.index; i < quest.intervals.length; i++) {
       quest.intervals[i].completed = true;
     }
   }
@@ -50,16 +55,22 @@ export async function createQuest(clientQuest) {
     id: crypto.randomUUID(),
     category: clientQuest.category,
     title: clientQuest.title,
-    status: "inProgress",
+    status: "justCreated",
     totalTimeInMs: totalTimeInMs,
     intervalDurationInMs: intervalTimeInMs,
     remainingTotalTimeInMs: totalTimeInMs,
+    currentInterval: {
+      index: clientQuest.amountOfIntervals - 1,
+      started: Date.now(),
+      remaining: intervalTimeInMs,
+    },
     amountOfIntervals: clientQuest.amountOfIntervals,
     breaks: {
       disabled: clientQuest.breaks.disabled,
       shortBreakInMs: clientQuest.breaks.shortBreak * 60 * 1000,
       longBreakInMs: clientQuest.breaks.longBreak * 60 * 1000,
     },
+    createdAt: Date.now(),
   };
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(pomoQuest));
@@ -74,4 +85,24 @@ export async function cancelQuest() {
 export async function hasActiveQuest() {
   await delay();
   return localStorage.getItem(STORAGE_KEY) !== null;
+}
+
+export async function questTimeValidate(clientQues) {
+  await delay();
+
+  const currentTime = Date.now();
+  const startTime = clientQues.currentInterval.started;
+  const timeDiff = currentTime - startTime;
+
+  clientQues.currentInterval.remaining =
+    clientQues.intervalDurationInMs - timeDiff;
+
+  let quest = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  quest.currentInterval.index = clientQues.currentInterval.index;
+  quest.currentInterval.remaining = clientQues.currentInterval.remaining;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(quest));
+
+  return clientQues;
 }

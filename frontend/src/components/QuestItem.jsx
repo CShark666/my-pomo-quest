@@ -21,35 +21,34 @@ export function QuestItem() {
       const data = await getQuest();
       setQuest(data);
     };
-
     fetchQuest();
   }, []);
 
   useEffect(() => {
-    if (remaining % 3000 === 0) {
-      const checkTime = async () => {
-        const validatedQuest = await questTimeValidate(quest);
-        setQuest(validatedQuest);
-        setRemaining(Number(validatedQuest.currentInterval.remaining));
-      };
-      checkTime();
+    if (quest) {
+      setRemaining(Number(quest.currentInterval.remaining));
+      setIsRunning(true); // якщо потрібно одразу запустити
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remaining]);
+  }, [quest?.currentInterval?.remaining]);
+
+  useEffect(() => {
+    if (!quest) return; // не запускаємо поки quest не завантажений
+
+    const interval = setInterval(async () => {
+      const validatedQuest = await questTimeValidate(quest);
+      setQuest(validatedQuest);
+      setRemaining(Number(validatedQuest.currentInterval.remaining));
+    }, 1000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quest]);
 
   if (!quest) {
-    return (
-      <>
-        <h2>No quest :c </h2>
-      </>
-    );
+    return <h2>No quest :c</h2>;
   }
 
-  if (!isRunning) {
-    setIsRunning(true);
-  }
-
-  let isBreakMode = quest.breakStatus;
+  let isBreakMode = quest.currentInterval.status === "break";
   let timerPercent = !isBreakMode
     ? Math.round((remaining / quest.intervalDurationInMs) * 100)
     : 100;

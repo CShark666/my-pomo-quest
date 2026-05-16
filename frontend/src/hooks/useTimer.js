@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-export function useTimer(initial = 5000) {
+export function useTimer(initial) {
   const [remaining, setRemaining] = useState(initial);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -12,7 +12,7 @@ export function useTimer(initial = 5000) {
         if (prev < 100) {
           clearInterval(id);
           setIsRunning(false);
-          return initial;
+          return 0;
         }
 
         return prev - 100;
@@ -20,12 +20,12 @@ export function useTimer(initial = 5000) {
     }, 100);
 
     return () => clearInterval(id);
-  }, [initial, isRunning, remaining]);
+  }, [isRunning]);
 
   return {
     remaining,
     isRunning,
     setIsRunning,
-    setRemaining
+    setRemaining,
   };
 }

@@ -96,7 +96,7 @@ export async function questTimeValidate(clientQues) {
     clientQues.intervalDurationInMs -
     (Date.now() - clientQues.currentInterval.started);
 
-  const updated = {
+  let updated = {
     ...clientQues,
     currentInterval: {
       ...clientQues.currentInterval,
@@ -104,9 +104,68 @@ export async function questTimeValidate(clientQues) {
     },
   };
 
-  let quest = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  quest.currentInterval.remaining = remaining;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(quest));
+  if (remaining <= 1000) {
+    updated = handleEndOfInterval(updated);
+  }
 
+  saveChanges(updated);
   return updated;
+}
+
+function saveChanges(changes) {
+  const quest = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  const saveChanges = {
+    ...quest,
+    status: changes.status,
+    currentInterval: {
+      ...changes.currentInterval,
+    },
+
+    remainingTotalTimeInMs: changes.remainingTotalTimeInMs,
+    breaks: {
+      ...quest.breaks,
+      currentBreak: changes.breaks.currentBreak,
+    },
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saveChanges));
+}
+
+function handleEndOfInterval(quest) {
+  if (quest.currentInterval.status === "working") {
+    return endOfWorking(quest);
+  }
+
+  return endOfBreak(quest);
+}
+function endOfWorking(quest) {
+  quest.intervals[quest.currentInterval.index].completed = true;
+  quest.currentInterval.index -= 1;
+
+  if (quest.currentInterval.index < 0) {
+    quest.currentInterval.status = "finis";
+    quest.status = "finished";
+  }
+
+  quest.remainingTotalTimeInMs -= quest.intervalDurationInMs;
+  quest.currentInterval.status = "break";
+  quest.currentInterval.remaining =
+    quest.currentInterval.index % 2 === 1
+      ? quest.breaks.shortBreakInMs
+      : quest.breaks.longBreakInMs;
+  quest.breaks.currentBreak =
+    quest.currentInterval.index % 2 === 1 ? "short" : "long";
+  quest.currentInterval.started = Date.now();
+
+  saveChanges(quest);
+  return quest;
+}
+function endOfBreak(quest) {
+  quest.currentInterval.status = "working";
+  quest.currentInterval.remaining = quest.intervalDurationInMs;
+  quest.currentInterval.started = Date.now();
+
+  saveChanges(quest);
+  return quest;
 }

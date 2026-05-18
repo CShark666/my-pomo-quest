@@ -27,13 +27,13 @@ export function QuestItem() {
   useEffect(() => {
     if (quest) {
       setRemaining(Number(quest.currentInterval.remaining));
-      setIsRunning(true); // якщо потрібно одразу запустити
+      setIsRunning(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quest?.currentInterval?.remaining]);
 
   useEffect(() => {
-    if (!quest) return; // не запускаємо поки quest не завантажений
+    if (!quest) return;
 
     const interval = setInterval(async () => {
       const validatedQuest = await questTimeValidate(quest);
@@ -41,7 +41,7 @@ export function QuestItem() {
       setRemaining(Number(validatedQuest.currentInterval.remaining));
     }, 1000);
     return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quest]);
 
   if (!quest) {
@@ -68,7 +68,8 @@ export function QuestItem() {
               <p>
                 #{quest.id} {quest.title}
               </p>
-              <p>Status: {quest.status}</p>
+              <p>Status: {quest.currentInterval.status}</p>
+              {isBreakMode && `${quest.breaks.currentBreak}`}
             </div>
             <IntervalsBar
               intervals={quest.intervals}

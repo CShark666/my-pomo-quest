@@ -5,7 +5,7 @@ import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
 import { IntervalsBar } from "./IntervalsBar";
 
-import { getQuest, questTimeValidate } from "../api";
+import { getQuest } from "../api";
 import { timeFormatter } from "../util/timeFormatter";
 
 import "../styles/QuestItem.css";
@@ -16,33 +16,33 @@ export function QuestItem() {
     quest ? Number(quest.currentInterval.remaining) : 500,
   );
 
-  useEffect(() => {
-    const fetchQuest = async () => {
-      const data = await getQuest();
-      setQuest(data);
-    };
-    fetchQuest();
-  }, []);
+  // useEffect(() => {
+  //   const fetchQuest = async () => {
+  //     const data = await getQuest();
+  //     setQuest(data);
+  //   };
+  //   fetchQuest();
+  // }, []);
 
-  useEffect(() => {
-    if (quest) {
-      setRemaining(Number(quest.currentInterval.remaining));
-      setIsRunning(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quest?.currentInterval?.remaining]);
+  // useEffect(() => {
+  //   if (quest) {
+  //     setRemaining(Number(quest.currentInterval.remaining));
+  //     setIsRunning(true);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [quest?.currentInterval?.remaining]);
 
-  useEffect(() => {
-    if (!quest) return;
+  // useEffect(() => {
+  //   if (!quest) return;
 
-    const interval = setInterval(async () => {
-      const validatedQuest = await questTimeValidate(quest);
-      setQuest(validatedQuest);
-      setRemaining(Number(validatedQuest.currentInterval.remaining));
-    }, 1000);
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quest]);
+  //   const interval = setInterval(async () => {
+  //     const validatedQuest = await questTimeValidate(quest);
+  //     setQuest(validatedQuest);
+  //     setRemaining(Number(validatedQuest.currentInterval.remaining));
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [quest]);
 
   if (!quest) {
     return <h2>No quest :c</h2>;

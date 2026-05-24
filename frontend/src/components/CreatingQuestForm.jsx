@@ -1,52 +1,44 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { createQuest } from "../api";
+import { createQuest } from "../api.ts";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
-  const [input, setInput] = useState({
-    category: "",
-    title: "",
-    totalTime: { hours: 0, minutes: 0 },
-    timeInterval: 0,
-    amountOfIntervals: 0,
-    breaks: { disabled: false, shortBreak: 5, longBreak: 10 },
-  });
+export function CreatingQuestForm() {
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
+  const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
+  const [intervalsCount, setIntervalsCount] = useState(1);
+  const [breaks, setBreaks] = useState({ disabled: false, short: 5, long: 10 });
+
   const [disableField, setDisableField] = useState(true);
   const [showBreakSettings, setShowBreakSettings] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleTimeUpdate = () => {
-      const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
+      const totalMinutes = totalTime.hours * 60 + totalTime.minutes;
       totalMinutes > 0 ? setDisableField(false) : setDisableField(true);
     };
     handleTimeUpdate();
-  }, [input.totalTime]);
+  }, [totalTime]);
 
   const saveQuest = async () => {
-    await createQuest(input);
-    setIsQuestActive(true);
+    await createQuest({
+      category: category,
+      title: title,
+      totalTimeMs: (totalTime.hours * 60 + totalTime.minutes) * 60 * 1000,
+      intervalsCount: intervalsCount,
+      breaks: breaks.disabled
+        ? null
+        : { short: breaks.short * 60 * 1000, long: breaks.long * 60 * 1000 },
+    });
   };
 
   const updateTime = (field, value) => {
-    setInput((prev) => ({
+    setTotalTimeMs((prev) => ({
       ...prev,
-      totalTime: {
-        ...prev.totalTime,
-        [field]: Number(value),
-      },
+      [field]: Number(value),
     }));
-  };
-
-  const updateIntervalsInput = (currentField, secondField, value) => {
-    const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
-
-    setInput({
-      ...input,
-      [currentField]: Number(value),
-      [secondField]: Number(totalMinutes / value),
-    });
   };
 
   return (
@@ -55,12 +47,7 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
         <div className="info-box">
           <select
             className="category-selector"
-            onChange={(e) =>
-              setInput({
-                ...input,
-                category: e.target.value,
-              })
-            }
+            onChange={(e) => setCategory(e.target.value)}
             defaultValue="Category"
           >
             <option value="Category" disabled>
@@ -75,13 +62,8 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
           <input
             type="text"
             placeholder="title"
-            value={input.title}
-            onChange={(e) =>
-              setInput({
-                ...input,
-                title: e.target.value,
-              })
-            }
+            value={title.title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="time-settings">
@@ -92,7 +74,7 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
                 className="time-input"
                 type="number"
                 min="0"
-                value={input.totalTime.hours}
+                value={totalTime.hours}
                 onChange={(e) => {
                   updateTime("hours", e.target.value);
                 }}
@@ -102,7 +84,7 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
                 type="number"
                 min="0"
                 max="59"
-                value={input.totalTime.minutes}
+                value={totalTime.minutes}
                 onChange={(e) => {
                   updateTime("minutes", e.target.value);
                 }}
@@ -115,13 +97,14 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
               className="time-input"
               type="number"
               min="1"
-              max="60"
-              value={input.timeInterval}
+              value={
+                (totalTime.hours * 60 + totalTime.minutes) / intervalsCount
+              }
               onChange={(e) => {
-                updateIntervalsInput(
-                  "timeInterval",
-                  "amountOfIntervals",
-                  e.target.value,
+                setIntervalsCount(
+                  Number(
+                    (totalTime.hours * 60 + totalTime.minutes) / e.target.value,
+                  ),
                 );
               }}
               disabled={disableField}
@@ -133,13 +116,9 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
               className="time-input"
               type="number"
               min="1"
-              value={input.amountOfIntervals}
+              value={intervalsCount}
               onChange={(e) => {
-                updateIntervalsInput(
-                  "amountOfIntervals",
-                  "timeInterval",
-                  e.target.value,
-                );
+                setIntervalsCount(Number(e.target.value));
               }}
               disabled={disableField}
             />
@@ -160,15 +139,12 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
                   <span>Disable breaks:</span>
                   <input
                     type="checkbox"
-                    checked={input.breaks.disabled}
+                    checked={breaks.disabled}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          disabled: e.target.checked,
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        disabled: e.target.checked,
+                      }))
                     }
                   />
                 </div>
@@ -178,16 +154,13 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
                     className="break-settings__input"
                     type="number"
                     className="time-input"
-                    value={input.breaks.shortBreak}
-                    disabled={input.breaks.disabled}
+                    value={breaks.short}
+                    disabled={breaks.disabled}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          shortBreak: Number(e.target.value),
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        short: Number(e.target.value),
+                      }))
                     }
                   />
                 </div>
@@ -197,28 +170,24 @@ export function CreatingQuesForm({ setQuestActive: setIsQuestActive }) {
                     className="break-settings__input"
                     type="number"
                     className="time-input"
-                    value={input.breaks.longBreak}
-                    disabled={input.breaks.disabled}
+                    value={breaks.long}
+                    disabled={breaks.disabled}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          longBreak: Number(e.target.value),
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        long: Number(e.target.value),
+                      }))
                     }
                   />
                 </div>
               </div>
             ) : (
               <div className="break-settings__summary">
-                {input.breaks.disabled ? (
+                {breaks.disabled ? (
                   "no breaks"
                 ) : (
                   <span>
-                    short: {input.breaks.shortBreak} m. / long:{" "}
-                    {input.breaks.longBreak} m.
+                    short: {breaks.short} m. / long: {breaks.long} m.
                   </span>
                 )}
               </div>

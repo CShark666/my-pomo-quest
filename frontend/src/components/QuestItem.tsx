@@ -1,19 +1,24 @@
-import { useTimer } from "../hooks/useTimer";
-import { Timer } from "./Timer";
-import { CancelButton } from "./CancelButton";
-import { IntervalsBar } from "./IntervalsBar";
-import { timeFormatter } from "../util/timeFormatter";
+import { useTimer } from "../hooks/useTimer.ts";
+import { Timer } from "./Timer.tsx";
+import { CancelButton } from "./CancelButton.tsx";
+import { IntervalsBar } from "./IntervalsBar.tsx";
+import { timeFormatter } from "../util/timeFormatter.ts";
+import type { ClientQuest } from "../api.ts";
 
 import "../styles/QuestItem.css";
 
-export function QuestItem({ quest }) {
+export function QuestItem({ quest }: { quest: ClientQuest }) {
   const { remaining: remainingTotal } = useTimer(quest.remainingTotalTimeMs);
-  const { remaining: remainingCurrentInterval } = useTimer(quest.currentInterval.remaining);
+  const { remaining: remainingCurrentInterval } = useTimer(
+    quest.currentInterval.remaining,
+  );
 
+  // eslint-disable-next-line prefer-const
   let isBreakMode = quest.currentInterval.status !== "work";
+  // eslint-disable-next-line prefer-const
   let timerPercent = !isBreakMode
     ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
-    : 0;
+    : 100;
 
   return (
     <>
@@ -23,7 +28,11 @@ export function QuestItem({ quest }) {
         </div>
         <div className="quest-item__content">
           <div className="quest-item__total-time">
-            <p>{timeFormatter(isBreakMode ? quest.remainingTotalTimeMs : remainingTotal)}</p>
+            <p>
+              {timeFormatter(
+                isBreakMode ? quest.remainingTotalTimeMs : remainingTotal,
+              )}
+            </p>
           </div>
           <div>
             <div className="quest-item__meta">

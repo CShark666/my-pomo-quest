@@ -1,7 +1,7 @@
 import "../styles/Timer.css";
 
-export function Timer({ time }) {
-  const format = (ms) => {
+export function Timer({ time }: { time: number }) {
+  const format = (ms: number) => {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60)
       .toString()

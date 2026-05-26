@@ -42,7 +42,7 @@ type DbQUest = {
     currentInterval: IntervalState
 }
 
-type ClientQuest = DbQUest & {
+export type ClientQuest = DbQUest & {
     intervalDurationMs: number,
     remainingTotalTimeMs: number,
     currentInterval: IntervalStateFull

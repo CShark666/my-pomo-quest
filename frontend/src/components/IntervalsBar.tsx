@@ -4,18 +4,23 @@ export function IntervalsBar({
   currentIntervalIdx,
   intervalCount,
   timerPercent,
+}: {
+  currentIntervalIdx: number;
+  intervalCount: number;
+  timerPercent: number;
 }) {
-  const activeIntervalIdx = intervalCount - currentIntervalIdx - 1
+  const activeIntervalIdx = intervalCount - currentIntervalIdx - 1;
   const intervals = Array.from({ length: intervalCount }, (_, i) => {
     return {
       active: i === activeIntervalIdx,
-      percent: i < activeIntervalIdx
-        ? 100
-        : i > activeIntervalIdx
-          ? 0
-          : timerPercent
-    }
-  })
+      percent:
+        i < activeIntervalIdx 
+          ? 100 
+          : i > activeIntervalIdx 
+            ? 0 
+            : timerPercent,
+    };
+  });
   return (
     <div className="intervals">
       {intervals.map((interval, i) => {

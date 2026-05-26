@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { createQuest } from "../api.ts";
+import type { ClientQuest } from "../api.ts";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuestForm({ setQuest }) {
+export function CreatingQuestForm({
+  setQuest,
+}: {
+  setQuest: React.Dispatch<React.SetStateAction<ClientQuest | null>>;
+}) {
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
@@ -17,6 +22,7 @@ export function CreatingQuestForm({ setQuest }) {
   useEffect(() => {
     const handleTimeUpdate = () => {
       const totalMinutes = totalTime.hours * 60 + totalTime.minutes;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       totalMinutes > 0 ? setDisableField(false) : setDisableField(true);
     };
     handleTimeUpdate();
@@ -35,7 +41,7 @@ export function CreatingQuestForm({ setQuest }) {
     setQuest(quest);
   };
 
-  const updateTime = (field, value) => {
+  const updateTime = (field: string, value: number) => {
     setTotalTimeMs((prev) => ({
       ...prev,
       [field]: Number(value),
@@ -63,7 +69,7 @@ export function CreatingQuestForm({ setQuest }) {
           <input
             type="text"
             placeholder="title"
-            value={title.title}
+            value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
@@ -77,7 +83,7 @@ export function CreatingQuestForm({ setQuest }) {
                 min="0"
                 value={totalTime.hours}
                 onChange={(e) => {
-                  updateTime("hours", e.target.value);
+                  updateTime("hours", Number(e.target.value));
                 }}
               />
               <input
@@ -87,7 +93,7 @@ export function CreatingQuestForm({ setQuest }) {
                 max="59"
                 value={totalTime.minutes}
                 onChange={(e) => {
-                  updateTime("minutes", e.target.value);
+                  updateTime("minutes", Number(e.target.value));
                 }}
               />
             </div>
@@ -104,7 +110,7 @@ export function CreatingQuestForm({ setQuest }) {
               onChange={(e) => {
                 setIntervalsCount(
                   Number(
-                    (totalTime.hours * 60 + totalTime.minutes) / e.target.value,
+                    (totalTime.hours * 60 + totalTime.minutes) /Number(e.target.value),
                   ),
                 );
               }}
@@ -152,9 +158,8 @@ export function CreatingQuestForm({ setQuest }) {
                 <div className="break-settings__row">
                   <span>Short break: </span>
                   <input
-                    className="break-settings__input"
+                    className="break-settings__input time-input"
                     type="number"
-                    className="time-input"
                     value={breaks.short}
                     disabled={breaks.disabled}
                     onChange={(e) =>
@@ -168,9 +173,8 @@ export function CreatingQuestForm({ setQuest }) {
                 <div className="break-settings__row">
                   <span>Long break: </span>
                   <input
-                    className="break-settings__input"
+                    className="break-settings__input time-input"
                     type="number"
-                    className="time-input"
                     value={breaks.long}
                     disabled={breaks.disabled}
                     onChange={(e) =>

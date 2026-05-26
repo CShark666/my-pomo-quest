@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useTimer(initial) {
   const [remaining, setRemaining] = useState(initial);
-  const [isRunning, setIsRunning] = useState(false);
+  const initialRef = useRef(null);
 
   useEffect(() => {
-    if (!isRunning) return;
+    initialRef.current = initial;
+    setRemaining(initialRef.current);
 
     const id = setInterval(() => {
       setRemaining((prev) => {
         if (prev < 100) {
           clearInterval(id);
-          setIsRunning(false);
           return 0;
         }
 
@@ -20,12 +20,10 @@ export function useTimer(initial) {
     }, 100);
 
     return () => clearInterval(id);
-  }, [isRunning]);
+  }, [initial]);
 
   return {
     remaining,
-    isRunning,
-    setIsRunning,
     setRemaining,
   };
 }

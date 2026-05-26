@@ -10,10 +10,8 @@ export function QuestPage() {
 
   useEffect(() => {
     if (quest) {
-      const id = setTimeout(
-        async () => getQuest().then(setQuest).quest.currentInterval.remaining,
-      );
-      return clearInterval(id);
+      const id = setTimeout(async () => getQuest().then(setQuest), quest.currentInterval.remaining);
+      return () => clearInterval(id);
     }
   }, [quest]);
 

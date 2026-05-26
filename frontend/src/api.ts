@@ -4,12 +4,14 @@ function delay(ms = 300) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
+const TRANSITION_DURATION_MS = 5000
+
 type QuestStatus = "inProgress" | "finished" | "cancelled"
 
 type BreakType = "short" | "long"
 type BreakConfig = Record<BreakType, number> | null
 
-type IntervalStatus = "work" | "break"
+type IntervalStatus = "work" | "break" | "transitionToWork" | "transitionToBreak"
 type IntervalState = {
     index: number,
     status: IntervalStatus,
@@ -46,7 +48,7 @@ type ClientQuest = DbQUest & {
     currentInterval: IntervalStateFull
 }
 
-export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
+export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest> {
     await delay();
     saveDbQuest({
         id: crypto.randomUUID(),
@@ -67,17 +69,15 @@ export async function createQuest(request: CreateQuestRequest): Promise<ClientQu
     return await getQuest();
 }
 
-export async function getQuest(): Promise<ClientQuest | null> {
+export async function getQuest(): Promise<ClientQuest> {
     await delay();
 
     const dbQuest: DbQUest = getDbQuest();
-    if (!dbQuest || dbQuest.status != "inProgress") return null;
 
     const remainingIntervals = dbQuest.intervalsCount - dbQuest.currentInterval.index;
-    const durationsMs = getIntervalDuration(dbQuest)
     const currentIntervalRemaining = getCurrentIntervalRemainingTime(dbQuest);
 
-    let remainingTotalMs = remainingIntervals * durationsMs;
+    let remainingTotalMs = remainingIntervals * getIntervalDuration(dbQuest);
 
     if (dbQuest.currentInterval.status === "work") {
         remainingTotalMs += currentIntervalRemaining;
@@ -85,7 +85,7 @@ export async function getQuest(): Promise<ClientQuest | null> {
 
     return {
         ...dbQuest,
-        intervalDurationMs: durationsMs,
+        intervalDurationMs: getIntervalDuration(dbQuest),
         remainingTotalTimeMs: remainingTotalMs,
         currentInterval: {
             ...dbQuest.currentInterval,
@@ -136,11 +136,17 @@ function fixDbQuestIfNeeded(dbQuest: DbQUest): boolean {
             break;
         }
 
-        if (dbQuest.currentInterval.status === "work") {
-            dbQuest.currentInterval.status = "break"
-            dbQuest.currentInterval.started += getIntervalDuration(dbQuest)
-        } else {
+        if (dbQuest.currentInterval.status === "transitionToWork") {
             dbQuest.currentInterval.status = "work"
+            dbQuest.currentInterval.started += TRANSITION_DURATION_MS
+        } else if (dbQuest.currentInterval.status === "work") {
+            dbQuest.currentInterval.status = "transitionToBreak"
+            dbQuest.currentInterval.started += getIntervalDuration(dbQuest);
+        } else if (dbQuest.currentInterval.status === "transitionToBreak") {
+            dbQuest.currentInterval.status = "break"
+            dbQuest.currentInterval.started += TRANSITION_DURATION_MS
+        } else /*if (dbQuest.currentInterval.status === "break") */ {
+            dbQuest.currentInterval.status = "transitionToWork"
             dbQuest.currentInterval.started += getBreakDuration(breakTypeForIndex(dbQuest.currentInterval.index), dbQuest.breaks)
             dbQuest.currentInterval.index++;
         }
@@ -175,7 +181,12 @@ function removeQuest() {
 }
 
 function getCurrentIntervalRemainingTime(dbQuest: DbQUest): number {
-    return getIntervalDuration(dbQuest) - (Date.now() - dbQuest.currentInterval.started);
+    const currentIntervalTotalTime = dbQuest.currentInterval.status === 'work'
+        ? getIntervalDuration(dbQuest)
+        : dbQuest.currentInterval.status === 'break'
+            ? getBreakDuration(breakTypeForIndex(dbQuest.currentInterval.index), dbQuest.breaks)
+            : TRANSITION_DURATION_MS
+    return currentIntervalTotalTime - (Date.now() - dbQuest.currentInterval.started)
 }
 
 function getIntervalDuration(dbQuest: DbQUest): number {

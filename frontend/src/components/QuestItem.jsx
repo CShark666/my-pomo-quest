@@ -1,57 +1,19 @@
-import { useEffect, useState } from "react";
 import { useTimer } from "../hooks/useTimer";
-
 import { Timer } from "./Timer";
 import { CancelButton } from "./CancelButton";
 import { IntervalsBar } from "./IntervalsBar";
-
-import { getQuest } from "../api";
 import { timeFormatter } from "../util/timeFormatter";
 
 import "../styles/QuestItem.css";
 
-export function QuestItem() {
-  const [quest, setQuest] = useState(null);
-  const { remaining, isRunning, setIsRunning, setRemaining } = useTimer(
-    quest ? Number(quest.currentInterval.remaining) : 500,
-  );
+export function QuestItem({ quest }) {
+  const { remaining: remainingTotal } = useTimer(quest.remainingTotalTimeMs);
+  const { remaining: remainingCurrentInterval } = useTimer(quest.currentInterval.remaining);
 
-  // useEffect(() => {
-  //   const fetchQuest = async () => {
-  //     const data = await getQuest();
-  //     setQuest(data);
-  //   };
-  //   fetchQuest();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (quest) {
-  //     setRemaining(Number(quest.currentInterval.remaining));
-  //     setIsRunning(true);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [quest?.currentInterval?.remaining]);
-
-  // useEffect(() => {
-  //   if (!quest) return;
-
-  //   const interval = setInterval(async () => {
-  //     const validatedQuest = await questTimeValidate(quest);
-  //     setQuest(validatedQuest);
-  //     setRemaining(Number(validatedQuest.currentInterval.remaining));
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [quest]);
-
-  if (!quest) {
-    return <h2>No quest :c</h2>;
-  }
-
-  let isBreakMode = quest.currentInterval.status === "break";
+  let isBreakMode = quest.currentInterval.status !== "work";
   let timerPercent = !isBreakMode
-    ? Math.round((remaining / quest.intervalDurationInMs) * 100)
-    : 100;
+    ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
+    : 0;
 
   return (
     <>
@@ -61,7 +23,7 @@ export function QuestItem() {
         </div>
         <div className="quest-item__content">
           <div className="quest-item__total-time">
-            <p>{timeFormatter(quest.remainingTotalTimeInMs)}</p>
+            <p>{timeFormatter(isBreakMode ? quest.remainingTotalTimeMs : remainingTotal)}</p>
           </div>
           <div>
             <div className="quest-item__meta">
@@ -69,16 +31,15 @@ export function QuestItem() {
                 #{quest.id} {quest.title}
               </p>
               <p>Status: {quest.currentInterval.status}</p>
-              {isBreakMode && `${quest.breaks.currentBreak}`}
             </div>
             <IntervalsBar
-              intervals={quest.intervals}
-              currentIntervalIndex={quest.currentInterval.index}
+              currentIntervalIdx={quest.currentInterval.index}
+              intervalCount={quest.intervalsCount}
               timerPercent={timerPercent}
             />
           </div>
         </div>
-        <Timer time={remaining} />
+        <Timer time={remainingCurrentInterval} />
       </div>
     </>
   );

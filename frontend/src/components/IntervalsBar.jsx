@@ -1,28 +1,31 @@
 import "../styles/IntervalsBar.css";
 
 export function IntervalsBar({
-  intervals,
-  currentIntervalIndex,
+  currentIntervalIdx,
+  intervalCount,
   timerPercent,
 }) {
+  const activeIntervalIdx = intervalCount - currentIntervalIdx - 1
+  const intervals = Array.from({ length: intervalCount }, (_, i) => {
+    return {
+      active: i === activeIntervalIdx,
+      percent: i < activeIntervalIdx
+        ? 100
+        : i > activeIntervalIdx
+          ? 0
+          : timerPercent
+    }
+  })
   return (
     <div className="intervals">
       {intervals.map((interval, i) => {
-        const isActiveNow = i === currentIntervalIndex;
-
-        const width = isActiveNow
-          ? `${timerPercent}%`
-          : interval.completed
-            ? "0%"
-            : "100%";
-
         return (
           <div key={i} className="interval">
             <div
-              className={`interval-progress ${isActiveNow ? "--active" : ""}`}
-              style={{ width }}
+              className={`interval-progress ${interval.active ? "--active" : ""}`}
+              style={{ width: interval.percent + "%" }}
             >
-              {width}
+              {Math.floor(interval.percent) + "%"}
             </div>
           </div>
         );

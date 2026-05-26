@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { createQuest } from "../api.ts";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuestForm() {
+export function CreatingQuestForm({ setQuest }) {
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
@@ -23,7 +23,7 @@ export function CreatingQuestForm() {
   }, [totalTime]);
 
   const saveQuest = async () => {
-    await createQuest({
+    const quest = await createQuest({
       category: category,
       title: title,
       totalTimeMs: (totalTime.hours * 60 + totalTime.minutes) * 60 * 1000,
@@ -32,6 +32,7 @@ export function CreatingQuestForm() {
         ? null
         : { short: breaks.short * 60 * 1000, long: breaks.long * 60 * 1000 },
     });
+    setQuest(quest);
   };
 
   const updateTime = (field, value) => {

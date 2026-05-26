@@ -46,7 +46,7 @@ type ClientQuest = DbQUest & {
     currentInterval: IntervalStateFull
 }
 
-export async function createQuest(request: CreateQuestRequest): Promise<void> {
+export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
     await delay();
     saveDbQuest({
         id: crypto.randomUUID(),
@@ -63,6 +63,8 @@ export async function createQuest(request: CreateQuestRequest): Promise<void> {
             started: Date.now()
         }
     })
+
+    return await getQuest();
 }
 
 export async function getQuest(): Promise<ClientQuest | null> {
@@ -162,6 +164,8 @@ function saveDbQuest(quest: DbQUest) {
 function getDbQuest(): DbQUest {
     const data = localStorage.getItem(STORAGE_KEY);
     const quest = JSON.parse(data!) as DbQUest;
+
+    if (fixDbQuestIfNeeded(quest)) saveDbQuest(quest)
 
     return quest;
 }

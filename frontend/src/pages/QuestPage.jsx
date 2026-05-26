@@ -2,19 +2,34 @@ import { Sidebar } from "./Sidebar.jsx";
 import { QuestItem } from "../components/QuestItem.jsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.jsx";
 import "../styles/QuestPage.css";
+import { useEffect, useState } from "react";
+import { getQuest } from "../api.js";
 
 export function QuestPage() {
-  const isQuestActive = false;
+  const [quest, setQuest] = useState(false);
+
+  useEffect(() => {
+    if (quest) {
+      const id = setTimeout(
+        async () => getQuest().then(setQuest).quest.currentInterval.remaining,
+      );
+      return clearInterval(id);
+    }
+  }, [quest]);
+
+  useEffect(() => {
+    getQuest().then(setQuest);
+  }, []);
 
   return (
     <>
       <Sidebar />
       <h1>QuestPage:</h1>
       <div className="quest-box">
-        {isQuestActive ? (
-          <QuestItem />
+        {quest ? (
+          <QuestItem quest={quest} />
         ) : (
-          <CreatingQuestForm setQuestActive={() => {}} />
+          <CreatingQuestForm setQuest={setQuest} />
         )}
       </div>
     </>

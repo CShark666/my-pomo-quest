@@ -68,6 +68,12 @@ input:disabled {
     color: #FBE8CE;
 }
 
+.buttons button:disabled {
+    background-color: rgba(104, 104, 104, 0.253);
+    border-color: rgba(104, 104, 104, 0.253);
+    cursor: not-allowed;
+}
+
 .cancel {
     background: rgb(160, 35, 35);
     border-color: rgb(160, 35, 35);

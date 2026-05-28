@@ -1,13 +1,14 @@
 import { Sidebar } from "./Sidebar.jsx";
 import { QuestItem } from "../components/QuestItem.tsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
+import { LoadingSpinnerLabel } from "../components/Loading.tsx";
 import "../styles/QuestPage.css";
-import { useEffect, useState } from "react";
-import { getQuest } from "../api.ts";
-import type { ClientQuest } from "../api.ts";
+import { Suspense, use, useEffect, useState, useTransition } from "react";
+import { type ClientQuest, getQuest } from "../api.ts";
 
-export function QuestPage() {
-  const [quest, setQuest] = useState<ClientQuest | null>(null);
+function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest | null> }) {
+  const [quest, setQuest] = useState<ClientQuest | null>(use(initialQuest));
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (quest) {
@@ -19,21 +20,27 @@ export function QuestPage() {
     }
   }, [quest]);
 
-  useEffect(() => {
-    getQuest().then(setQuest);
-  }, []);
+  return (
+    <div className="quest-box">
+      {quest ? (
+        <QuestItem quest={quest} />
+      ) : (
+        <CreatingQuestForm setQuest={setQuest} />
+      )}
+    </div>
+  )
+}
+
+export function QuestPage() {
+  const initialQuest = getQuest();
 
   return (
     <>
       <Sidebar />
       <h1>QuestPage:</h1>
-      <div className="quest-box">
-        {quest ? (
-          <QuestItem quest={quest} />
-        ) : (
-          <CreatingQuestForm setQuest={setQuest} />
-        )}
-      </div>
+      <Suspense fallback={<LoadingSpinnerLabel />}>
+        <QuestPageContent initialQuest={initialQuest} />
+      </Suspense>
     </>
   );
 }

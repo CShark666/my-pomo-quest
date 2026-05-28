@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useNavigate } from "react-router";
+import { LoadingSpinnerLabel } from "./Loading.tsx";
 import { createQuest } from "../api.ts";
 import type { ClientQuest } from "../api.ts";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuestForm({
-  setQuest,
-}: {
-  setQuest: React.Dispatch<React.SetStateAction<ClientQuest | null>>;
-}) {
+export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
+  const [isPendingCreateForm, startCreateFormTransition] = useTransition();
+
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
@@ -22,13 +21,12 @@ export function CreatingQuestForm({
   useEffect(() => {
     const handleTimeUpdate = () => {
       const totalMinutes = totalTime.hours * 60 + totalTime.minutes;
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      totalMinutes > 0 ? setDisableField(false) : setDisableField(true);
+      setDisableField(totalMinutes <= 0);
     };
     handleTimeUpdate();
   }, [totalTime]);
 
-  const saveQuest = async () => {
+  const saveQuest = () => startCreateFormTransition(async () => {
     const quest = await createQuest({
       category: category,
       title: title,
@@ -39,7 +37,7 @@ export function CreatingQuestForm({
         : { short: breaks.short * 60 * 1000, long: breaks.long * 60 * 1000 },
     });
     setQuest(quest);
-  };
+  })
 
   const updateTime = (field: string, value: number) => {
     setTotalTimeMs((prev) => ({
@@ -71,6 +69,7 @@ export function CreatingQuestForm({
             placeholder="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            disabled={isPendingCreateForm}
           />
         </div>
         <div className="time-settings">
@@ -85,6 +84,7 @@ export function CreatingQuestForm({
                 onChange={(e) => {
                   updateTime("hours", Number(e.target.value));
                 }}
+                disabled={isPendingCreateForm}
               />
               <input
                 className="time-input"
@@ -95,6 +95,7 @@ export function CreatingQuestForm({
                 onChange={(e) => {
                   updateTime("minutes", Number(e.target.value));
                 }}
+                disabled={isPendingCreateForm}
               />
             </div>
           </div>
@@ -110,11 +111,11 @@ export function CreatingQuestForm({
               onChange={(e) => {
                 setIntervalsCount(
                   Number(
-                    (totalTime.hours * 60 + totalTime.minutes) /Number(e.target.value),
+                    (totalTime.hours * 60 + totalTime.minutes) / Number(e.target.value),
                   ),
                 );
               }}
-              disabled={disableField}
+              disabled={disableField || isPendingCreateForm}
             />
           </div>
           <div className="time-input-box">
@@ -127,7 +128,7 @@ export function CreatingQuestForm({
               onChange={(e) => {
                 setIntervalsCount(Number(e.target.value));
               }}
-              disabled={disableField}
+              disabled={disableField || isPendingCreateForm}
             />
           </div>
         </div>
@@ -153,6 +154,7 @@ export function CreatingQuestForm({
                         disabled: e.target.checked,
                       }))
                     }
+                    disabled={isPendingCreateForm}
                   />
                 </div>
                 <div className="break-settings__row">
@@ -161,7 +163,7 @@ export function CreatingQuestForm({
                     className="break-settings__input time-input"
                     type="number"
                     value={breaks.short}
-                    disabled={breaks.disabled}
+                    disabled={breaks.disabled || isPendingCreateForm}
                     onChange={(e) =>
                       setBreaks((prev) => ({
                         ...prev,
@@ -176,7 +178,7 @@ export function CreatingQuestForm({
                     className="break-settings__input time-input"
                     type="number"
                     value={breaks.long}
-                    disabled={breaks.disabled}
+                    disabled={breaks.disabled || isPendingCreateForm}
                     onChange={(e) =>
                       setBreaks((prev) => ({
                         ...prev,
@@ -205,13 +207,15 @@ export function CreatingQuestForm({
             onClick={() => {
               navigate("/");
             }}
+            disabled={isPendingCreateForm}
           >
             Cancel
           </button>
-          <button className="start" onClick={saveQuest}>
+          <button className="start" onClick={saveQuest} disabled={isPendingCreateForm}>
             Get started
           </button>
         </div>
+        {isPendingCreateForm && (<div> <LoadingSpinnerLabel /> </div>)}
       </div>
     </div>
   );

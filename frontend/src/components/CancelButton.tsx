@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useNavigate } from "react-router";
 import { cancelQuest } from "../api";
 import "../styles/CancelButton.css";
+import { LoadingSpinnerLabel } from "./Loading";
 
 export function CancelButton() {
+  const [isPending, startTransition] = useTransition();
   const [showWindow, setShowWindow] = useState(false);
   const navigate = useNavigate();
 
-  const cancel = async () => {
+  const cancel = () => startTransition(async () => {
     await cancelQuest();
     navigate("/");
-  };
+  })
 
   return (
     <>
@@ -29,14 +31,15 @@ export function CancelButton() {
               <b>All progress will be irretrievably lost!</b>
             </span>
             <div>
-              <button onClick={cancel}>Yes! Cenacle!</button>
+              <button onClick={cancel} disabled={isPending}>Yes! Cancel!</button>
               <button
                 onClick={() => {
                   setShowWindow(false);
                 }}
-              >
+                disabled={isPending}>
                 No! Continue the quest!
               </button>
+              {isPending && (<LoadingSpinnerLabel />)}
             </div>
           </div>
         </div>

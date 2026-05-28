@@ -1,52 +1,49 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useNavigate } from "react-router";
-import { createQuest } from "../api";
+import { LoadingSpinnerLabel } from "./Loading.tsx";
+import { createQuest } from "../api.ts";
+import type { ClientQuest } from "../api.ts";
 import "../styles/CreatingQuesForm.css";
 
-export function CreatingQuesForm({ setCurrentQuest }) {
-  const [input, setInput] = useState({
-    category: "",
-    title: "",
-    totalTime: { hours: 0, minutes: 0 },
-    timeInterval: 0,
-    amountOfIntervals: 0,
-    breaks: { disabled: false, shortBreak: 5, longBreak: 10 },
-  });
+export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
+  const [isPendingCreateForm, startCreateFormTransition] = useTransition();
+
+  const [category, setCategory] = useState("");
+  const [title, setTitle] = useState("");
+  const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
+  const [intervalsCount, setIntervalsCount] = useState(1);
+  const [breaks, setBreaks] = useState({ disabled: false, short: 5, long: 10 });
+
   const [disableField, setDisableField] = useState(true);
   const [showBreakSettings, setShowBreakSettings] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleTimeUpdate = () => {
-      const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
-      totalMinutes > 0 ? setDisableField(false) : setDisableField(true);
+      const totalMinutes = totalTime.hours * 60 + totalTime.minutes;
+      setDisableField(totalMinutes <= 0);
     };
     handleTimeUpdate();
-  }, [input.totalTime]);
+  }, [totalTime]);
 
-  const saveQuest = async () => {
-    await createQuest(input);
-    setCurrentQuest(input);
-  };
-
-  const updateTime = (field, value) => {
-    setInput((prev) => ({
-      ...prev,
-      totalTime: {
-        ...prev.totalTime,
-        [field]: Number(value),
-      },
-    }));
-  };
-
-  const updateIntervalsInput = (currentField, secondField, value) => {
-    const totalMinutes = input.totalTime.hours * 60 + input.totalTime.minutes;
-
-    setInput({
-      ...input,
-      [currentField]: Number(value),
-      [secondField]: Number(totalMinutes / value),
+  const saveQuest = () => startCreateFormTransition(async () => {
+    const quest = await createQuest({
+      category: category,
+      title: title,
+      totalTimeMs: (totalTime.hours * 60 + totalTime.minutes) * 60 * 1000,
+      intervalsCount: intervalsCount,
+      breaks: breaks.disabled
+        ? null
+        : { short: breaks.short * 60 * 1000, long: breaks.long * 60 * 1000 },
     });
+    setQuest(quest);
+  })
+
+  const updateTime = (field: string, value: number) => {
+    setTotalTimeMs((prev) => ({
+      ...prev,
+      [field]: Number(value),
+    }));
   };
 
   return (
@@ -55,12 +52,7 @@ export function CreatingQuesForm({ setCurrentQuest }) {
         <div className="info-box">
           <select
             className="category-selector"
-            onChange={(e) =>
-              setInput({
-                ...input,
-                category: e.target.value,
-              })
-            }
+            onChange={(e) => setCategory(e.target.value)}
             defaultValue="Category"
           >
             <option value="Category" disabled>
@@ -75,13 +67,9 @@ export function CreatingQuesForm({ setCurrentQuest }) {
           <input
             type="text"
             placeholder="title"
-            value={input.title}
-            onChange={(e) =>
-              setInput({
-                ...input,
-                title: e.target.value,
-              })
-            }
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            disabled={isPendingCreateForm}
           />
         </div>
         <div className="time-settings">
@@ -92,20 +80,22 @@ export function CreatingQuesForm({ setCurrentQuest }) {
                 className="time-input"
                 type="number"
                 min="0"
-                value={input.totalTime.hours}
+                value={totalTime.hours}
                 onChange={(e) => {
-                  updateTime("hours", e.target.value);
+                  updateTime("hours", Number(e.target.value));
                 }}
+                disabled={isPendingCreateForm}
               />
               <input
                 className="time-input"
                 type="number"
                 min="0"
                 max="59"
-                value={input.totalTime.minutes}
+                value={totalTime.minutes}
                 onChange={(e) => {
-                  updateTime("minutes", e.target.value);
+                  updateTime("minutes", Number(e.target.value));
                 }}
+                disabled={isPendingCreateForm}
               />
             </div>
           </div>
@@ -115,16 +105,17 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               className="time-input"
               type="number"
               min="1"
-              max="60"
-              value={input.timeInterval}
+              value={
+                (totalTime.hours * 60 + totalTime.minutes) / intervalsCount
+              }
               onChange={(e) => {
-                updateIntervalsInput(
-                  "timeInterval",
-                  "amountOfIntervals",
-                  e.target.value,
+                setIntervalsCount(
+                  Number(
+                    (totalTime.hours * 60 + totalTime.minutes) / Number(e.target.value),
+                  ),
                 );
               }}
-              disabled={disableField}
+              disabled={disableField || isPendingCreateForm}
             />
           </div>
           <div className="time-input-box">
@@ -133,15 +124,11 @@ export function CreatingQuesForm({ setCurrentQuest }) {
               className="time-input"
               type="number"
               min="1"
-              value={input.amountOfIntervals}
+              value={intervalsCount}
               onChange={(e) => {
-                updateIntervalsInput(
-                  "amountOfIntervals",
-                  "timeInterval",
-                  e.target.value,
-                );
+                setIntervalsCount(Number(e.target.value));
               }}
-              disabled={disableField}
+              disabled={disableField || isPendingCreateForm}
             />
           </div>
         </div>
@@ -160,65 +147,54 @@ export function CreatingQuesForm({ setCurrentQuest }) {
                   <span>Disable breaks:</span>
                   <input
                     type="checkbox"
-                    checked={input.breaks.disabled}
+                    checked={breaks.disabled}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          disabled: e.target.checked,
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        disabled: e.target.checked,
+                      }))
                     }
+                    disabled={isPendingCreateForm}
                   />
                 </div>
                 <div className="break-settings__row">
                   <span>Short break: </span>
                   <input
-                    className="break-settings__input"
+                    className="break-settings__input time-input"
                     type="number"
-                    className="time-input"
-                    value={input.breaks.shortBreak}
-                    disabled={input.breaks.disabled}
+                    value={breaks.short}
+                    disabled={breaks.disabled || isPendingCreateForm}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          shortBreak: Number(e.target.value),
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        short: Number(e.target.value),
+                      }))
                     }
                   />
                 </div>
                 <div className="break-settings__row">
                   <span>Long break: </span>
                   <input
-                    className="break-settings__input"
+                    className="break-settings__input time-input"
                     type="number"
-                    className="time-input"
-                    value={input.breaks.longBreak}
-                    disabled={input.breaks.disabled}
+                    value={breaks.long}
+                    disabled={breaks.disabled || isPendingCreateForm}
                     onChange={(e) =>
-                      setInput({
-                        ...input,
-                        breaks: {
-                          ...input.breaks,
-                          longBreak: Number(e.target.value),
-                        },
-                      })
+                      setBreaks((prev) => ({
+                        ...prev,
+                        long: Number(e.target.value),
+                      }))
                     }
                   />
                 </div>
               </div>
             ) : (
               <div className="break-settings__summary">
-                {input.breaks.disabled ? (
+                {breaks.disabled ? (
                   "no breaks"
                 ) : (
                   <span>
-                    short: {input.breaks.shortBreak} m. / long:{" "}
-                    {input.breaks.longBreak} m.
+                    short: {breaks.short} m. / long: {breaks.long} m.
                   </span>
                 )}
               </div>
@@ -231,13 +207,15 @@ export function CreatingQuesForm({ setCurrentQuest }) {
             onClick={() => {
               navigate("/");
             }}
+            disabled={isPendingCreateForm}
           >
             Cancel
           </button>
-          <button className="start" onClick={saveQuest}>
+          <button className="start" onClick={saveQuest} disabled={isPendingCreateForm}>
             Get started
           </button>
         </div>
+        {isPendingCreateForm && (<div> <LoadingSpinnerLabel /> </div>)}
       </div>
     </div>
   );

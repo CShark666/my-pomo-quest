@@ -4,7 +4,7 @@ import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
 import { LoadingSpinnerLabel } from "../components/Loading.tsx";
 import "../styles/QuestPage.css";
 import { Suspense, use, useEffect, useState, useTransition } from "react";
-import { type ClientQuest, getQuest } from "../api.ts";
+import { type ClientQuest, skipTransitionToBreak, getQuest, skipBreak } from "../api.ts";
 
 function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest | null> }) {
   const [quest, setQuest] = useState<ClientQuest | null>(use(initialQuest));
@@ -20,10 +20,22 @@ function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest 
     }
   }, [quest]);
 
+  const skipBreakAction = () => {
+    startTransition(async () => {
+      setQuest(await skipBreak());
+    })
+  }
+
+  const skipTransitionAction = () => {
+    startTransition(async () => {
+      setQuest(await skipTransitionToBreak());
+    })
+  }
+
   return (
     <div className="quest-box">
       {quest ? (
-        <QuestItem quest={quest} />
+        <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
       ) : (
         <CreatingQuestForm setQuest={setQuest} />
       )}

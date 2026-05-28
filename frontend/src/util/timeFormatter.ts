@@ -4,3 +4,8 @@ export function timeFormatter(ms: number) {
 
     return `${hours}h. ${minutes}m.`;
 }
+
+export function timeFormatterSeconds(ms: number): string {
+    return Math.floor((ms % 60000) / 1000)
+        .toString()
+}

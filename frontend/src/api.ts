@@ -1,10 +1,12 @@
 const STORAGE_KEY = "pomoQuest";
+const TRANSITION_DURATION_MS = 5000
+const DELAY_DURATION_MS = 300
 
-function delay(ms = 300) {
+
+function delay(ms = DELAY_DURATION_MS) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-const TRANSITION_DURATION_MS = 5000
 
 type QuestStatus = "inProgress" | "finished" | "cancelled"
 
@@ -48,8 +50,9 @@ export type ClientQuest = DbQUest & {
     currentInterval: IntervalStateFull
 }
 
-export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest> {
+export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
     await delay();
+
     saveDbQuest({
         id: crypto.randomUUID(),
         category: request.category,
@@ -61,7 +64,7 @@ export async function createQuest(request: CreateQuestRequest): Promise<ClientQu
         createdAt: Date.now(),
         currentInterval: {
             index: 0,
-            status: "work",
+            status: "transitionToWork",
             started: Date.now()
         }
     })
@@ -69,10 +72,12 @@ export async function createQuest(request: CreateQuestRequest): Promise<ClientQu
     return await getQuest();
 }
 
-export async function getQuest(): Promise<ClientQuest> {
+export async function getQuest(): Promise<ClientQuest | null> {
     await delay();
 
-    const dbQuest: DbQUest = getDbQuest();
+    const dbQuest = getDbQuest();
+
+    if (!dbQuest || dbQuest.status != 'inProgress') return null;
 
     const remainingIntervals = dbQuest.intervalsCount - dbQuest.currentInterval.index;
     const currentIntervalRemaining = getCurrentIntervalRemainingTime(dbQuest);
@@ -94,22 +99,24 @@ export async function getQuest(): Promise<ClientQuest> {
     };
 }
 
-export async function forceStartBreak() {
+export async function skipTransitionToBreak(): Promise<ClientQuest | null> {
     await delay();
 
-    const dbQuest: DbQUest = getDbQuest();
+    const dbQuest = getDbQuest();
     if (!dbQuest || dbQuest.status != "inProgress") return null;
 
     dbQuest.currentInterval.status = "break"
     dbQuest.currentInterval.started = Date.now();
 
     saveDbQuest(dbQuest);
+
+    return await getQuest();
 }
 
-export async function skipBreak() {
+export async function skipBreak(): Promise<ClientQuest | null> {
     await delay();
 
-    const dbQuest: DbQUest = getDbQuest();
+    const dbQuest = getDbQuest();
     if (!dbQuest || dbQuest.status != "inProgress") return null;
 
     dbQuest.currentInterval.index++
@@ -117,6 +124,8 @@ export async function skipBreak() {
     dbQuest.currentInterval.started = Date.now();
 
     saveDbQuest(dbQuest);
+
+    return await getQuest();
 }
 
 export async function cancelQuest() {
@@ -126,7 +135,8 @@ export async function cancelQuest() {
 }
 
 function fixDbQuestIfNeeded(dbQuest: DbQUest): boolean {
-    if (dbQuest.status != 'inProgress') return false;
+    if (!dbQuest || dbQuest.status != 'inProgress') return false;
+
     let needsUpdate = false;
 
     while (getCurrentIntervalRemainingTime(dbQuest) < 0) {
@@ -167,9 +177,11 @@ function saveDbQuest(quest: DbQUest) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(quest))
 }
 
-function getDbQuest(): DbQUest {
+function getDbQuest(): DbQUest | null {
     const data = localStorage.getItem(STORAGE_KEY);
     const quest = JSON.parse(data!) as DbQUest;
+
+    if (!quest || quest.status != 'inProgress') return null;
 
     if (fixDbQuestIfNeeded(quest)) saveDbQuest(quest)
 

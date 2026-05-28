@@ -42,7 +42,7 @@ export function QuestItem({ quest }: { quest: ClientQuest }) {
               <p>Status: {quest.currentInterval.status}</p>
             </div>
             <IntervalsBar
-              currentIntervalIdx={quest.currentInterval.index}
+              currentIntervalIdx={quest.currentInterval.index +(isBreakMode && quest.currentInterval.status != "transitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
               timerPercent={timerPercent}
             />

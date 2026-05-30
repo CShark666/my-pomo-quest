@@ -1,3 +1,13 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+  root: ":root";
+  include: ;
+  exclude: ;
+  prefix: ;
+  logs: true;
+}
+
 :root {
   --text: #FBE8CE;
   --text-h: #FBE8CE;
@@ -87,4 +97,3 @@ button:disabled {
   background-color: rgba(104, 104, 104, 0.253);
   border-color: rgba(104, 104, 104, 0.253);
   cursor: not-allowed;
-}

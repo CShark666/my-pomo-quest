@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: silk --default, forest --prefersdark;
+  root: ":root";
+  include: ;
+  exclude: ;
+  prefix: ;
+  logs: true;
+}
+
+@keyframes drain {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+@theme {
+  --color-work: red;
+  --color-break: green;
+  --color-active: #ffc813d8;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  --color-work: red;
+  --color-break: green;
+  --color-active: #ffc813d8;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  --color-work: blue;
+  --color-break: green;
+  --color-active: #ffc813d8;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

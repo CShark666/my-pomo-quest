@@ -2,7 +2,6 @@ import { Sidebar } from "./Sidebar.jsx";
 import { QuestItem } from "../components/QuestItem.tsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
 import { LoadingSpinnerLabel } from "../components/Loading.tsx";
-import "../styles/QuestPage.css";
 import { Suspense, use, useEffect, useState, useTransition } from "react";
 import { type ClientQuest, skipTransitionToBreak, getQuest, skipBreak } from "../api.ts";
 
@@ -33,7 +32,7 @@ function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest 
   }
 
   return (
-    <div className="quest-box">
+    <div className="flex justify-center">
       {quest ? (
         <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
       ) : (
@@ -49,7 +48,6 @@ export function QuestPage() {
   return (
     <>
       <Sidebar />
-      <h1>QuestPage:</h1>
       <Suspense fallback={<LoadingSpinnerLabel />}>
         <QuestPageContent initialQuest={initialQuest} />
       </Suspense>

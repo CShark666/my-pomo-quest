@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { HomePage } from "./pages/HomePage.tsx";
 import { QuestPage } from "./pages/QuestPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import './App.css';
 
 function App() {
   return (

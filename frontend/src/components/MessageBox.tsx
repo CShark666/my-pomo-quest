@@ -1,4 +1,3 @@
-import '../styles/MessageBox.css'
 
 type ButtonProp = {
     text: string,

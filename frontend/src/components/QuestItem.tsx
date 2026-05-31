@@ -2,10 +2,11 @@ import { useTimer } from "../hooks/useTimer.ts";
 import { Timer } from "./Timer.tsx";
 import { CancelButton } from "./CancelButton.tsx";
 import { IntervalsBar } from "./IntervalsBar.tsx";
-import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
-import type { ClientQuest } from "../api.ts";
-import "../styles/QuestItem.css";
 import { MessageBox } from "./MessageBox.tsx";
+import { PopupWindow } from "./PopupWindow.tsx";
+import { type ClientQuest } from "../api.ts";
+import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
+
 
 type QuestItemProps = {
   quest: ClientQuest,
@@ -33,12 +34,12 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
 
   return (
     <>
-      <div className={isBreakMode ? "quest-item-break" : "quest-item"}>
-        <div className="quest-item__cancel">
+      <div className="quest-item flex flex-col w-full max-w-3xl min-w-2xs p-1">
+        <div className="quest-item__cancel flex justify-end">
           <CancelButton />
         </div>
-        <div className="quest-item__content">
-          <div className="quest-item__total-time">
+        <div className="quest-item__content flex items-center">
+          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full bg${isBreakMode ? "-break/50" : "-work/50"} text-white`}>
             <p>
               {timeFormatter(
                 isBreakMode ? quest.remainingTotalTimeMs : remainingTotal,
@@ -46,7 +47,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
             </p>
           </div>
           <div>
-            <div className="quest-item__meta">
+            <div className="quest-item__meta w-full flex justify-between">
               <p>
                 #{quest.id} {quest.title}
               </p>
@@ -56,6 +57,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "transitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
               timerPercent={timerPercent}
+              isBreakMode={isBreakMode}
             />
           </div>
         </div>
@@ -64,8 +66,17 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
             ? <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />
             : quest.currentInterval.status === "transitionToBreak"
               ? <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />
-              : <Timer time={remainingCurrentInterval} />
+              : <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />
         }
+        {isBreakMode && quest.currentInterval.status != "transitionToWork" && quest.currentInterval.status != "transitionToBreak"
+          &&
+          <div className="flex justify-center">
+            <PopupWindow
+              title="Skip break"
+              description="Are you sure you want to skip this break and move on to the next stage?"
+              buttons={isLoading ? undefined : [{ text: "Yes! Skip break", onClick: skipBreakAction }]}
+            />
+          </div>}
       </div>
     </>
   );

@@ -3,15 +3,14 @@ import { useNavigate } from "react-router";
 import { LoadingSpinnerLabel } from "./Loading.tsx";
 import { createQuest } from "../api.ts";
 import type { ClientQuest } from "../api.ts";
-import "../styles/CreatingQuesForm.css";
 
 export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
   const [isPendingCreateForm, startCreateFormTransition] = useTransition();
 
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
-  const [totalTime, setTotalTimeMs] = useState({ hours: 0, minutes: 0 });
-  const [intervalsCount, setIntervalsCount] = useState(1);
+  const [totalTime, setTotalTimeMs] = useState({ hours: 1, minutes: 20 });
+  const [intervalsCount, setIntervalsCount] = useState(4);
   const [breaks, setBreaks] = useState({ disabled: false, short: 5, long: 10 });
 
   const [disableField, setDisableField] = useState(true);
@@ -47,11 +46,13 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
   };
 
   return (
-    <div className="quest-form-container">
-      <div className="quest-form">
-        <div className="info-box">
+    <>
+      <div className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+
+        {/*title*/}
+        <div className="grid gap-1">
           <select
-            className="category-selector"
+            className="select select-primary text-center"
             onChange={(e) => setCategory(e.target.value)}
             defaultValue="Category"
           >
@@ -65,6 +66,7 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
             <option value="hobby">hobby</option>
           </select>
           <input
+            className="input input-primary"
             type="text"
             placeholder="title"
             value={title}
@@ -72,14 +74,17 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
             disabled={isPendingCreateForm}
           />
         </div>
-        <div className="time-settings">
-          <div className="time-input-box">
-            <p>Total time</p>
-            <div>
+
+        {/*time*/}
+        <div className="grid gap-1">
+          <div className="flex justify-between items-center">
+            <span className="text-lg">Total time</span>
+            <div className="flex">
               <input
-                className="time-input"
+                className="input validator text-right border-0 rounded-2xl rounded-r-none"
                 type="number"
                 min="0"
+                max="24"
                 value={totalTime.hours}
                 onChange={(e) => {
                   updateTime("hours", Number(e.target.value));
@@ -87,7 +92,7 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
                 disabled={isPendingCreateForm}
               />
               <input
-                className="time-input"
+                className="input validator text-left border-0 rounded-2xl rounded-l-none"
                 type="number"
                 min="0"
                 max="59"
@@ -99,10 +104,10 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
               />
             </div>
           </div>
-          <div className="time-input-box">
-            <p>Time interval</p>
+          <div className="flex justify-between items-center">
+            <span className="text-lg">Interval duration</span>
             <input
-              className="time-input"
+              className="input validator w-26 text-center border-0 rounded-2xl"
               type="number"
               min="1"
               value={
@@ -118,10 +123,10 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
               disabled={disableField || isPendingCreateForm}
             />
           </div>
-          <div className="time-input-box">
-            <p>Amount of intervals</p>
+          <div className="flex justify-between items-center">
+            <span className="text-lg">Intervals count</span>
             <input
-              className="time-input"
+              className="input validator w-26 text-center border-0 rounded-2xl"
               type="number"
               min="1"
               value={intervalsCount}
@@ -132,78 +137,80 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
             />
           </div>
         </div>
-        <div className="break-settings">
+        <div className="grid">
           <button
+            className="btn btn-sm btn-dash"
             onClick={() => {
               setShowBreakSettings(!showBreakSettings);
             }}
           >
             Break settings
           </button>
-          <div className="break-settings__content">
-            {showBreakSettings ? (
-              <div className="break-settings__form">
-                <div className="break-settings__row">
-                  <span>Disable breaks:</span>
-                  <input
-                    type="checkbox"
-                    checked={breaks.disabled}
-                    onChange={(e) =>
-                      setBreaks((prev) => ({
-                        ...prev,
-                        disabled: e.target.checked,
-                      }))
-                    }
-                    disabled={isPendingCreateForm}
-                  />
-                </div>
-                <div className="break-settings__row">
-                  <span>Short break: </span>
-                  <input
-                    className="break-settings__input time-input"
-                    type="number"
-                    value={breaks.short}
-                    disabled={breaks.disabled || isPendingCreateForm}
-                    onChange={(e) =>
-                      setBreaks((prev) => ({
-                        ...prev,
-                        short: Number(e.target.value),
-                      }))
-                    }
-                  />
-                </div>
-                <div className="break-settings__row">
-                  <span>Long break: </span>
-                  <input
-                    className="break-settings__input time-input"
-                    type="number"
-                    value={breaks.long}
-                    disabled={breaks.disabled || isPendingCreateForm}
-                    onChange={(e) =>
-                      setBreaks((prev) => ({
-                        ...prev,
-                        long: Number(e.target.value),
-                      }))
-                    }
-                  />
-                </div>
+
+          {/*break*/}
+          {showBreakSettings ? (
+            <div className="grid gap-1">
+              <div className="flex justify-center m-2">
+                <span className="text-md">Disable breaks:</span>
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  checked={breaks.disabled}
+                  onChange={(e) =>
+                    setBreaks((prev) => ({
+                      ...prev,
+                      disabled: e.target.checked,
+                    }))
+                  }
+                  disabled={isPendingCreateForm}
+                />
               </div>
-            ) : (
-              <div className="break-settings__summary">
-                {breaks.disabled ? (
-                  "no breaks"
-                ) : (
-                  <span>
-                    short: {breaks.short} m. / long: {breaks.long} m.
-                  </span>
-                )}
+              <div className="flex items-center justify-between">
+                <span className="text-base">Short break: </span>
+                <input
+                  className="input validator w-26 text-center border-0 rounded-2xl"
+                  type="number"
+                  value={breaks.short}
+                  disabled={breaks.disabled || isPendingCreateForm}
+                  onChange={(e) =>
+                    setBreaks((prev) => ({
+                      ...prev,
+                      short: Number(e.target.value),
+                    }))
+                  }
+                />
               </div>
-            )}
-          </div>
+              <div className="flex justify-between">
+                <span className="text-base">Long break: </span>
+                <input
+                  className="input validator w-26 text-center border-0 rounded-2xl"
+                  type="number"
+                  value={breaks.long}
+                  disabled={breaks.disabled || isPendingCreateForm}
+                  onChange={(e) =>
+                    setBreaks((prev) => ({
+                      ...prev,
+                      long: Number(e.target.value),
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-accent/60 flex justify-center">
+              {breaks.disabled ? (
+                "no breaks"
+              ) : (
+                <span >
+                  short: {breaks.short} m. / long: {breaks.long} m.
+                </span>
+              )}
+            </div>
+          )}
         </div>
-        <div className="buttons">
+        <div className="flex justify-center gap-5">
           <button
-            className="cancel"
+            className="btn btn-secondary disabled:btn-secondary/25"
             onClick={() => {
               navigate("/");
             }}
@@ -211,12 +218,12 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
           >
             Cancel
           </button>
-          <button className="start" onClick={saveQuest} disabled={isPendingCreateForm}>
+          <button className="btn btn-primary disabled:btn-primary/25" onClick={saveQuest} disabled={isPendingCreateForm}>
             Get started
           </button>
         </div>
         {isPendingCreateForm && (<div> <LoadingSpinnerLabel /> </div>)}
       </div>
-    </div>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 import { useState, useTransition } from "react";
 import { useNavigate } from "react-router";
 import { cancelQuest } from "../api";
-import "../styles/CancelButton.css";
 import { LoadingSpinnerLabel } from "./Loading";
 
 export function CancelButton() {
@@ -16,7 +15,7 @@ export function CancelButton() {
 
   return (
     <>
-      <button className="x-btn"
+      <button className="x-btn px-1 bg-error/55"
         onClick={() => {
           setShowWindow(!showWindow);
         }}
@@ -24,15 +23,16 @@ export function CancelButton() {
         X
       </button>
       {showWindow && (
-        <div className="overlay">
-          <div className="dialog-window">
+        <div className="overlay fixed to-0% left-0 w-full h-full bg-black/50 flex justify-center items-center z-50">
+          <div className="dialog-window bg-gray-700 p-6 w-96 text-center">
             <span>
               Are you sure you want to cancel the task?{" "}
               <b>All progress will be irretrievably lost!</b>
             </span>
             <div>
-              <button onClick={cancel} disabled={isPending}>Yes! Cancel!</button>
+              <button className="btn m-1.5 btn-secondary disabled:bg-secondary/65" onClick={cancel} disabled={isPending}>Yes! Cancel!</button>
               <button
+                className="btn m-1.5 btn-primary disabled:bg-primary/65"
                 onClick={() => {
                   setShowWindow(false);
                 }}

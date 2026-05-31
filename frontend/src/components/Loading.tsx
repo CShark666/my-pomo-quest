@@ -1,12 +1,5 @@
-import "../styles/LoadingSpinner.css";
-
-export function LoadingSpinner() {
-    return <span className="loader"></span>;
-}
-
 export function LoadingSpinnerLabel() {
-    return <div>
-        <LoadingSpinner />
-        <p>loading</p>
+    return <div className="grid justify-center ali">
+        <span className="loading loading-bars loading-xl"></span>
     </div>;
 }

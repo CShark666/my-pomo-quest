@@ -3,7 +3,8 @@ import { Timer } from "./Timer.tsx";
 import { CancelButton } from "./CancelButton.tsx";
 import { IntervalsBar } from "./IntervalsBar.tsx";
 import { MessageBox } from "./MessageBox.tsx";
-import type { ClientQuest } from "../api.ts";
+import { PopupWindow } from "./PopupWindow.tsx";
+import { type ClientQuest } from "../api.ts";
 import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
 
 
@@ -38,7 +39,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
           <CancelButton />
         </div>
         <div className="quest-item__content flex items-center">
-          <div className="quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full bg-work/50 text-white">
+          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full bg${isBreakMode ? "-break/50" : "-work/50"} text-white`}>
             <p>
               {timeFormatter(
                 isBreakMode ? quest.remainingTotalTimeMs : remainingTotal,
@@ -56,6 +57,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "transitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
               timerPercent={timerPercent}
+              isBreakMode={isBreakMode}
             />
           </div>
         </div>
@@ -66,6 +68,15 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               ? <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />
               : <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />
         }
+        {isBreakMode && quest.currentInterval.status != "transitionToWork" && quest.currentInterval.status != "transitionToBreak"
+          &&
+          <div className="flex justify-center">
+            <PopupWindow
+              title="Skip break"
+              description="Are you sure you want to skip this break and move on to the next stage?"
+              buttons={isLoading ? undefined : [{ text: "Yes! Skip break", onClick: skipBreakAction }]}
+            />
+          </div>}
       </div>
     </>
   );

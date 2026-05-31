@@ -14,7 +14,7 @@ export function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolea
     <div className="timer flex items-center justify-center">
       <div className="time flex items-center">
         <div className="hours">
-          <div className={`time-card flex justify-center items-center bg${isBreakMode ? "-break/50" : "-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-l-box`}>
+          <div className={`time-card flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-l-box`}>
             <p>{format(time).minutes}</p>
           </div>
         </div>
@@ -22,7 +22,7 @@ export function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolea
         <p className="dots text-8xl">:</p>
 
         <div className="seconds">
-          <div className={`time-card flex justify-center items-center bg${isBreakMode ? "-break/50" : "-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-r-box`}>
+          <div className={`time-card flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-r-box`}>
             <p>{format(time).seconds}</p>
           </div>
         </div>

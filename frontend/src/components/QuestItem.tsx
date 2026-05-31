@@ -39,7 +39,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
           <CancelButton />
         </div>
         <div className="quest-item__content flex items-center">
-          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full bg${isBreakMode ? "-break/50" : "-work/50"} text-white`}>
+          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white`}>
             <p>
               {timeFormatter(
                 isBreakMode ? quest.remainingTotalTimeMs : remainingTotal,

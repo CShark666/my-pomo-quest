@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import { useTimer } from "../hooks/useTimer.ts";
 import { Timer } from "./Timer.tsx";
 import { CancelButton } from "./CancelButton.tsx";
@@ -20,8 +21,10 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
   const { remaining: remainingCurrentInterval } = useTimer(
     quest.currentInterval.remaining,
   );
+  const nav = useNavigate();
 
   const isBreakMode = quest.currentInterval.status !== "work";
+  const isTransitionMode = quest.currentInterval.status == "transitionToWork" || quest.currentInterval.status == "transitionToBreak";
   const timerPercent = !isBreakMode
     ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
     : 100;
@@ -31,6 +34,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
     : `The break is over. The next stage will start in: ${timeFormatterSeconds(remainingCurrentInterval)}... `;
 
   const transitionToBreakText = `Congratulations! You have completed stage ${quest.currentInterval.index + 1}. Your break will start in: ${timeFormatterSeconds(remainingCurrentInterval)}... `;
+  const finishText = `Good job! You've successfully completed your quest "${quest.title}"!`;
 
   return (
     <>
@@ -42,7 +46,11 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
           <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white`}>
             <p>
               {timeFormatter(
-                isBreakMode ? quest.remainingTotalTimeMs : remainingTotal,
+                isBreakMode
+                  ? quest.remainingTotalTimeMs
+                  : quest.status === "inProgress"
+                    ? remainingTotal
+                    : 0,
               )}
             </p>
           </div>
@@ -56,19 +64,26 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
             <IntervalsBar
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "transitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
-              timerPercent={timerPercent}
+              timerPercent={quest.status === "inProgress" ? timerPercent : 0}
               isBreakMode={isBreakMode}
             />
           </div>
         </div>
         {
-          quest.currentInterval.status === "transitionToWork"
-            ? <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />
-            : quest.currentInterval.status === "transitionToBreak"
-              ? <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />
-              : <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />
+          (() => {
+            switch (quest.status === "inProgress" ? quest.currentInterval.status : quest.status) {
+              case 'transitionToWork':
+                return <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />;
+              case 'transitionToBreak':
+                return <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />;
+              case 'finished':
+                return <MessageBox text={finishText} buttons={isLoading ? undefined : [{ text: "Back to home page", onClick: () => { nav("/") } }]} />;
+              default:
+                return <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />;
+            }
+          })()
         }
-        {isBreakMode && quest.currentInterval.status != "transitionToWork" && quest.currentInterval.status != "transitionToBreak"
+        {isBreakMode && !isTransitionMode
           &&
           <div className="flex justify-center">
             <PopupWindow

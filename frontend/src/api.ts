@@ -77,7 +77,7 @@ export async function getQuest(): Promise<ClientQuest | null> {
 
     const dbQuest = getDbQuest();
 
-    if (!dbQuest || dbQuest.status != 'inProgress') return null;
+    if (!dbQuest) return null;
 
     const remainingIntervals = dbQuest.intervalsCount - dbQuest.currentInterval.index;
     const currentIntervalRemaining = getCurrentIntervalRemainingTime(dbQuest);
@@ -181,7 +181,7 @@ function getDbQuest(): DbQUest | null {
     const data = localStorage.getItem(STORAGE_KEY);
     const quest = JSON.parse(data!) as DbQUest;
 
-    if (!quest || quest.status != 'inProgress') return null;
+    if (!quest) return null;
 
     if (fixDbQuestIfNeeded(quest)) saveDbQuest(quest)
 

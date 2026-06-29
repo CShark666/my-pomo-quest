@@ -5,7 +5,7 @@ import { CancelButton } from "./CancelButton.tsx";
 import { IntervalsBar } from "./IntervalsBar.tsx";
 import { MessageBox } from "./MessageBox.tsx";
 import { PopupWindow } from "./PopupWindow.tsx";
-import { type ClientQuest } from "../api.ts";
+import { type ClientQuest } from "../types/questTypes.ts";
 import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
 
 

@@ -1,54 +1,20 @@
+import type {
+    BreakType,
+    BreakConfig,
+    CreateQuestRequest,
+    DbQUest,
+    ClientQuest,
+} from "./types/questTypes";
+
 const STORAGE_KEY = "pomoQuest";
 const TRANSITION_DURATION_MS = 5000
 const DELAY_DURATION_MS = 300
 
 
-function delay(ms = DELAY_DURATION_MS) {
+export function delay(ms = DELAY_DURATION_MS) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-
-type QuestStatus = "inProgress" | "finished" | "cancelled"
-
-type BreakType = "short" | "long"
-type BreakConfig = Record<BreakType, number> | null
-
-type IntervalStatus = "work" | "break" | "transitionToWork" | "transitionToBreak"
-type IntervalState = {
-    index: number,
-    status: IntervalStatus,
-    started: number
-}
-type IntervalStateFull = IntervalState & {
-    remaining: number
-}
-
-type CreateQuestRequest = {
-    category: string,
-    title: string,
-    totalTimeMs: number,
-    intervalsCount: number,
-    breaks: BreakConfig,
-}
-
-type DbQUest = {
-    id: string,
-    category: string
-    title: string,
-    status: QuestStatus
-    totalTimeMs: number,
-    intervalsCount: number,
-    breaks: BreakConfig,
-    createdAt: number,
-
-    currentInterval: IntervalState
-}
-
-export type ClientQuest = DbQUest & {
-    intervalDurationMs: number,
-    remainingTotalTimeMs: number,
-    currentInterval: IntervalStateFull
-}
 
 export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
     await delay();

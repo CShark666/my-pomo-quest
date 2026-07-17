@@ -3,7 +3,8 @@ import { QuestItem } from "../components/QuestItem.tsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
 import { LoadingSpinnerLabel } from "../components/Loading.tsx";
 import { Suspense, use, useEffect, useState, useTransition } from "react";
-import { type ClientQuest, skipTransitionToBreak, getQuest, skipBreak } from "../api.ts";
+import { skipTransitionToBreak, getQuest, skipBreak } from '../api.ts'
+import type { ClientQuest } from "../types/types.ts";
 
 function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest | null> }) {
   const [quest, setQuest] = useState<ClientQuest | null>(use(initialQuest));

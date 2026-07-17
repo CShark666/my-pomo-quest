@@ -2,7 +2,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useNavigate } from "react-router";
 import { LoadingSpinnerLabel } from "./Loading.tsx";
 import { createQuest } from "../api.ts";
-import type { ClientQuest } from "../types/questTypes";
+import type { ClientQuest } from "../types/types.ts";
 
 export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
   const [isPendingCreateForm, startCreateFormTransition] = useTransition();

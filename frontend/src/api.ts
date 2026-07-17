@@ -4,7 +4,7 @@ import type {
     CreateQuestRequest,
     DbQUest,
     ClientQuest,
-} from "./types/questTypes";
+} from "./types/types";
 
 const STORAGE_KEY = "pomoQuest";
 const TRANSITION_DURATION_MS = 5000

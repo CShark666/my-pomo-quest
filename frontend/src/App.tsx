@@ -4,6 +4,7 @@ import { QuestPage } from "./pages/QuestPage";
 import { AuthorizationPage } from "./pages/AuthorizationPage.tsx";
 import { LogInPage } from "./pages/LogInPage.tsx";
 import { SingUpPage } from "./pages/SignUpPage.tsx";
+import { UserPage } from "./pages/UserPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/quest" element={<QuestPage />} />
         <Route path="/authorization" element={<AuthorizationPage />} />
 
+        <Route path="/user/" element={<UserPage />} />
         <Route path="/user/login" element={<LogInPage />} />
         <Route path="/user/signup" element={<SingUpPage />} />
 

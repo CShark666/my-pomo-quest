@@ -13,9 +13,10 @@ export function Sidebar() {
         <label htmlFor="my-drawer-1" aria-label="close sidebar" className="drawer-overlay"></label>
         <ul className="menu bg-base-200 min-h-full w-60 p-4">
           {/* Sidebar content here */}
-          <li><Link to="user/:id">Profile</Link></li>
+          <li><Link to="/user/">Profile</Link></li>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/quest/">Pomo-Quest</Link></li>
+          <li className="btn btn-ghost"><Link to="/">Log out</Link></li>
         </ul>
       </div>
     </div>

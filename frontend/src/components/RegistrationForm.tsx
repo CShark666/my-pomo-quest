@@ -1,7 +1,20 @@
 import { useState } from "react";
+import { registerUser } from "../userApi";
+import { useNavigate } from "react-router";
 
 export function RegistrationForm() {
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate();
+
+  const handleSignUp = async () => {
+    await registerUser({
+      login: login,
+      password: password
+    });
+    navigate("/user/");
+  }
 
   return (
     <>
@@ -9,18 +22,14 @@ export function RegistrationForm() {
 
         <h1>SignUp</h1>
 
-        {/*name*/}
+        {/*login*/}
         <div className="grid gap-1">
           <input
             className="input input-primary"
             type="text"
             placeholder="Name"
-            required
-          />
-          <input
-            className="input input-primary"
-            type="email"
-            placeholder="Email"
+            onChange={(e) => setLogin(e.target.value)}
+            value={login}
             required
           />
         </div>
@@ -32,6 +41,8 @@ export function RegistrationForm() {
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             required
           />
           <span>
@@ -45,7 +56,7 @@ export function RegistrationForm() {
 
 
         <div>
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={handleSignUp}>
             Sign Up
           </button>
         </div>

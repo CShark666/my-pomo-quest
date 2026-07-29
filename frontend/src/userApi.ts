@@ -1,34 +1,28 @@
 import { delay } from "./api";
 import type {
-    userRegisterRequest,
-    DbUser
-} from './types/userTypes';
-
-const STORAGE_KEY = "user";
+    DbUser,
+    ClientUser
+} from './types/types';
 
 
-export async function registerUser(request: userRegisterRequest): Promise<DbUser | void> {
-    await delay()
+export async function getUser(): Promise<ClientUser | null> {
+    await delay();
 
-    saveNewUserDb({
-        name: request.name,
-        login: request.login,
-        password: request.password,
-        createdAt: Date.now(),
-        experience: 0,
-        compliedQuests: 0
-    });
+    const currentUserId = localStorage.getItem("currentUserId");
+    if (!currentUserId) return null;
 
-    return getUserDb();
+    const userData = localStorage.getItem(currentUserId);
+    if (!userData) return null;
+
+    const dbUser = JSON.parse(userData) as DbUser;
+
+    return {
+        ...dbUser,
+        level: 1
+    }
 }
 
-function saveNewUserDb(user: DbUser) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-}
-
-function getUserDb(): DbUser {
-    const data = localStorage.getItem(STORAGE_KEY);
-    const user = JSON.parse(data!) as DbUser;
-
-    return user;
+export async function logOutUser() {
+    await delay();
+    return localStorage.removeItem("currentUserId");
 }

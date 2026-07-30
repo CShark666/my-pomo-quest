@@ -11,13 +11,11 @@ import type {
 export async function getUser(): Promise<ClientUser | null> {
     await delay();
 
-    const currentUserId = localStorage.getItem("currentUserId");
+    const currentUserId = getCurrentUserId();
     if (!currentUserId) return null;
 
-    const userData = localStorage.getItem(currentUserId);
-    if (!userData) return null;
-
-    const dbUser = JSON.parse(userData) as UserData;
+    const dbUser = getUserData(currentUserId);
+    if (!dbUser) return null;
 
     return {
         ...dbUser,
@@ -49,10 +47,9 @@ export async function registerUser(request: UserRegistrationRequest): Promise<vo
 export async function loginUser(request: UserLoginRequest): Promise<boolean | null> {
     await delay();
 
-    const data = localStorage.getItem(request.login);
-    if (!data) return null;
+    const userCredential = getUserCredential(request.login);
+    if (!userCredential) return null;
 
-    const userCredential = JSON.parse(data) as UserCredential;
     if (request.password !== userCredential.password) return null;
 
     setCurrentUserId(userCredential.id);
@@ -74,4 +71,22 @@ function saveUserCredential(userCredential: UserCredential) {
 
 function setCurrentUserId(id: number) {
     localStorage.setItem("currentUserId", JSON.stringify(id))
+}
+
+function getCurrentUserId(): string | null {
+    return localStorage.getItem("currentUserId");
+}
+
+function getUserData(currentUserId: string): UserData | null {
+    const userData = localStorage.getItem(currentUserId);
+    if (!userData) return null;
+
+    return JSON.parse(userData) as UserData;
+}
+
+function getUserCredential(login: string): UserCredential | null {
+    const data = localStorage.getItem(login);
+    if (!data) return null;
+
+    return JSON.parse(data) as UserCredential;
 }

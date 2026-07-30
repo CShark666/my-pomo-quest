@@ -1,7 +1,22 @@
 import { useState } from "react";
+import { loginUser } from "../userApi";
+import { useNavigate } from "react-router";
 
 export function LogInForm() {
     const [showPassword, setShowPassword] = useState(false)
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+
+    const handleLogIn = async () => {
+        const response = await loginUser({
+            login,
+            password
+        })
+        setLogin("")
+        setPassword("")
+        if (response) navigate("/user/");
+    }
 
     return (
         <>
@@ -11,8 +26,8 @@ export function LogInForm() {
                 <h1>LogIn</h1>
 
                 <div className="grid gap-1">
-                    <input className="input input-primary" type="text" placeholder="Name" required />
-                    <input className="input input-primary" type={showPassword ? "text" : "password"} placeholder="Password" required />
+                    <input className="input input-primary" type="text" placeholder="Name" value={login} onChange={(e) => { setLogin(e.target.value) }} required />
+                    <input className="input input-primary" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => { setPassword(e.target.value) }} required />
                     <span>
                         <input type="checkbox" className="checkbox"
                             onChange={(e) =>
@@ -22,7 +37,7 @@ export function LogInForm() {
                 </div>
 
                 <div>
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={handleLogIn}>
                         Log In
                     </button>
                 </div>

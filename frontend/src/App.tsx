@@ -14,11 +14,13 @@ function App() {
       <Routes>
         <Route index element={<HomePage />} />
         <Route path="/quest" element={<QuestPage />} />
+
         <Route path="/authorization" element={<AuthorizationPage />} />
+        <Route path="/authorization/login" element={<LogInPage />} />
+        <Route path="/authorization/signup" element={<SingUpPage />} />
 
         <Route path="/user/" element={<UserPage />} />
-        <Route path="/user/login" element={<LogInPage />} />
-        <Route path="/user/signup" element={<SingUpPage />} />
+
 
 
         <Route path="*" element={<NotFoundPage />} />

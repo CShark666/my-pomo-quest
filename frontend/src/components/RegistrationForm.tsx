@@ -1,20 +1,22 @@
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { registerUser } from "../userApi";
 import { useNavigate } from "react-router";
+import { LoadingSpinnerLabel } from "./Loading";
 
 export function RegistrationForm() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false)
+  const [isPending, startTransition] = useTransition();
   const navigate = useNavigate();
 
-  const handleSignUp = async () => {
+  const handleSignUp = () => startTransition(async () => {
     await registerUser({
       login: login,
       password: password
     });
     navigate("/user/");
-  }
+  })
 
   return (
     <>
@@ -31,6 +33,7 @@ export function RegistrationForm() {
             onChange={(e) => setLogin(e.target.value)}
             value={login}
             required
+            disabled={isPending}
           />
         </div>
 
@@ -44,23 +47,27 @@ export function RegistrationForm() {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             required
+            disabled={isPending}
           />
           <span>
             <input type="checkbox" className="checkbox"
               onChange={(e) =>
                 setShowPassword(e.target.checked)
-              } /> Show password
+              }
+              disabled={isPending}
+            /> Show password
           </span>
         </div>
 
-
-
         <div>
-          <button className="btn btn-primary" onClick={handleSignUp}>
+          <button className="btn btn-primary" onClick={handleSignUp} disabled={isPending}>
             Sign Up
           </button>
         </div>
 
+        <div>
+          {isPending && <LoadingSpinnerLabel />}
+        </div>
       </div>
     </>
   );

@@ -1,8 +1,10 @@
 import { delay } from "./api";
 import type {
-    DbUser,
+    UserData,
     ClientUser,
-    UserRegistrationRequest
+    UserRegistrationRequest,
+    UserCredential,
+    UserLoginRequest
 } from './types/types';
 
 
@@ -15,7 +17,7 @@ export async function getUser(): Promise<ClientUser | null> {
     const userData = localStorage.getItem(currentUserId);
     if (!userData) return null;
 
-    const dbUser = JSON.parse(userData) as DbUser;
+    const dbUser = JSON.parse(userData) as UserData;
 
     return {
         ...dbUser,
@@ -28,14 +30,33 @@ export async function registerUser(request: UserRegistrationRequest): Promise<vo
 
     const randomId = Math.floor(Math.random() * 9999999);
 
-    saveDbUser({
+    saveUserData({
         id: randomId,
         login: request.login,
-        password: request.password,
         experience: 0,
         completedQuests: 0
     })
+
+    saveUserCredential({
+        login: request.login,
+        password: request.password,
+        id: randomId
+    });
+
     setCurrentUserId(randomId);
+}
+
+export async function loginUser(request: UserLoginRequest): Promise<boolean | null> {
+    await delay();
+
+    const data = localStorage.getItem(request.login);
+    if (!data) return null;
+
+    const userCredential = JSON.parse(data) as UserCredential;
+    if (request.password !== userCredential.password) return null;
+
+    setCurrentUserId(userCredential.id);
+    return true;
 }
 
 export async function logOutUser() {
@@ -43,8 +64,12 @@ export async function logOutUser() {
     return localStorage.removeItem("currentUserId");
 }
 
-function saveDbUser(user: DbUser) {
+function saveUserData(user: UserData) {
     localStorage.setItem(`${user.id}`, JSON.stringify(user))
+}
+
+function saveUserCredential(userCredential: UserCredential) {
+    localStorage.setItem(userCredential.login, JSON.stringify(userCredential));
 }
 
 function setCurrentUserId(id: number) {

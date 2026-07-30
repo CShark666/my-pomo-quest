@@ -42,19 +42,31 @@ export type ClientQuest = DbQUest & {
     currentInterval: IntervalStateFull
 }
 
+// User
+
 export type UserRegistrationRequest = {
     login: string,
     password: string
 }
 
-export type DbUser = {
-    id: number,
+export type UserLoginRequest = {
+    login: string,
+    password: string
+}
+
+export type UserCredential = {
     login: string,
     password: string,
+    id: number
+}
+
+export type UserData = {
+    id: number,
+    login: string,
     experience: number,
     completedQuests: number
 }
 
-export type ClientUser = DbUser & {
+export type ClientUser = UserData & {
     level: number
 }

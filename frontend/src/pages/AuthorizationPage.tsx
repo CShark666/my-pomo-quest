@@ -1,13 +1,11 @@
 import { Link, Navigate } from "react-router";
 import { Sidebar } from "./Sidebar";
-import { getUser } from "../userApi";
-import { Suspense, use } from "react";
+import { Suspense, useContext } from "react";
 import { LoadingSpinnerLabel } from "../components/Loading";
 import type { ClientUser } from "../types/types";
+import { UserContext } from "../contexts/UserContext";
 
-function AuthorizationPageContext({ initialUser }: { initialUser: Promise<ClientUser | null> }) {
-    const user: ClientUser | null = use(initialUser);
-
+function AuthorizationPageContext({ user }: { user: ClientUser | null }) {
     return (
         <div className="flex justify-center items-center h-screen">
             {user ? (
@@ -26,12 +24,12 @@ function AuthorizationPageContext({ initialUser }: { initialUser: Promise<Client
 }
 
 export function AuthorizationPage() {
-    const initialUser = getUser();
+    const initialUser = useContext(UserContext);
 
     return <>
         <Sidebar />
         <Suspense fallback={<LoadingSpinnerLabel />}>
-            <AuthorizationPageContext initialUser={initialUser} />
+            <AuthorizationPageContext user={initialUser.user} />
         </Suspense>
     </>
 }

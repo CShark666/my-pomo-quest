@@ -1,15 +1,17 @@
-import { Suspense, use, useState } from "react";
+import { Suspense, useContext } from "react";
 import { Navigate } from "react-router";
 import { Sidebar } from "./Sidebar";
 import { UserProfile } from "../components/UserProfile"
 import { LoadingSpinnerLabel } from "../components/Loading";
-import { getUser } from "../userApi";
 import type { ClientUser } from '../types/types';
+import { UserContext } from "../contexts/UserContext";
 
+type UserPageProps = {
+    user: ClientUser | null,
+    setUser: (user: ClientUser | null) => void
+}
 
-function UserPageContext({ initialUser }: { initialUser: Promise<ClientUser | null> }) {
-    const [user, setUser] = useState<ClientUser | null>(use(initialUser));
-
+function UserPageContext({ user, setUser }: UserPageProps) {
     const logOutAction = () => {
         setUser(null);
     }
@@ -17,24 +19,23 @@ function UserPageContext({ initialUser }: { initialUser: Promise<ClientUser | nu
     return (
         <>
             <div className="flex justify-center items-center h-screen">
-                {user ? (
-                    <UserProfile user={user} logOutAction={logOutAction}/>
-                ) : (
-                    <Navigate to="/authorization" />
-                )}
+                {user
+                    ? (<UserProfile user={user} logOutAction={logOutAction} />)
+                    : (<Navigate to="/authorization" />)
+                }
             </div>
         </>
     );
 }
 
 export function UserPage() {
-    const initialUser = getUser();
+    const initialUser = useContext(UserContext);
 
     return (
         <>
             <Sidebar />
             <Suspense fallback={<LoadingSpinnerLabel />}>
-                <UserPageContext initialUser={initialUser} />
+                <UserPageContext user={initialUser.user} setUser={initialUser.setUser} />
             </Suspense>
         </>
     )

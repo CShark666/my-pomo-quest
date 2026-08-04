@@ -7,25 +7,26 @@ import { SingUpPage } from "./pages/SignUpPage.tsx";
 import { UserPage } from "./pages/UserPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
+import { ContextProvider } from "./contexts/ContextProvider.tsx";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<HomePage />} />
-        <Route path="/quest" element={<QuestPage />} />
+    <ContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route index element={<HomePage />} />
+          <Route path="/quest" element={<QuestPage />} />
 
-        <Route path="/authorization" element={<AuthorizationPage />} />
-        <Route path="/authorization/login" element={<LogInPage />} />
-        <Route path="/authorization/signup" element={<SingUpPage />} />
+          <Route path="/authorization" element={<AuthorizationPage />} />
+          <Route path="/authorization/login" element={<LogInPage />} />
+          <Route path="/authorization/signup" element={<SingUpPage />} />
 
-        <Route path="/user/" element={<UserPage />} />
+          <Route path="/user/" element={<UserPage />} />
 
-
-
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </ContextProvider>
   );
 }
 

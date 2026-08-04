@@ -1,18 +1,29 @@
 import { Sidebar } from "./Sidebar";
 import { RegistrationForm } from "../components/RegistrationForm";
 import type { ClientUser } from "../types/types";
-import { Suspense, use } from "react";
+import { Suspense, useContext } from "react";
 import { Navigate } from "react-router";
-import { getUser } from "../userApi";
 import { LoadingSpinnerLabel } from "../components/Loading";
+import { UserContext } from "../contexts/UserContext";
+import { getUser } from "../userApi";
 
-function SingUpPageContext({ initialUser }: { initialUser: Promise<ClientUser | null> }) {
-    const user: ClientUser | null = use(initialUser);
+type SignUpPageProps = {
+    user: ClientUser | null,
+    setUser: (user: ClientUser | null) => void
+}
+
+function SingUpPageContext({ user, setUser }: SignUpPageProps) {
+
+    const signUpAction = async () => {
+        setUser(await getUser());
+    }
 
     return (
         <div className="flex justify-center items-center h-screen">
             {
-                user ? (<Navigate to="/user/" />) : (<RegistrationForm />)
+                user
+                    ? (<Navigate to="/user/" />)
+                    : (<RegistrationForm signUpAction={signUpAction} />)
             }
         </div>
     )
@@ -20,13 +31,13 @@ function SingUpPageContext({ initialUser }: { initialUser: Promise<ClientUser | 
 }
 
 export function SingUpPage() {
-    const initialUser = getUser();
+    const initialUser = useContext(UserContext)
 
     return (
         <>
             <Sidebar />
             <Suspense fallback={<LoadingSpinnerLabel />}>
-                <SingUpPageContext initialUser={initialUser} />
+                <SingUpPageContext user={initialUser.user} setUser={initialUser.setUser} />
             </Suspense>
         </>
     );

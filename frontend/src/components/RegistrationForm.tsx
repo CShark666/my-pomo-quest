@@ -1,21 +1,24 @@
 import { useState, useTransition } from "react";
 import { registerUser } from "../userApi";
-import { useNavigate } from "react-router";
 import { LoadingSpinnerLabel } from "./Loading";
 
-export function RegistrationForm() {
+type RegistrationFormProps = {
+  signUpAction: () => void
+}
+
+export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false)
   const [isPending, startTransition] = useTransition();
-  const navigate = useNavigate();
 
   const handleSignUp = () => startTransition(async () => {
     await registerUser({
       login: login,
       password: password
     });
-    navigate("/user/");
+
+    signUpAction();
   })
 
   return (

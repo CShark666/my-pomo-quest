@@ -1,14 +1,16 @@
 import { useState, useTransition } from "react";
 import { loginUser } from "../userApi";
-import { useNavigate } from "react-router";
 import { LoadingSpinnerLabel } from "./Loading";
 
-export function LogInForm() {
+type LogInFormProps = {
+    logInAction: () => void
+}
+
+export function LogInForm({ logInAction }: LogInFormProps) {
     const [showPassword, setShowPassword] = useState(false)
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [isPending, startTransition] = useTransition();
-    const navigate = useNavigate();
 
     const handleLogIn = () => startTransition(async () => {
         const response = await loginUser({
@@ -17,7 +19,10 @@ export function LogInForm() {
         })
         setLogin("")
         setPassword("")
-        if (response) navigate("/user/");
+
+        if (response) {
+            logInAction();
+        };
     })
 
     return (

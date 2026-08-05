@@ -17,16 +17,17 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/quest" element={<QuestPage />} />
 
-          <Route path="/authorization" element={<AuthorizationPage />} />
-          <Route path="/authorization/login" element={<LogInPage />} />
-          <Route path="/authorization/signup" element={<SingUpPage />} />
+          <Route path="/authorization" element={<AuthorizationPage />}>
+            <Route path="login" element={<LogInPage />} />
+            <Route path="signup" element={<SingUpPage />} />
+          </Route>
 
           <Route path="/user/" element={<UserPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
-    </ContextProvider>
+    </ContextProvider >
   );
 }
 

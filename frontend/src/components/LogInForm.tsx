@@ -27,14 +27,30 @@ export function LogInForm({ logInAction }: LogInFormProps) {
 
     return (
         <>
-
             <div className="flex-col justify-center fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 gap-3">
 
                 <h1>LogIn</h1>
 
                 <div className="grid gap-1">
-                    <input className="input input-primary" type="text" placeholder="Name" value={login} onChange={(e) => { setLogin(e.target.value) }} disabled={isPending} required />
-                    <input className="input input-primary" type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => { setPassword(e.target.value) }} disabled={isPending} required />
+                    {/* Name Input */}
+                    <input
+                        className="input input-primary"
+                        type="text"
+                        placeholder="Name"
+                        value={login}
+                        onChange={(e) => { setLogin(e.target.value) }}
+                        disabled={isPending}
+                        required />
+                    {/* Name Input */}
+                    <input
+                        className="input input-primary"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => { setPassword(e.target.value) }}
+                        disabled={isPending}
+                        required />
+
                     <span>
                         <input type="checkbox" className="checkbox"
                             onChange={(e) =>

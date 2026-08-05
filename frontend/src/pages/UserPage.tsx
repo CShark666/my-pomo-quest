@@ -1,6 +1,5 @@
 import { Suspense, useContext } from "react";
 import { Navigate } from "react-router";
-import { Sidebar } from "./Sidebar";
 import { UserProfile } from "../components/UserProfile"
 import { LoadingSpinnerLabel } from "../components/Loading";
 import type { ClientUser } from '../types/types';
@@ -18,12 +17,12 @@ function UserPageContext({ user, setUser }: UserPageProps) {
 
     return (
         <>
-            <div className="flex justify-center items-center h-screen">
+            <>
                 {user
-                    ? (<UserProfile user={user} logOutAction={logOutAction} />)
-                    : (<Navigate to="/authorization" />)
+                    ? <UserProfile user={user} logOutAction={logOutAction} />
+                    : <Navigate to="/authorization" />
                 }
-            </div>
+            </>
         </>
     );
 }
@@ -33,7 +32,6 @@ export function UserPage() {
 
     return (
         <>
-            <Sidebar />
             <Suspense fallback={<LoadingSpinnerLabel />}>
                 <UserPageContext user={initialUser.user} setUser={initialUser.setUser} />
             </Suspense>

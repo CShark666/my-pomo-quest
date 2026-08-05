@@ -1,4 +1,3 @@
-import { Sidebar } from "./Sidebar.jsx";
 import { QuestItem } from "../components/QuestItem.tsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
 import { LoadingSpinnerLabel } from "../components/Loading.tsx";
@@ -34,11 +33,10 @@ function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest 
 
   return (
     <div className="flex justify-center">
-      {quest ? (
-        <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
-      ) : (
-        <CreatingQuestForm setQuest={setQuest} />
-      )}
+      {quest
+        ? <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
+        : <CreatingQuestForm setQuest={setQuest} />
+      }
     </div>
   )
 }
@@ -48,7 +46,6 @@ export function QuestPage() {
 
   return (
     <>
-      <Sidebar />
       <Suspense fallback={<LoadingSpinnerLabel />}>
         <QuestPageContent initialQuest={initialQuest} />
       </Suspense>

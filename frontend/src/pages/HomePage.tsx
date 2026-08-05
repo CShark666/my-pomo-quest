@@ -1,19 +1,20 @@
-import { Link } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { Sidebar } from "./Sidebar";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export function HomePage() {
+  const userContext = useContext(UserContext);
+  const user = userContext.user!;
+
   return (
     <>
       <Sidebar />
-      <div className="flex justify-center text-4xl">
-        <h1>Welcome to Pomo-Quest home page!</h1>
-      </div>
-      <div className="link-box flex justify-center items-center m-4">
-        <Link to="/quest/">
-          <div className="flex justify-center items-center w-40 h-40 rounded-full bg-primary text-white font-bold">
-            <h2>Pomo-quest</h2>
-          </div>
-        </Link>
+      <div className="flex flex-col gap-2.5 justify-center items-center h-screen">
+        {user
+          ? <Outlet />
+          : <Navigate to="/authorization" />
+        }
       </div>
     </>
   );

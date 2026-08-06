@@ -3,7 +3,7 @@ import { HomePage } from "./pages/HomePage.tsx";
 import { QuestPage } from "./pages/QuestPage";
 import { AuthorizationPage } from "./pages/AuthorizationPage.tsx";
 import { LogInPage } from "./pages/LogInPage.tsx";
-import { SingUpPage } from "./pages/SignUpPage.tsx";
+import { SignUpPage } from "./pages/SignUpPage.tsx";
 import { UserPage } from "./pages/UserPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
@@ -23,7 +23,7 @@ function App() {
 
           <Route path="authorization" element={<AuthorizationPage />}>
             <Route path="login" element={<LogInPage />} />
-            <Route path="signup" element={<SingUpPage />} />
+            <Route path="signup" element={<SignUpPage />} />
           </Route>
 
         </Routes>

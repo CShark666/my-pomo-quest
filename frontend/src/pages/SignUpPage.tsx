@@ -4,7 +4,7 @@ import { LoadingSpinnerLabel } from "../components/Loading";
 import { UserContext } from "../contexts/UserContext";
 import { getUser } from "../userApi";
 
-export function SingUpPage() {
+export function SignUpPage() {
     const initialUser = useContext(UserContext)
 
     const signUpAction = async () => {

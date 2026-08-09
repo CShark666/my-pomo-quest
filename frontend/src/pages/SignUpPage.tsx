@@ -1,6 +1,5 @@
 import { RegistrationForm } from "../components/RegistrationForm";
-import { Suspense, useContext } from "react";
-import { LoadingSpinnerLabel } from "../components/Loading";
+import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { getUser } from "../userApi";
 
@@ -13,9 +12,7 @@ export function SignUpPage() {
 
     return (
         <>
-            <Suspense fallback={<LoadingSpinnerLabel />}>
-                <RegistrationForm signUpAction={signUpAction} />
-            </Suspense>
+            <RegistrationForm signUpAction={signUpAction} />
         </>
     );
 }

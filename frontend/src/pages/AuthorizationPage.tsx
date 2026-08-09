@@ -12,7 +12,9 @@ function AuthorizationPageContext() {
                     or
                     <Link className="btn mr-1.5 ml-1.5" to="signup">Sign up</Link>
                 </samp>
-                <Outlet />
+                <Suspense fallback={<LoadingSpinnerLabel />}>
+                    <Outlet />
+                </Suspense>
             </div>
         </>
     )
@@ -22,11 +24,9 @@ export function AuthorizationPage() {
     const userContext = useContext(UserContext);
 
     return <>
-        <Suspense fallback={<LoadingSpinnerLabel />}>
-            {userContext.user
-                ? <Navigate to="/" />
-                : <AuthorizationPageContext />
-            }
-        </Suspense>
+        {userContext.user
+            ? <Navigate to="/" />
+            : <AuthorizationPageContext />
+        }
     </>
 }

@@ -1,6 +1,5 @@
 import { LogInForm } from "../components/LogInForm";
-import { Suspense, useContext } from "react";
-import { LoadingSpinnerLabel } from "../components/Loading";
+import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { getUser } from "../userApi";
 
@@ -13,9 +12,7 @@ export function LogInPage() {
 
     return (
         <>
-            <Suspense fallback={<LoadingSpinnerLabel />}>
-                <LogInForm logInAction={logInAction} />
-            </Suspense>
+            <LogInForm logInAction={logInAction} />
         </>
     );
 }

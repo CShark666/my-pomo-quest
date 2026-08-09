@@ -1,7 +1,6 @@
-import { Suspense, useContext } from "react";
+import { useContext } from "react";
 import { Navigate } from "react-router";
 import { UserProfile } from "../components/UserProfile"
-import { LoadingSpinnerLabel } from "../components/Loading";
 import type { ClientUser } from '../types/types';
 import { UserContext } from "../contexts/UserContext";
 
@@ -32,9 +31,7 @@ export function UserPage() {
 
     return (
         <>
-            <Suspense fallback={<LoadingSpinnerLabel />}>
-                <UserPageContext user={initialUser.user} setUser={initialUser.setUser} />
-            </Suspense>
+            <UserPageContext user={initialUser.user} setUser={initialUser.setUser} />
         </>
     )
 }

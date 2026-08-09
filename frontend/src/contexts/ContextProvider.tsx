@@ -3,12 +3,11 @@ import { UserContext } from "./UserContext";
 import type { ClientUser } from "../types/types";
 import { getUser } from "../userApi";
 import { LoadingSpinnerLabel } from "../components/Loading";
+import { QuestContextProvider } from "./QuestContextProvider";
 
 export function ContextProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<ClientUser | null>(null);
     const [isUserReady, setIsUserReady] = useState<boolean>(false);
-
-
 
     useEffect(() => {
         getUser()
@@ -17,8 +16,12 @@ export function ContextProvider({ children }: { children: ReactNode }) {
     }, [])
 
     return (
-        isUserReady
-            ? <UserContext.Provider value={{ user, setUser }}> {children} </UserContext.Provider>
-            : <LoadingSpinnerLabel />
+        !isUserReady
+            ? <LoadingSpinnerLabel />
+            : <UserContext.Provider value={{ user, setUser }}>
+                <QuestContextProvider>
+                    {children}
+                </QuestContextProvider>
+            </UserContext.Provider>
     )
 }

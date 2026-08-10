@@ -1,4 +1,5 @@
 import { delay } from "./api";
+import type { FormErrors } from "./types/FormTypes";
 import type {
     UserData,
     ClientUser,
@@ -44,16 +45,18 @@ export async function registerUser(request: UserRegistrationRequest): Promise<vo
     setCurrentUserId(randomId);
 }
 
-export async function loginUser(request: UserLoginRequest): Promise<boolean | null> {
+export async function loginUser(request: UserLoginRequest): Promise<FormErrors> {
     await delay();
 
     const userCredential = getUserCredential(request.login);
-    if (!userCredential) return null;
 
-    if (request.password !== userCredential.password) return null;
+    const response: FormErrors = validateUserLoginRequest(request, userCredential!);
 
-    setCurrentUserId(userCredential.id);
-    return true;
+    if (Object.keys(response).length === 0) {
+        setCurrentUserId(userCredential!.id);
+    }
+
+    return response;
 }
 
 export async function logOutUser() {
@@ -89,4 +92,17 @@ function getUserCredential(login: string): UserCredential | null {
     if (!data) return null;
 
     return JSON.parse(data) as UserCredential;
+}
+
+function validateUserLoginRequest(request: UserLoginRequest, userCredential: UserCredential): FormErrors {
+    const errors: FormErrors = {};
+
+    if (!userCredential) {
+        errors.login = "Wrong login!";
+        return errors;
+    }
+
+    if (request.password !== userCredential.password) errors.password = "Wrong password";
+
+    return errors;
 }

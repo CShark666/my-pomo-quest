@@ -1,21 +1,21 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { registerUser } from "../userApi";
-import type { FormErrors, FormValues } from "../types/FormTypes";
+import type { FormErrors, RegistrationFormValues } from "../types/FormTypes";
 import { validateRegistration } from "../util/validation";
 
 type RegistrationFormProps = {
   signUpAction: () => void
 }
 
-const initialValues: FormValues = {
+const initialValues: RegistrationFormValues = {
   login: "",
   password: ""
 };
 
 export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
-  const [values, setValues] = useState<FormValues>(initialValues);
+  const [values, setValues] = useState<RegistrationFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Partial<Record<keyof FormValues, boolean>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof RegistrationFormValues, boolean>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
@@ -26,7 +26,7 @@ export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
     setValues(newValues);
 
 
-    if (touched[name as keyof FormValues]) {
+    if (touched[name as keyof RegistrationFormValues]) {
       setErrors(validateRegistration(newValues));
     }
   };

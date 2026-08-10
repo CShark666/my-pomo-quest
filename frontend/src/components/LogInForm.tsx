@@ -1,26 +1,38 @@
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { loginUser } from "../userApi";
-import { LoadingSpinnerLabel } from "./Loading";
+import type { FormErrors, RegistrationFormValues } from "../types/FormTypes";
 
 type LogInFormProps = {
     logInAction: () => void
 }
 
+const initialValues: RegistrationFormValues = {
+    login: "",
+    password: ""
+};
+
 export function LogInForm({ logInAction }: LogInFormProps) {
     const [showPassword, setShowPassword] = useState(false)
-    const [login, setLogin] = useState('');
-    const [password, setPassword] = useState('');
+    const [values, setValues] = useState(initialValues);
+    const [errors, setErrors] = useState<FormErrors>({});
     const [isPending, startTransition] = useTransition();
 
-    const handleLogIn = () => startTransition(async () => {
-        const response = await loginUser({
-            login,
-            password
-        })
-        setLogin("")
-        setPassword("")
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const newValues = { ...values, [name]: value };
+        setValues(newValues);
+    };
 
-        if (response) {
+    const handleSubmit = (e: FormEvent) => startTransition(async () => {
+        e.preventDefault();
+
+        const response = await loginUser({
+            login: values.login,
+            password: values.password
+        })
+        setErrors(response);
+
+        if (Object.keys(response).length === 0) {
             logInAction();
         };
     })
@@ -29,44 +41,59 @@ export function LogInForm({ logInAction }: LogInFormProps) {
         <>
             <div className="flex-col justify-center fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 gap-3">
 
-                <h1>LogIn</h1>
+                <h1 className="text-3xl font-bold">Log In</h1>
 
-                <div className="grid gap-1">
-                    {/* Name Input */}
-                    <input
-                        className="input input-primary"
-                        type="text"
-                        placeholder="Name"
-                        value={login}
-                        onChange={(e) => { setLogin(e.target.value) }}
-                        disabled={isPending}
-                        required />
-                    {/* Name Input */}
-                    <input
-                        className="input input-primary"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => { setPassword(e.target.value) }}
-                        disabled={isPending}
-                        required />
+                <form onSubmit={handleSubmit} noValidate>
 
-                    <span>
-                        <input type="checkbox" className="checkbox"
-                            onChange={(e) =>
-                                setShowPassword(e.target.checked)
-                            } /> Show password
-                    </span>
-                </div>
+                    {/*login*/}
+                    <div className="grid gap-1">
+                        <label htmlFor="login">Login</label>
+                        <input
+                            className="input input-primary"
+                            id="login"
+                            name="login"
+                            type="text"
+                            value={values.login}
+                            onChange={handleChange}
+                            disabled={isPending}
+                        />
+                        {errors.login && <span style={{ color: "red" }}>{errors.login}</span>}
+                    </div>
 
-                <div>
-                    <button className="btn btn-primary" onClick={handleLogIn} disabled={isPending}>
-                        Log In
-                    </button>
-                </div>
-                <div>
-                    {isPending && <LoadingSpinnerLabel />}
-                </div>
+                    {/*password*/}
+                    <div className="grid gap-1">
+
+                        <div>
+                            <label htmlFor="password">Password</label>
+                            <input
+                                className="input input-primary"
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                value={values.password}
+                                onChange={handleChange}
+                                disabled={isPending}
+                            />
+                            {errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
+                        </div>
+
+                        <span>
+                            <input type="checkbox" className="checkbox"
+                                onChange={(e) =>
+                                    setShowPassword(e.target.checked)
+                                }
+                            /> Show password
+                        </span>
+
+                    </div>
+
+                    <div>
+                        <button className="btn btn-primary mt-2.5" type="submit" disabled={isPending}>
+                            {isPending ? "Authorization..." : "Log in"}
+                        </button>
+                    </div>
+
+                </form>
             </div>
         </>
     );

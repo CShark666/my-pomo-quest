@@ -1,6 +1,6 @@
-import type { FormErrors, FormValues } from "../types/FormTypes";
+import type { FormErrors, RegistrationFormValues } from "../types/FormTypes";
 
-export function validateRegistration(values: FormValues): FormErrors {
+export function validateRegistration(values: RegistrationFormValues): FormErrors {
     const errors: FormErrors = {};
 
     if (!values.login.trim()) {

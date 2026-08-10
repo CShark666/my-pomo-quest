@@ -7,6 +7,7 @@ import type {
     UserCredential,
     UserLoginRequest
 } from './types/types';
+import { validateSignUpValues } from "./util/validation";
 
 
 export async function getUser(): Promise<ClientUser | null> {
@@ -24,25 +25,32 @@ export async function getUser(): Promise<ClientUser | null> {
     }
 }
 
-export async function signUpUser(request: UserRegistrationRequest): Promise<void> {
+export async function signUpUser(request: UserRegistrationRequest): Promise<FormErrors> {
     await delay();
 
-    const randomId = Math.floor(Math.random() * 9999999);
+    const validatedUser: FormErrors = validateSignUpValues(request);
 
-    saveUserData({
-        id: randomId,
-        login: request.login,
-        experience: 0,
-        completedQuests: 0
-    })
+    if (Object.keys(validatedUser).length === 0) {
 
-    saveUserCredential({
-        login: request.login,
-        password: request.password,
-        id: randomId
-    });
+        const randomId = Math.floor(Math.random() * 9999999);
 
-    setCurrentUserId(randomId);
+        saveUserData({
+            id: randomId,
+            login: request.login,
+            experience: 0,
+            completedQuests: 0
+        })
+
+        saveUserCredential({
+            login: request.login,
+            password: request.password,
+            id: randomId
+        });
+
+        setCurrentUserId(randomId);
+    }
+
+    return validatedUser
 }
 
 export async function loginUser(request: UserLoginRequest): Promise<FormErrors> {

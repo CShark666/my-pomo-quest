@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { signUpUser } from "../userApi";
 import type { FormErrors, SignUpFormValues } from "../types/FormTypes";
 import { validateSignUpValues } from "../util/validation";
@@ -16,8 +16,8 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
   const [values, setValues] = useState<SignUpFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof SignUpFormValues, boolean>>>({});
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +37,7 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
     setErrors(validateSignUpValues(values));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => startTransition(async () => {
     e.preventDefault();
 
     const validationErrors = validateSignUpValues(values);
@@ -48,21 +48,20 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      await signUpUser({
-        login: values.login,
-        password: values.password
-      });
+    const responseErrors = await signUpUser({
+      login: values.login,
+      password: values.password
+    });
 
-      setSubmitted(true);
-      setValues(initialValues);
-      setTouched({});
-    } finally {
-      setSubmitting(false);
+    setSubmitted(true);
+    setValues(initialValues);
+    setTouched({});
+
+    if (Object.keys(responseErrors).length === 0) {
       signUpAction();
     }
-  };
+
+  });
 
   if (submitted) {
     return <p>Registration was successful!</p>;
@@ -87,7 +86,7 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
               value={values.login}
               onChange={handleChange}
               onBlur={handleBlur}
-              disabled={submitting}
+              disabled={isPending}
             />
             {touched.login && errors.login && <span style={{ color: "red" }}>{errors.login}</span>}
           </div>
@@ -105,7 +104,7 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                disabled={submitting}
+                disabled={isPending}
               />
               {touched.password && errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
             </div>
@@ -121,8 +120,8 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
           </div>
 
           <div>
-            <button className="btn btn-primary mt-2.5" type="submit" disabled={submitting}>
-              {submitting ? "Registration..." : "Sign Up"}
+            <button className="btn btn-primary mt-2.5" type="submit" disabled={isPending}>
+              {isPending ? "Registration..." : "Sign Up"}
             </button>
           </div>
 

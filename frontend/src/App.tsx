@@ -8,6 +8,7 @@ import { UserPage } from "./pages/UserPage.tsx";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
 import { ContextProvider } from "./contexts/ContextProvider.tsx";
+import { WelcomePage } from "./pages/WelcomePage.tsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
 
           <Route path="/" element={<HomePage />} >
+            <Route path="/" element={<WelcomePage />} />
             <Route path="quest" element={<QuestPage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="*" element={<NotFoundPage />} />

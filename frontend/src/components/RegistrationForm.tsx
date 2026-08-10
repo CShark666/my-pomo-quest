@@ -1,21 +1,21 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { registerUser } from "../userApi";
-import type { FormErrors, RegistrationFormValues } from "../types/FormTypes";
-import { validateRegistration } from "../util/validation";
+import { signUpUser } from "../userApi";
+import type { FormErrors, SignUpFormValues } from "../types/FormTypes";
+import { validateSignUpValues } from "../util/validation";
 
-type RegistrationFormProps = {
+type SignUpFormProps = {
   signUpAction: () => void
 }
 
-const initialValues: RegistrationFormValues = {
+const initialValues: SignUpFormValues = {
   login: "",
   password: ""
 };
 
-export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
-  const [values, setValues] = useState<RegistrationFormValues>(initialValues);
+export function SignUpForm({ signUpAction }: SignUpFormProps) {
+  const [values, setValues] = useState<SignUpFormValues>(initialValues);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Partial<Record<keyof RegistrationFormValues, boolean>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof SignUpFormValues, boolean>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
@@ -26,21 +26,21 @@ export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
     setValues(newValues);
 
 
-    if (touched[name as keyof RegistrationFormValues]) {
-      setErrors(validateRegistration(newValues));
+    if (touched[name as keyof SignUpFormValues]) {
+      setErrors(validateSignUpValues(newValues));
     }
   };
 
   const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
     const { name } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
-    setErrors(validateRegistration(values));
+    setErrors(validateSignUpValues(values));
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateRegistration(values);
+    const validationErrors = validateSignUpValues(values);
     setErrors(validationErrors);
     setTouched({ login: true, password: true });
 
@@ -50,7 +50,7 @@ export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
 
     setSubmitting(true);
     try {
-      await registerUser({
+      await signUpUser({
         login: values.login,
         password: values.password
       });
@@ -72,7 +72,7 @@ export function RegistrationForm({ signUpAction }: RegistrationFormProps) {
     <>
       <div className="flex-col justify-center fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 gap-3">
 
-        <h1 className="text-3xl font-bold">SignUp</h1>
+        <h1 className="text-3xl font-bold">Sign Up</h1>
 
         <form onSubmit={handleSubmit} noValidate>
 

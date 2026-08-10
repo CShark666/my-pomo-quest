@@ -1,4 +1,4 @@
-export interface RegistrationFormValues {
+export interface SignUpFormValues {
     login: string;
     password: string;
 }
@@ -8,4 +8,4 @@ export interface LogInFormValues {
 }
 
 export type FormErrors = Partial<
-    Record<keyof RegistrationFormValues, string> | Record<keyof LogInFormValues, string>>;
+    Record<keyof SignUpFormValues, string> | Record<keyof LogInFormValues, string>>;

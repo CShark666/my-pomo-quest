@@ -1,12 +1,12 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { loginUser } from "../userApi";
-import type { FormErrors, RegistrationFormValues } from "../types/FormTypes";
+import type { FormErrors, SignUpFormValues } from "../types/FormTypes";
 
 type LogInFormProps = {
     logInAction: () => void
 }
 
-const initialValues: RegistrationFormValues = {
+const initialValues: SignUpFormValues = {
     login: "",
     password: ""
 };

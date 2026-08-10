@@ -24,7 +24,7 @@ export async function getUser(): Promise<ClientUser | null> {
     }
 }
 
-export async function registerUser(request: UserRegistrationRequest): Promise<void> {
+export async function signUpUser(request: UserRegistrationRequest): Promise<void> {
     await delay();
 
     const randomId = Math.floor(Math.random() * 9999999);

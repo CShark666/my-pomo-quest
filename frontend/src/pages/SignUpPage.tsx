@@ -1,4 +1,4 @@
-import { RegistrationForm } from "../components/RegistrationForm";
+import { SignUpForm } from "../components/RegistrationForm";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { getUser } from "../userApi";
@@ -12,7 +12,7 @@ export function SignUpPage() {
 
     return (
         <>
-            <RegistrationForm signUpAction={signUpAction} />
+            <SignUpForm signUpAction={signUpAction} />
         </>
     );
 }

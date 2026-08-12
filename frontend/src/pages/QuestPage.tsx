@@ -1,12 +1,13 @@
-import { Sidebar } from "./Sidebar.jsx";
 import { QuestItem } from "../components/QuestItem.tsx";
 import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
-import { LoadingSpinnerLabel } from "../components/Loading.tsx";
-import { Suspense, use, useEffect, useState, useTransition } from "react";
-import { type ClientQuest, skipTransitionToBreak, getQuest, skipBreak } from "../api.ts";
+import { useContext, useEffect, useTransition } from "react";
+import { skipTransitionToBreak, getQuest, skipBreak } from '../api.ts'
+import { QuestContext } from "../contexts/QuestContext.ts";
 
-function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest | null> }) {
-  const [quest, setQuest] = useState<ClientQuest | null>(use(initialQuest));
+function QuestPageContent() {
+  const questContext = useContext(QuestContext);
+  const quest = questContext.quest;
+  const setQuest = questContext.setQuest;
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest 
       );
       return () => clearInterval(id);
     }
-  }, [quest]);
+  }, [quest, setQuest]);
 
   const skipBreakAction = () => {
     startTransition(async () => {
@@ -33,24 +34,19 @@ function QuestPageContent({ initialQuest }: { initialQuest: Promise<ClientQuest 
 
   return (
     <div className="flex justify-center">
-      {quest ? (
-        <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
-      ) : (
-        <CreatingQuestForm setQuest={setQuest} />
-      )}
+      {quest
+        ? <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
+        : <CreatingQuestForm setQuest={setQuest} />
+      }
     </div>
   )
 }
 
 export function QuestPage() {
-  const initialQuest = getQuest();
 
   return (
     <>
-      <Sidebar />
-      <Suspense fallback={<LoadingSpinnerLabel />}>
-        <QuestPageContent initialQuest={initialQuest} />
-      </Suspense>
+      <QuestPageContent />
     </>
   );
 }

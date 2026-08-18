@@ -1,6 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using PomoQuestApi.Auth.Services;
+using PomoQuestApi.data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=pqdb.db"));
+
+builder.Services.AddScoped<PasswordService>();
+builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<SessionService>();
 
 var app = builder.Build();
 
@@ -10,5 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();

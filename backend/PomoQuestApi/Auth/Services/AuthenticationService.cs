@@ -15,11 +15,21 @@ namespace PomoQuestApi.Auth.Services
         public async Task RegisterAsync(UserRegisterRequest request)
         {
             var email = request.Email.Trim().ToLowerInvariant();
+
             if (!isEmailValid(email))
                 throw new ArgumentException("Invalid email.");
 
             if (await IsEmailUsedAsync(email))
                 throw new InvalidOperationException("Email is already used.");
+
+            if (request.Name.Length < 2)
+                throw new ArgumentException("Name must be at least 2 characters long.");
+
+            if (request.Password.Length < 8)
+                throw new ArgumentException("Password must be at least 8 characters long.");
+
+            if (request.Password != request.ConfirmPassword)
+                throw new ArgumentException("Passwords do not match.");
 
 
             var hashedPassword = _passwordService.HashPassword(request.Password);
@@ -31,8 +41,15 @@ namespace PomoQuestApi.Auth.Services
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
+            var profile = new Profile
+            {
+                Email = email,
+                Name = request.Name,
+                User = user
+            };
 
             await _context.Users.AddAsync(user);
+            await _context.Profiles.AddAsync(profile);
             await _context.SaveChangesAsync();
         }
 
@@ -95,12 +112,13 @@ namespace PomoQuestApi.Auth.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User> GetUserAsync(string token)
+        public async Task<Profile> GetUserAsync(string token)
         {
             var hash = _sessionService.HashToken(token);
 
             var session = await _context.Sessions
                 .Include(s => s.User)
+                .Include(s => s.User.Profile)
                 .SingleOrDefaultAsync(s => s.TokenHash == hash);
 
             if (session == null)
@@ -115,7 +133,7 @@ namespace PomoQuestApi.Auth.Services
             if (!session.User.IsActive)
                 throw new UnauthorizedAccessException("User is inactive.");
 
-            return session.User;
+            return session.User.Profile;
         }
         private bool isEmailValid(string email)
         {

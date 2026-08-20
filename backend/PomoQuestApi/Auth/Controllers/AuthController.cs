@@ -110,11 +110,11 @@ namespace PomoQuestApi.Auth.Controllers
             {
                 var user = await _authenticationService.GetUserAsync(token);
 
-                return Ok(new UserResponse
+                return Ok(new UserProfileResponse
                 {
                     Id = user.Id,
                     Email = user.Email,
-                    CreatedAt = user.CreatedAt
+                    Name = user.Name,
                 });
             }
             catch (UnauthorizedAccessException)

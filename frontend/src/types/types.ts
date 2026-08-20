@@ -45,12 +45,14 @@ export type ClientQuest = DbQUest & {
 // User
 
 export type UserRegistrationRequest = {
-    login: string,
-    password: string
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string
 }
 
 export type UserLoginRequest = {
-    login: string,
+    email: string,
     password: string
 }
 
@@ -62,7 +64,7 @@ export type UserCredential = {
 
 export type UserData = {
     id: number,
-    login: string,
+    name: string,
     experience: number,
     completedQuests: number
 }

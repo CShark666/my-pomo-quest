@@ -11,4 +11,13 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss()
   ],
+  server: {
+    proxy: {
+      '/auth': {
+        target: 'http://localhost:5059',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  }
 })

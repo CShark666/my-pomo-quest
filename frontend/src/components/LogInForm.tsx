@@ -1,20 +1,20 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { loginUser } from "../userApi";
-import type { FormErrors, SignUpFormValues } from "../types/FormTypes";
+import type { LogInFormValues } from "../types/FormTypes";
 
 type LogInFormProps = {
     logInAction: () => void
 }
 
-const initialValues: SignUpFormValues = {
-    login: "",
+const initialValues: LogInFormValues = {
+    email: "",
     password: ""
 };
 
 export function LogInForm({ logInAction }: LogInFormProps) {
     const [showPassword, setShowPassword] = useState(false)
     const [values, setValues] = useState(initialValues);
-    const [errors, setErrors] = useState<FormErrors>({});
+    const [errors, setErrors] = useState<string | null>(null);
     const [isPending, startTransition] = useTransition();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -23,19 +23,23 @@ export function LogInForm({ logInAction }: LogInFormProps) {
         setValues(newValues);
     };
 
-    const handleSubmit = (e: FormEvent) => startTransition(async () => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        const response = await loginUser({
-            login: values.login,
-            password: values.password
-        })
-        setErrors(response);
+        startTransition(async () => {
+            try {
+                await loginUser({
+                    email: values.email,
+                    password: values.password
+                })
+                setErrors(null);
+                logInAction();
 
-        if (Object.keys(response).length === 0) {
-            logInAction();
-        };
-    })
+            } catch (error) {
+                setErrors(error instanceof Error ? error.message : "Unknown error")
+            }
+        })
+    }
 
     return (
         <>
@@ -45,19 +49,19 @@ export function LogInForm({ logInAction }: LogInFormProps) {
 
                 <form onSubmit={handleSubmit} noValidate>
 
-                    {/*login*/}
+                    {/*email*/}
                     <div className="grid gap-1">
-                        <label htmlFor="login">Login</label>
+                        <label htmlFor="email">Email</label>
                         <input
                             className="input input-primary"
-                            id="login"
-                            name="login"
+                            id="email"
+                            name="email"
                             type="text"
-                            value={values.login}
+                            value={values.email}
                             onChange={handleChange}
                             disabled={isPending}
                         />
-                        {errors.login && <span style={{ color: "red" }}>{errors.login}</span>}
+                        {errors !== null && <span style={{ color: "red" }}>{errors}</span>}
                     </div>
 
                     {/*password*/}
@@ -74,7 +78,7 @@ export function LogInForm({ logInAction }: LogInFormProps) {
                                 onChange={handleChange}
                                 disabled={isPending}
                             />
-                            {errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
+                            {errors !== null && <span style={{ color: "red" }}>{errors}</span>}
                         </div>
 
                         <span>
@@ -87,7 +91,7 @@ export function LogInForm({ logInAction }: LogInFormProps) {
 
                     </div>
 
-                    <div>
+                    <div >
                         <button className="btn btn-primary mt-2.5" type="submit" disabled={isPending}>
                             {isPending ? "Authorization..." : "Log in"}
                         </button>

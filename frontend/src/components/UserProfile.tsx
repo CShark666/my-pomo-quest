@@ -26,7 +26,7 @@ export function UserProfile({ user, logOutAction }: UserProfileProps) {
                     </div>
 
                     <div className="flex flex-2 justify-between">
-                        <p>{user.login}</p>
+                        <p>{user.name}</p>
                         <p>{user.level}</p>
                     </div>
 

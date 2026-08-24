@@ -40,13 +40,7 @@ namespace PomoQuestApi.data
         {
             entity.HasKey(s => s.Id);
 
-            entity.Property(s => s.TokenHash)
-                .IsRequired();
-
             entity.Property(s => s.CreatedAt)
-                .IsRequired();
-
-            entity.Property(s => s.ExpiresAt)
                 .IsRequired();
 
             entity.HasIndex(s => s.UserId);

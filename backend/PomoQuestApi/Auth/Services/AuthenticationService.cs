@@ -6,11 +6,10 @@ using PomoQuestApi.data;
 
 namespace PomoQuestApi.Auth.Services
 {
-    public class AuthenticationService(AppDbContext context, PasswordService passwordService, SessionService sessionService)
+    public class AuthenticationService(AppDbContext context, PasswordService passwordService)
     {
         private readonly AppDbContext _context = context;
         private readonly PasswordService _passwordService = passwordService;
-        private readonly SessionService _sessionService = sessionService;
 
         public async Task RegisterAsync(UserRegisterRequest request)
         {
@@ -53,7 +52,7 @@ namespace PomoQuestApi.Auth.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<string> LoginAsync(UserLoginRequest request)
+        public async Task<Guid> LoginAsync(UserLoginRequest request)
         {
             var email = request.Email.Trim().ToLowerInvariant();
 
@@ -71,16 +70,13 @@ namespace PomoQuestApi.Auth.Services
                 throw new ArgumentException("Invalid email or password.");
             }
 
-            var token = _sessionService.GenerateToken();
-            var tokenHash = _sessionService.HashToken(token);
-
             var now = DateTime.UtcNow;
+            var id = Guid.NewGuid();
 
             var session = new Session
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 UserId = user.Id,
-                TokenHash = tokenHash,
                 CreatedAt = now,
                 ExpiresAt = now.AddDays(30)
             };
@@ -88,47 +84,37 @@ namespace PomoQuestApi.Auth.Services
             await _context.Sessions.AddAsync(session);
             await _context.SaveChangesAsync();
 
-            return token;
+            return id;
         }
 
-        public async Task LogoutAsync(string token)
+        public async Task LogoutAsync(Guid sessionId)
         {
-            var hash = _sessionService.HashToken(token);
-
-            var session = await _context.Sessions
-                .SingleOrDefaultAsync(s => s.TokenHash == hash);
+            var session = await _context.Sessions.FindAsync(sessionId);
 
             if (session == null)
                 throw new UnauthorizedAccessException("Invalid session.");
 
-            if (session.RevokedAt.HasValue)
-                return;
-
-            if (session.ExpiresAt <= DateTime.UtcNow)
-                return;
-
-            session.RevokedAt = DateTime.UtcNow;
-
+            _context.Sessions.Remove(session);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Profile> GetUserAsync(string token)
+        public async Task<Profile> GetUserAsync(Guid id)
         {
-            var hash = _sessionService.HashToken(token);
-
             var session = await _context.Sessions
                 .Include(s => s.User)
-                .Include(s => s.User.Profile)
-                .SingleOrDefaultAsync(s => s.TokenHash == hash);
+                    .ThenInclude(u => u.Profile)
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (session == null)
                 throw new UnauthorizedAccessException("Invalid session.");
 
-            if (session.RevokedAt.HasValue)
-                throw new UnauthorizedAccessException("Session revoked.");
-
             if (session.ExpiresAt <= DateTime.UtcNow)
+            {
+                _context.Remove(session);
+                await _context.SaveChangesAsync();
+
                 throw new UnauthorizedAccessException("Session expired.");
+            }
 
             if (!session.User.IsActive)
                 throw new UnauthorizedAccessException("User is inactive.");

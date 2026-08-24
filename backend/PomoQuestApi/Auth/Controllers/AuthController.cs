@@ -49,7 +49,7 @@ namespace PomoQuestApi.Auth.Controllers
 
                 Response.Cookies.Append(
                     "session_token",
-                    token,
+                    $"{token}",
                     new CookieOptions
                     {
                         HttpOnly = true,
@@ -84,7 +84,12 @@ namespace PomoQuestApi.Auth.Controllers
         {
             if (Request.Cookies.TryGetValue("session_token", out var token))
             {
-                await _authenticationService.LogoutAsync(token);
+                if (!Guid.TryParse(token, out var sessionId) || sessionId == Guid.Empty)
+                {
+                    return Unauthorized(new { error = "Invalid session token." });
+                }
+
+                await _authenticationService.LogoutAsync(sessionId);
             }
 
             Response.Cookies.Delete("session_token");
@@ -108,7 +113,10 @@ namespace PomoQuestApi.Auth.Controllers
 
             try
             {
-                var user = await _authenticationService.GetUserAsync(token);
+                if (!Guid.TryParse(token, out var sessionId) || sessionId == Guid.Empty)
+                    return Unauthorized(new { error = "Invalid session token." });
+
+                var user = await _authenticationService.GetUserAsync(sessionId);
 
                 return Ok(new UserProfileResponse
                 {

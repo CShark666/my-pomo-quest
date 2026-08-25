@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Services;
@@ -9,7 +10,7 @@ namespace PomoQuestApi.Auth.Controllers
     [Route("auth")]
     public class AuthController(AuthenticationService authenticationService) : ControllerBase
     {
-        private readonly AuthenticationService _authenticationService = authenticationService;
+        private readonly AuthenticationService _authService = authenticationService;
 
 
         [HttpPost("register")]
@@ -17,7 +18,7 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                await _authenticationService.RegisterAsync(request);
+                await _authService.RegisterAsync(request);
 
                 return Ok(new
                 {
@@ -45,10 +46,10 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                var token = await _authenticationService.LoginAsync(request);
+                var token = await _authService.LoginAsync(request);
 
                 Response.Cookies.Append(
-                    "session_token",
+                    "session_id",
                     $"{token}",
                     new CookieOptions
                     {
@@ -79,20 +80,15 @@ namespace PomoQuestApi.Auth.Controllers
             }
         }
 
+        [RequiresAuth]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            if (Request.Cookies.TryGetValue("session_token", out var token))
-            {
-                if (!Guid.TryParse(token, out var sessionId) || sessionId == Guid.Empty)
-                {
-                    return Unauthorized(new { error = "Invalid session token." });
-                }
+            var sessionId = Guid.Parse(User.FindFirstValue("session_id")!);
 
-                await _authenticationService.LogoutAsync(sessionId);
-            }
+            await _authService.LogoutAsync(sessionId);
 
-            Response.Cookies.Delete("session_token");
+            Response.Cookies.Delete("session_id");
 
             return Ok(new
             {
@@ -100,38 +96,21 @@ namespace PomoQuestApi.Auth.Controllers
             });
         }
 
+        [RequiresAuth]
         [HttpGet("me")]
         public async Task<IActionResult> GetUser()
         {
-            if (!Request.Cookies.TryGetValue("session_token", out var token))
-            {
-                return Unauthorized(new
-                {
-                    error = "Authentication required."
-                });
-            }
+            // var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var profileId = long.Parse(User.FindFirstValue("profile_id")!);
+            var email = User.FindFirstValue(ClaimTypes.Email)!;
+            var name = User.FindFirstValue(ClaimTypes.Name)!;
 
-            try
+            return Ok(new UserProfileResponse
             {
-                if (!Guid.TryParse(token, out var sessionId) || sessionId == Guid.Empty)
-                    return Unauthorized(new { error = "Invalid session token." });
-
-                var user = await _authenticationService.GetUserAsync(sessionId);
-
-                return Ok(new UserProfileResponse
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    Name = user.Name,
-                });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized(new
-                {
-                    error = "Invalid or expired session."
-                });
-            }
+                Id = profileId,
+                Email = email,
+                Name = name
+            });
         }
     }
 }

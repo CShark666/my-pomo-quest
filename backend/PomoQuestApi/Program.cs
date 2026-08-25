@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PomoQuestApi.Auth.Middleware;
 using PomoQuestApi.Auth.Services;
 using PomoQuestApi.data;
 
@@ -22,6 +23,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseMiddleware<AuthenticationMiddleware>();
+
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.MapControllers();
 

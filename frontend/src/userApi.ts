@@ -18,7 +18,6 @@ export async function getUser(): Promise<ClientUser | null> {
 }
 
 export async function signUpUser(request: UserRegistrationRequest): Promise<void> {
-
     await axios.post("/auth/register", {
         Name: request.name,
         Email: request.email,

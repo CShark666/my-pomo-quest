@@ -39,33 +39,42 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
     setErrors(validateSignUpValues(values));
   };
 
-  const handleSubmit = (e: FormEvent) => startTransition(async () => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateSignUpValues(values);
-    setErrors(validationErrors);
-    setTouched({ name: true, email: true, password: true, confirmPassword: true });
+    startTransition(async () => {
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
+      const validationErrors = validateSignUpValues(values);
+      setErrors(validationErrors);
+      setTouched({ name: true, email: true, password: true, confirmPassword: true });
 
-    const responseErrors = await signUpUser({
-      name: values.name,
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
+      if (Object.keys(validationErrors).length > 0) {
+        return;
+      }
+
+      try {
+        await signUpUser({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        });
+
+        setSubmitted(true);
+        setValues(initialValues);
+        setTouched({});
+        signUpAction();
+
+      } catch (error) {
+        setErrors(prev => ({
+          ...prev,
+          serverResponse: error instanceof Error ? error.message : "Unknown error"
+        }))
+      }
+
     });
+  }
 
-    setSubmitted(true);
-    setValues(initialValues);
-    setTouched({});
-
-    if (Object.keys(responseErrors).length === 0) {
-      signUpAction();
-    }
-
-  });
 
   if (submitted) {
     return <p>Registration was successful!</p>;

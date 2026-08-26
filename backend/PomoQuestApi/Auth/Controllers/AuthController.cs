@@ -68,14 +68,14 @@ namespace PomoQuestApi.Auth.Controllers
             {
                 return Unauthorized(new
                 {
-                    error = "Invalid email or password."
+                    message = "Invalid email or password."
                 });
             }
             catch (InvalidOperationException)
             {
                 return Unauthorized(new
                 {
-                    error = "Invalid email or password."
+                    message = "Invalid email or password."
                 });
             }
         }

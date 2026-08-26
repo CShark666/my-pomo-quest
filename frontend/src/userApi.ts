@@ -15,28 +15,12 @@ interface ApiErrorResponse {
 
 export async function getUser(): Promise<ClientUser | null> {
     try {
-        const response = await axios.get("/auth/me");
-        console.log("Success:", response.data);
+        const res = await axios.get("/auth/me");
+        console.log("Success:", res.data);
 
-        return { ...response.data, level: 1 }
-
-    } catch (err) {
-        if (axios.isAxiosError<ApiErrorResponse>(err)) {
-            if (err.response) {
-                if (err.response.status === 401) {
-                    return null;
-                }
-
-                const message = err.response.data?.error ?? "Something went wrong";
-                throw new Error(message, { cause: err });
-            }
-
-            if (err.request) {
-                throw new Error("No connection to the server", { cause: err });
-            }
-        }
-
-        throw new Error("Unknown error", { cause: err });
+        return { ...res.data, level: 1 }
+    } catch {
+        return null;
     }
 }
 
@@ -47,8 +31,10 @@ export async function signUpUser(request: UserRegistrationRequest): Promise<Sign
 
         const url = "/auth/register";
         const payload = {
+            Name: request.name,
             Email: request.email,
-            Password: request.password
+            Password: request.password,
+            ConfirmPassword: request.confirmPassword,
         };
 
         try {
@@ -112,3 +98,21 @@ export async function logOutUser() {
         throw new Error("Unknown error", { cause: err });
     }
 }
+
+// Add a response interceptor
+axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            if (error.response.status === 401) {
+                return Promise.reject("You are not logged in. Please log in.")
+            }
+        }
+        if (error.response.data && error.response.data.error) {
+            return Promise.reject(error.response.data.error);
+        }
+        return Promise.reject(error.message);
+    }
+);

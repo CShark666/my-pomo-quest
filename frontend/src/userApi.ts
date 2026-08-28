@@ -1,14 +1,14 @@
-import axios from "axios";
 import type {
     ClientUser,
     UserRegistrationRequest,
     UserLoginRequest
 } from './types/types';
+import { apiClient } from "./apiClient";
 
 
 export async function getUser(): Promise<ClientUser | null> {
     try {
-        const res = await axios.get("/auth/me");
+        const res = await apiClient.get("/me");
         console.log("Success:", res.data);
 
         return { ...res.data, level: 1 }
@@ -18,7 +18,7 @@ export async function getUser(): Promise<ClientUser | null> {
 }
 
 export async function signUpUser(request: UserRegistrationRequest): Promise<void> {
-    await axios.post("/auth/register", {
+    await apiClient.post("/register", {
         Name: request.name,
         Email: request.email,
         Password: request.password,
@@ -27,26 +27,12 @@ export async function signUpUser(request: UserRegistrationRequest): Promise<void
 }
 
 export async function loginUser(request: UserLoginRequest): Promise<void> {
-    await axios.post("/auth/login", {
+    await apiClient.post("/login", {
         Email: request.email,
         Password: request.password
     });
 }
 
 export async function logOutUser() {
-    await axios.post("auth/logout");
+    await apiClient.post("/logout");
 }
-
-axios.interceptors.response.use(
-    (response) => {
-        console.log("Success:", response.data);
-        return response;
-    },
-    (err) => {
-        if (axios.isAxiosError(err)) {
-            const message = err.response?.data?.message || err.message || "Request error.";
-            throw new Error(message, { cause: err });
-        }
-        throw new Error("Unknown error.", { cause: err });
-    }
-);

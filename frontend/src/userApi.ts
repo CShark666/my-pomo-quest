@@ -8,8 +8,7 @@ import { apiClient } from "./apiClient";
 
 export async function getUser(): Promise<ClientUser | null> {
     try {
-        const res = await apiClient.get("/me");
-        console.log("Success:", res.data);
+        const res = await apiClient.get("/auth/me");
 
         return { ...res.data, level: 1 }
     } catch {
@@ -18,7 +17,7 @@ export async function getUser(): Promise<ClientUser | null> {
 }
 
 export async function signUpUser(request: UserRegistrationRequest): Promise<void> {
-    await apiClient.post("/register", {
+    await apiClient.post("/auth/register", {
         Name: request.name,
         Email: request.email,
         Password: request.password,
@@ -27,12 +26,12 @@ export async function signUpUser(request: UserRegistrationRequest): Promise<void
 }
 
 export async function loginUser(request: UserLoginRequest): Promise<void> {
-    await apiClient.post("/login", {
+    await apiClient.post("/auth/login", {
         Email: request.email,
         Password: request.password
     });
 }
 
 export async function logOutUser() {
-    await apiClient.post("/logout");
+    await apiClient.post("/auth/logout");
 }

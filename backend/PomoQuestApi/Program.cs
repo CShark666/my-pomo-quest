@@ -4,6 +4,22 @@ using PomoQuestApi.Auth.Services;
 using PomoQuestApi.data;
 
 var builder = WebApplication.CreateBuilder(args);
+var AllowFrontendOrigins = "AllowFrontendOrigins";
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(AllowFrontendOrigins, policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -24,6 +40,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors(AllowFrontendOrigins);
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 

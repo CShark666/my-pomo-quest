@@ -55,7 +55,7 @@ namespace PomoQuestApi.Auth.Controllers
                     {
                         HttpOnly = true,
                         Secure = false,
-                        SameSite = SameSiteMode.Strict,
+                        SameSite = SameSiteMode.Lax ,
                         Expires = DateTimeOffset.UtcNow.AddDays(30)
                     });
 

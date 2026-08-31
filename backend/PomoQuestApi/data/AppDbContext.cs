@@ -7,6 +7,7 @@ namespace PomoQuestApi.data
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<Profile> Profiles { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -39,13 +40,7 @@ namespace PomoQuestApi.data
         {
             entity.HasKey(s => s.Id);
 
-            entity.Property(s => s.TokenHash)
-                .IsRequired();
-
             entity.Property(s => s.CreatedAt)
-                .IsRequired();
-
-            entity.Property(s => s.ExpiresAt)
                 .IsRequired();
 
             entity.HasIndex(s => s.UserId);
@@ -55,6 +50,28 @@ namespace PomoQuestApi.data
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+            modelBuilder.Entity<Profile>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+
+                entity.Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+                entity.Property(p => p.Email)
+                .IsRequired();
+
+                entity.Property(p => p.Name)
+                .IsRequired();
+
+                entity.HasIndex(p => p.UserId).IsUnique();
+
+                entity.HasOne(p => p.User)
+                    .WithOne(u => u.Profile)
+                    .HasForeignKey<Profile>(p => p.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

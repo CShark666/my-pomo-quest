@@ -1,6 +1,6 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
 import { signUpUser } from "../userApi";
-import type { FormErrors, SignUpFormValues } from "../types/FormTypes";
+import type { SignupFormErrors, SignUpFormValues } from "../types/FormTypes";
 import { validateSignUpValues } from "../util/validation";
 
 type SignUpFormProps = {
@@ -8,13 +8,15 @@ type SignUpFormProps = {
 }
 
 const initialValues: SignUpFormValues = {
-  login: "",
-  password: ""
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: ""
 };
 
 export function SignUpForm({ signUpAction }: SignUpFormProps) {
   const [values, setValues] = useState<SignUpFormValues>(initialValues);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<SignupFormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<keyof SignUpFormValues, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -37,31 +39,42 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
     setErrors(validateSignUpValues(values));
   };
 
-  const handleSubmit = (e: FormEvent) => startTransition(async () => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    const validationErrors = validateSignUpValues(values);
-    setErrors(validationErrors);
-    setTouched({ login: true, password: true });
+    startTransition(async () => {
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
+      const validationErrors = validateSignUpValues(values);
+      setErrors(validationErrors);
+      setTouched({ name: true, email: true, password: true, confirmPassword: true });
 
-    const responseErrors = await signUpUser({
-      login: values.login,
-      password: values.password
+      if (Object.keys(validationErrors).length > 0) {
+        return;
+      }
+
+      try {
+        await signUpUser({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        });
+
+        setSubmitted(true);
+        setValues(initialValues);
+        setTouched({});
+        signUpAction();
+
+      } catch (error) {
+        setErrors(prev => ({
+          ...prev,
+          serverResponse: error instanceof Error ? error.message : "Unknown error"
+        }))
+      }
+
     });
+  }
 
-    setSubmitted(true);
-    setValues(initialValues);
-    setTouched({});
-
-    if (Object.keys(responseErrors).length === 0) {
-      signUpAction();
-    }
-
-  });
 
   if (submitted) {
     return <p>Registration was successful!</p>;
@@ -75,20 +88,36 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
 
         <form onSubmit={handleSubmit} noValidate>
 
-          {/*login*/}
+          {/*name*/}
           <div className="grid gap-1">
-            <label htmlFor="login">Login</label>
+            <label htmlFor="name">Name</label>
             <input
               className="input input-primary"
-              id="login"
-              name="login"
+              id="name"
+              name="name"
               type="text"
-              value={values.login}
+              value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={isPending}
             />
-            {touched.login && errors.login && <span style={{ color: "red" }}>{errors.login}</span>}
+            {touched.name && errors.name && <span style={{ color: "red" }}>{errors.name}</span>}
+          </div>
+
+          {/*email*/}
+          <div className="grid gap-1">
+            <label htmlFor="email">Email</label>
+            <input
+              className="input input-primary"
+              id="email"
+              name="email"
+              type="email"
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              disabled={isPending}
+            />
+            {touched.email && errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
           </div>
 
           {/*password*/}
@@ -107,6 +136,20 @@ export function SignUpForm({ signUpAction }: SignUpFormProps) {
                 disabled={isPending}
               />
               {touched.password && errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
+            </div>
+            <div>
+              <label htmlFor="confirmPassword">ConfirmPassword</label>
+              <input
+                className="input input-primary"
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                value={values.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                disabled={isPending}
+              />
+              {touched.confirmPassword && errors.confirmPassword && <span style={{ color: "red" }}>{errors.confirmPassword}</span>}
             </div>
 
             <span>

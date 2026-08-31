@@ -8,7 +8,9 @@ Content-Type: application/json
 
 {
   "email": "test@example.com",
-  "password": "password123"
+  "name": "test",
+  "password": "password123",
+  "confirmPassword": "password123"
 }
 
 ### POST login

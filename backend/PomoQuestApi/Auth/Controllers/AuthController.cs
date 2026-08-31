@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Services;
@@ -9,7 +10,7 @@ namespace PomoQuestApi.Auth.Controllers
     [Route("auth")]
     public class AuthController(AuthenticationService authenticationService) : ControllerBase
     {
-        private readonly AuthenticationService _authenticationService = authenticationService;
+        private readonly AuthenticationService _authService = authenticationService;
 
 
         [HttpPost("register")]
@@ -17,7 +18,7 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                await _authenticationService.RegisterAsync(request);
+                await _authService.RegisterAsync(request);
 
                 return Ok(new
                 {
@@ -45,16 +46,16 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                var token = await _authenticationService.LoginAsync(request);
+                var token = await _authService.LoginAsync(request);
 
                 Response.Cookies.Append(
-                    "session_token",
-                    token,
+                    "session_id",
+                    $"{token}",
                     new CookieOptions
                     {
                         HttpOnly = true,
                         Secure = false,
-                        SameSite = SameSiteMode.Strict,
+                        SameSite = SameSiteMode.Lax ,
                         Expires = DateTimeOffset.UtcNow.AddDays(30)
                     });
 
@@ -67,27 +68,27 @@ namespace PomoQuestApi.Auth.Controllers
             {
                 return Unauthorized(new
                 {
-                    error = "Invalid email or password."
+                    message = "Invalid email or password."
                 });
             }
             catch (InvalidOperationException)
             {
                 return Unauthorized(new
                 {
-                    error = "Invalid email or password."
+                    message = "Invalid email or password."
                 });
             }
         }
 
+        [RequiresAuth]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            if (Request.Cookies.TryGetValue("session_token", out var token))
-            {
-                await _authenticationService.LogoutAsync(token);
-            }
+            var sessionId = Guid.Parse(User.FindFirstValue("session_id")!);
 
-            Response.Cookies.Delete("session_token");
+            await _authService.LogoutAsync(sessionId);
+
+            Response.Cookies.Delete("session_id");
 
             return Ok(new
             {
@@ -95,35 +96,21 @@ namespace PomoQuestApi.Auth.Controllers
             });
         }
 
+        [RequiresAuth]
         [HttpGet("me")]
         public async Task<IActionResult> GetUser()
         {
-            if (!Request.Cookies.TryGetValue("session_token", out var token))
-            {
-                return Unauthorized(new
-                {
-                    error = "Authentication required."
-                });
-            }
+            // var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var profileId = long.Parse(User.FindFirstValue("profile_id")!);
+            var email = User.FindFirstValue(ClaimTypes.Email)!;
+            var name = User.FindFirstValue(ClaimTypes.Name)!;
 
-            try
+            return Ok(new UserProfileResponse
             {
-                var user = await _authenticationService.GetUserAsync(token);
-
-                return Ok(new UserResponse
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    CreatedAt = user.CreatedAt
-                });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized(new
-                {
-                    error = "Invalid or expired session."
-                });
-            }
+                Id = profileId,
+                Email = email,
+                Name = name
+            });
         }
     }
 }

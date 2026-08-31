@@ -6,20 +6,29 @@ using PomoQuestApi.data;
 
 namespace PomoQuestApi.Auth.Services
 {
-    public class AuthenticationService(AppDbContext context, PasswordService passwordService, SessionService sessionService)
+    public class AuthenticationService(AppDbContext context, PasswordService passwordService)
     {
         private readonly AppDbContext _context = context;
         private readonly PasswordService _passwordService = passwordService;
-        private readonly SessionService _sessionService = sessionService;
 
         public async Task RegisterAsync(UserRegisterRequest request)
         {
             var email = request.Email.Trim().ToLowerInvariant();
+
             if (!isEmailValid(email))
                 throw new ArgumentException("Invalid email.");
 
             if (await IsEmailUsedAsync(email))
                 throw new InvalidOperationException("Email is already used.");
+
+            if (request.Name.Length < 2)
+                throw new ArgumentException("Name must be at least 2 characters long.");
+
+            if (request.Password.Length < 8)
+                throw new ArgumentException("Password must be at least 8 characters long.");
+
+            if (request.Password != request.ConfirmPassword)
+                throw new ArgumentException("Passwords do not match.");
 
 
             var hashedPassword = _passwordService.HashPassword(request.Password);
@@ -31,12 +40,19 @@ namespace PomoQuestApi.Auth.Services
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
+            var profile = new Profile
+            {
+                Email = email,
+                Name = request.Name,
+                User = user
+            };
 
             await _context.Users.AddAsync(user);
+            await _context.Profiles.AddAsync(profile);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<string> LoginAsync(UserLoginRequest request)
+        public async Task<Guid> LoginAsync(UserLoginRequest request)
         {
             var email = request.Email.Trim().ToLowerInvariant();
 
@@ -54,16 +70,13 @@ namespace PomoQuestApi.Auth.Services
                 throw new ArgumentException("Invalid email or password.");
             }
 
-            var token = _sessionService.GenerateToken();
-            var tokenHash = _sessionService.HashToken(token);
-
             var now = DateTime.UtcNow;
+            var id = Guid.NewGuid();
 
             var session = new Session
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 UserId = user.Id,
-                TokenHash = tokenHash,
                 CreatedAt = now,
                 ExpiresAt = now.AddDays(30)
             };
@@ -71,51 +84,42 @@ namespace PomoQuestApi.Auth.Services
             await _context.Sessions.AddAsync(session);
             await _context.SaveChangesAsync();
 
-            return token;
+            return id;
         }
 
-        public async Task LogoutAsync(string token)
+        public async Task LogoutAsync(Guid sessionId)
         {
-            var hash = _sessionService.HashToken(token);
-
-            var session = await _context.Sessions
-                .SingleOrDefaultAsync(s => s.TokenHash == hash);
+            var session = await _context.Sessions.FindAsync(sessionId);
 
             if (session == null)
                 throw new UnauthorizedAccessException("Invalid session.");
 
-            if (session.RevokedAt.HasValue)
-                return;
-
-            if (session.ExpiresAt <= DateTime.UtcNow)
-                return;
-
-            session.RevokedAt = DateTime.UtcNow;
-
+            _context.Sessions.Remove(session);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User> GetUserAsync(string token)
+        public async Task<Profile> GetUserAsync(Guid id)
         {
-            var hash = _sessionService.HashToken(token);
-
             var session = await _context.Sessions
                 .Include(s => s.User)
-                .SingleOrDefaultAsync(s => s.TokenHash == hash);
+                    .ThenInclude(u => u.Profile)
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (session == null)
                 throw new UnauthorizedAccessException("Invalid session.");
 
-            if (session.RevokedAt.HasValue)
-                throw new UnauthorizedAccessException("Session revoked.");
-
             if (session.ExpiresAt <= DateTime.UtcNow)
+            {
+                _context.Remove(session);
+                await _context.SaveChangesAsync();
+
                 throw new UnauthorizedAccessException("Session expired.");
+            }
 
             if (!session.User.IsActive)
                 throw new UnauthorizedAccessException("User is inactive.");
 
-            return session.User;
+            return session.User.Profile;
         }
         private bool isEmailValid(string email)
         {

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.Auth.Middleware;
 using PomoQuestApi.Auth.Services;
 using PomoQuestApi.data;
+using PomoQuestApi.PomoQuest.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 var AllowFrontendOrigins = "AllowFrontendOrigins";
@@ -29,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<QuestService>();
 
 var app = builder.Build();
 

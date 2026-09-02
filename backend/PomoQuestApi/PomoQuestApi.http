@@ -33,13 +33,13 @@ POST http://localhost:5059/quest/create
 Content-Type: application/json
 
 {
-  "category": "test",
-  "title": "test quest",
-  "totalTimeMs": 100000,
-  "intervalsCount": 10,
+  "Category": "test",
+  "Title": "test quest",
+  "TotalTimeMs": 10000,
+  "IntervalCount": 5,
   "Breaks":{
-    "type": "short",
-    "Time": 50000
+    "Short": 10000,
+    "Long": 5000
   }
 }
 

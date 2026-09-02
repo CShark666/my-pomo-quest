@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PomoQuestApi.data;
 
@@ -10,9 +11,11 @@ using PomoQuestApi.data;
 namespace PomoQuestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260902205837_QuestCurrentIntervalStartedConvertedToMs")]
+    partial class QuestCurrentIntervalStartedConvertedToMs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -172,9 +175,8 @@ namespace PomoQuestApi.Migrations
                             b1.Property<long>("Started")
                                 .HasColumnType("INTEGER");
 
-                            b1.Property<string>("Status")
-                                .IsRequired()
-                                .HasColumnType("TEXT");
+                            b1.Property<int>("Status")
+                                .HasColumnType("INTEGER");
 
                             b1.HasKey("QuestId");
 

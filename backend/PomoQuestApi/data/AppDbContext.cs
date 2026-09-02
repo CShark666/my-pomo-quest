@@ -110,7 +110,13 @@ namespace PomoQuestApi.data
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
             });
-
+        }
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            // Усі Enum у проєкті будуть зберігатися як String
+            configurationBuilder
+                .Properties<IntervalStatus>()
+                    .HaveConversion<string>();
         }
     }
 }

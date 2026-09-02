@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PomoQuestApi.Auth.Models;
 
 namespace PomoQuestApi.PomoQuest.Models
@@ -23,6 +24,8 @@ namespace PomoQuestApi.PomoQuest.Models
         Finished,
         Cancelled
     }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum BreakType
     {
         Short,

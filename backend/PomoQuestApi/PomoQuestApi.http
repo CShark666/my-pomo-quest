@@ -47,3 +47,12 @@ Content-Type: application/json
 ### GET current quest
 GET http://localhost:5059/quest/current
 Content-Type: application/json
+
+
+### GET skip transition to break
+GET http://localhost:5059/quest/skip_transition_to_break
+Content-Type: application/json
+
+### GET skip break
+GET http://localhost:5059/quest/skip_break
+Content-Type: application/json

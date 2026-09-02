@@ -25,3 +25,25 @@ Content-Type: application/json
 ### POST logout
 POST http://localhost:5059/auth/logout
 Content-Type: application/json
+
+
+
+### POST create quest
+POST http://localhost:5059/quest/create
+Content-Type: application/json
+
+{
+  "category": "test",
+  "title": "test quest",
+  "totalTimeMs": 100000,
+  "intervalsCount": 10,
+  "Breaks":{
+    "type": "short",
+    "Time": 50000
+  }
+}
+
+
+### GET current quest
+GET http://localhost:5059/quest/current
+Content-Type: application/json

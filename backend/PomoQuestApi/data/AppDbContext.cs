@@ -1,5 +1,8 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.Auth.Models;
+using PomoQuestApi.PomoQuest.Models;
 
 namespace PomoQuestApi.data
 {
@@ -8,6 +11,12 @@ namespace PomoQuestApi.data
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Quest> Quests { get; set; }
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -72,6 +81,36 @@ namespace PomoQuestApi.data
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<Quest>(entity =>
+            {
+                entity.HasKey(q => q.Id);
+
+                entity.Property(q => q.Id)
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(q => q.BreaksConfig)
+                    .HasConversion(
+                        b => b != null
+                            ? JsonSerializer.Serialize(b, JsonOptions)
+                            : null,
+
+                        b => !string.IsNullOrEmpty(b)
+                            ? JsonSerializer.Deserialize<Dictionary<BreakType, long>>(b, JsonOptions)
+                            : null
+                    );
+
+                entity.OwnsOne(q => q.CurrentInterval);
+
+                entity.HasIndex(q => new { q.UserId, q.Status });
+
+                entity.HasOne(q => q.User)
+                    .WithMany(u => u.Quests)
+                    .HasForeignKey(q => q.UserId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
         }
     }
 }

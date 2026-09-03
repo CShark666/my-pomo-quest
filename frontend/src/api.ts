@@ -1,14 +1,9 @@
 import apiClient from "./apiClient";
 import type {
-    BreakType,
-    BreakConfig,
     CreateQuestRequest,
-    DbQUest,
     ClientQuest,
 } from "./types/types";
 
-const STORAGE_KEY = "pomoQuest";
-const TRANSITION_DURATION_MS = 5000
 const DELAY_DURATION_MS = 300
 
 

@@ -1,14 +1,17 @@
-import { useTransition } from "react";
+import { useContext, useTransition } from "react";
 import { useNavigate } from "react-router";
 import { cancelQuest } from "../api";
 import { LoadingSpinnerLabel } from "./Loading";
+import { QuestContext } from "../contexts/QuestContext";
 
 export function CancelButton() {
   const [isPending, startTransition] = useTransition();
+  const setQuest = useContext(QuestContext).setQuest;
   const navigate = useNavigate();
 
   const cancel = () => startTransition(async () => {
     await cancelQuest();
+    setQuest(null);
     navigate("/");
   })
 

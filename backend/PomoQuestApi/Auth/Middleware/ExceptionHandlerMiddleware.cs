@@ -13,6 +13,10 @@ namespace PomoQuestApi.Auth.Middleware
             {
                 await _next(context);
             }
+            catch (NotFoundException ex)
+            {
+                await HandleNotFoundAsync(context, ex);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception at {Path}", context.Request.Path);
@@ -32,5 +36,21 @@ namespace PomoQuestApi.Auth.Middleware
                     });
             }
         }
+        private static Task HandleNotFoundAsync(HttpContext context, NotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+            return context.Response.WriteAsJsonAsync(
+                                    new ProblemDetails
+                                    {
+                                        Type = ex.GetType().Name,
+                                        Title = "Not Found",
+                                        Detail = ex.Message
+                                    });
+        }
+    }
+    public class NotFoundException(string message) : Exception(message)
+    {
     }
 }

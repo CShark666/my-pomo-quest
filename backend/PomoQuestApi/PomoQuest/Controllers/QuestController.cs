@@ -60,5 +60,20 @@ namespace PomoQuestApi.PomoQuest.Controllers
 
             return Ok(questResponse);
         }
+
+        [RequiresAuth]
+        [HttpGet("cancel")]
+        public async Task<IActionResult> CancelQuest()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var quest = await questService.GetCurrentQuestAsync(userId);
+
+            await questService.CancelQuestAsync(quest);
+
+            return Ok(new
+            {
+                message = "Quest canceled successfully."
+            });
+        }
     }
 }

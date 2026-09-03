@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using PomoQuestApi.Auth.Middleware;
 using PomoQuestApi.data;
 using PomoQuestApi.PomoQuest.DTO;
 using PomoQuestApi.PomoQuest.Models;
@@ -40,7 +42,7 @@ namespace PomoQuestApi.PomoQuest.Service
 
             if (quest == null)
             {
-                throw new ArgumentException("No active quests.");
+                throw new NotFoundException("No active quests.");
             }
 
             if (UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();
@@ -102,6 +104,12 @@ namespace PomoQuestApi.PomoQuest.Service
 
             return await CreateQuestResponseAsync(quest);
         }
+        public async Task CancelQuestAsync(Quest quest)
+        {
+            quest.Status = QuestStatus.Cancelled;
+            await db.SaveChangesAsync();
+        }
+
         private bool UpdateQuestIfNeeded(Quest quest)
         {
             if (quest == null || quest.Status != QuestStatus.InProgress) return false;

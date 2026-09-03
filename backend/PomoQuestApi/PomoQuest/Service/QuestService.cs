@@ -77,7 +77,7 @@ namespace PomoQuestApi.PomoQuest.Service
                     Remaining = currentIntervalRemaining
 
                 },
-                IntervalDuration = intervalDuration,
+                IntervalDurationMs = intervalDuration,
                 RemainingTotalTimeMs = remainingTotalTimeMs
             };
         }

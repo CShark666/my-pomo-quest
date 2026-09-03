@@ -18,6 +18,8 @@ namespace PomoQuestApi.PomoQuest.Models
 
         public User User { get; set; } = null!;
     }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum QuestStatus
     {
         InProgress,

@@ -13,7 +13,7 @@ namespace PomoQuestApi.PomoQuest.DTO
         public Dictionary<BreakType, long>? Breaks { get; set; }
         public DateTime CreatedAt { get; set; }
         public IntervalStateResponse CurrentInterval { get; set; } = null!;
-        public long IntervalDuration { get; set; }
+        public long IntervalDurationMs { get; set; }
         public long RemainingTotalTimeMs { get; set; }
     }
 }

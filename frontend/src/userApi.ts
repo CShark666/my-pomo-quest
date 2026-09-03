@@ -3,7 +3,7 @@ import type {
     UserRegistrationRequest,
     UserLoginRequest
 } from './types/types';
-import { apiClient } from "./apiClient";
+import apiClient from "./apiClient";
 
 
 export async function getUser(): Promise<ClientUser | null> {

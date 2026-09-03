@@ -1,10 +1,10 @@
-export type QuestStatus = "inProgress" | "finished" | "cancelled"
+export type QuestStatus = "InProgress" | "Finished" | "Cancelled"
 
 export type BreakType = "short" | "long"
 
 export type BreakConfig = Record<BreakType, number> | null
 
-export type IntervalStatus = "work" | "break" | "transitionToWork" | "transitionToBreak"
+export type IntervalStatus = "Work" | "Break" | "TransitionToWork" | "TransitionToBreak"
 
 export type IntervalState = {
     index: number,
@@ -24,14 +24,14 @@ export type CreateQuestRequest = {
 }
 
 export type DbQUest = {
-    id: string,
+    id: number,
     category: string
     title: string,
     status: QuestStatus
     totalTimeMs: number,
     intervalsCount: number,
     breaks: BreakConfig,
-    createdAt: number,
+    createdAt: string,
 
     currentInterval: IntervalState
 }

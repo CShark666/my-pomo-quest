@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.Auth.Middleware;
+using PomoQuestApi.Middleware;
 using PomoQuestApi.Auth.Services;
 using PomoQuestApi.data;
 using PomoQuestApi.PomoQuest.Service;

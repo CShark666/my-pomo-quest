@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using PomoQuestApi.Auth.Middleware;
 using PomoQuestApi.data;
+using PomoQuestApi.Middleware;
 using PomoQuestApi.PomoQuest.DTO;
 using PomoQuestApi.PomoQuest.Models;
 
@@ -38,12 +37,10 @@ namespace PomoQuestApi.PomoQuest.Service
 
         public async Task<Quest> GetCurrentQuestAsync(Guid userId)
         {
-            var quest = await db.Quests.FirstOrDefaultAsync(q => q.UserId == userId && q.Status == QuestStatus.InProgress);
+            var quest = await db.Quests
+                .FirstOrDefaultAsync(q => q.UserId == userId && q.Status == QuestStatus.InProgress)
+                ?? throw new NotFoundException("No active quests.");
 
-            if (quest == null)
-            {
-                throw new NotFoundException("No active quests.");
-            }
 
             if (UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();
 

@@ -23,6 +23,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
   );
   const nav = useNavigate();
 
+  const isStart = quest.currentInterval.status === "TransitionToWork" && quest.remainingTotalTimeMs === quest.totalTimeMs;
   const isBreakMode = quest.currentInterval.status !== "Work";
   const isTransitionMode = quest.currentInterval.status == "TransitionToWork" || quest.currentInterval.status == "TransitionToBreak";
   const timerPercent: number = !isBreakMode
@@ -73,7 +74,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
           (() => {
             switch (quest.status === "InProgress" ? quest.currentInterval.status : quest.status) {
               case 'TransitionToWork':
-                return <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />;
+                return <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : isStart ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />;
               case 'TransitionToBreak':
                 return <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />;
               case 'Finished':

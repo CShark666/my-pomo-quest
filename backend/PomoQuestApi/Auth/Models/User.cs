@@ -1,3 +1,5 @@
+using PomoQuestApi.PomoQuest.Models;
+
 namespace PomoQuestApi.Auth.Models
 {
     public class User
@@ -9,5 +11,7 @@ namespace PomoQuestApi.Auth.Models
         public bool IsActive { get; set; }
         public Profile Profile { get; set; } = null!;
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
+        public ICollection<Quest> Quests { get; set; } = new List<Quest>();
+
     }
 }

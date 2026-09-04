@@ -23,9 +23,10 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
   );
   const nav = useNavigate();
 
-  const isBreakMode = quest.currentInterval.status !== "work";
-  const isTransitionMode = quest.currentInterval.status == "transitionToWork" || quest.currentInterval.status == "transitionToBreak";
-  const timerPercent = !isBreakMode
+  const isStart = quest.currentInterval.status === "TransitionToWork" && quest.remainingTotalTimeMs === quest.totalTimeMs;
+  const isBreakMode = quest.currentInterval.status !== "Work";
+  const isTransitionMode = quest.currentInterval.status == "TransitionToWork" || quest.currentInterval.status == "TransitionToBreak";
+  const timerPercent: number = !isBreakMode
     ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
     : 100;
 
@@ -48,7 +49,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               {timeFormatter(
                 isBreakMode
                   ? quest.remainingTotalTimeMs
-                  : quest.status === "inProgress"
+                  : quest.status === "InProgress"
                     ? remainingTotal
                     : 0,
               )}
@@ -62,21 +63,21 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               <p>Status: {quest.currentInterval.status}</p>
             </div>
             <IntervalsBar
-              currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "transitionToWork" ? 1 : 0)}
+              currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "TransitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
-              timerPercent={quest.status === "inProgress" ? timerPercent : 0}
+              timerPercent={quest.status === "InProgress" ? timerPercent : 0}
               isBreakMode={isBreakMode}
             />
           </div>
         </div>
         {
           (() => {
-            switch (quest.status === "inProgress" ? quest.currentInterval.status : quest.status) {
-              case 'transitionToWork':
-                return <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />;
-              case 'transitionToBreak':
+            switch (quest.status === "InProgress" ? quest.currentInterval.status : quest.status) {
+              case 'TransitionToWork':
+                return <MessageBox text={transitionToWorkText} buttons={isLoading ? undefined : isStart ? undefined : [{ text: "Start now", onClick: skipBreakAction }]} />;
+              case 'TransitionToBreak':
                 return <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />;
-              case 'finished':
+              case 'Finished':
                 return <MessageBox text={finishText} buttons={isLoading ? undefined : [{ text: "Back to home page", onClick: () => { nav("/") } }]} />;
               default:
                 return <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />;

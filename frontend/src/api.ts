@@ -1,13 +1,9 @@
+import apiClient from "./apiClient";
 import type {
-    BreakType,
-    BreakConfig,
     CreateQuestRequest,
-    DbQUest,
     ClientQuest,
 } from "./types/types";
 
-const STORAGE_KEY = "pomoQuest";
-const TRANSITION_DURATION_MS = 5000
 const DELAY_DURATION_MS = 300
 
 
@@ -15,158 +11,56 @@ export function delay(ms = DELAY_DURATION_MS) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-
 export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
-    await delay();
 
-    saveDbQuest({
-        id: crypto.randomUUID(),
-        category: request.category,
-        title: request.title,
-        status: "inProgress",
-        totalTimeMs: request.totalTimeMs,
-        intervalsCount: request.intervalsCount,
-        breaks: request.breaks,
-        createdAt: Date.now(),
-        currentInterval: {
-            index: 0,
-            status: "transitionToWork",
-            started: Date.now()
-        }
-    })
+    await apiClient.post("/quest/create", {
+        Category: request.category,
+        Title: request.title,
+        TotalTimeMs: request.totalTimeMs,
+        IntervalCount: request.intervalsCount,
+        Breaks: request.breaks
+    });
 
     return await getQuest();
 }
 
 export async function getQuest(): Promise<ClientQuest | null> {
-    await delay();
+    try {
+        const res = await apiClient.get("/quest/current");
 
-    const dbQuest = getDbQuest();
+        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
 
-    if (!dbQuest) return null;
-
-    const remainingIntervals = dbQuest.intervalsCount - dbQuest.currentInterval.index;
-    const currentIntervalRemaining = getCurrentIntervalRemainingTime(dbQuest);
-
-    let remainingTotalMs = remainingIntervals * getIntervalDuration(dbQuest);
-
-    if (dbQuest.currentInterval.status === "work") {
-        remainingTotalMs += currentIntervalRemaining;
+        return res.data;
+    } catch {
+        return null;
     }
-
-    return {
-        ...dbQuest,
-        intervalDurationMs: getIntervalDuration(dbQuest),
-        remainingTotalTimeMs: remainingTotalMs,
-        currentInterval: {
-            ...dbQuest.currentInterval,
-            remaining: currentIntervalRemaining
-        }
-    };
 }
 
+
 export async function skipTransitionToBreak(): Promise<ClientQuest | null> {
-    await delay();
+    try {
+        const res = await apiClient.get("/quest/skip_transition_to_break");
 
-    const dbQuest = getDbQuest();
-    if (!dbQuest || dbQuest.status != "inProgress") return null;
+        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
 
-    dbQuest.currentInterval.status = "break"
-    dbQuest.currentInterval.started = Date.now();
-
-    saveDbQuest(dbQuest);
-
-    return await getQuest();
+        return res.data;
+    } catch {
+        return null;
+    }
 }
 
 export async function skipBreak(): Promise<ClientQuest | null> {
-    await delay();
+    try {
+        const res = await apiClient.get("/quest/skip_break");
 
-    const dbQuest = getDbQuest();
-    if (!dbQuest || dbQuest.status != "inProgress") return null;
+        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
 
-    dbQuest.currentInterval.index++
-    dbQuest.currentInterval.status = "work"
-    dbQuest.currentInterval.started = Date.now();
-
-    saveDbQuest(dbQuest);
-
-    return await getQuest();
+        return res.data;
+    } catch {
+        return null;
+    }
 }
 
 export async function cancelQuest() {
-    await delay();
-
-    removeQuest();
-}
-
-function fixDbQuestIfNeeded(dbQuest: DbQUest): boolean {
-    if (!dbQuest || dbQuest.status != 'inProgress') return false;
-
-    let needsUpdate = false;
-
-    while (getCurrentIntervalRemainingTime(dbQuest) < 0) {
-        needsUpdate = true;
-        if (dbQuest.currentInterval.index === dbQuest.intervalsCount - 1) {
-            dbQuest.status = "finished"
-            break;
-        }
-
-        if (dbQuest.currentInterval.status === "transitionToWork") {
-            dbQuest.currentInterval.status = "work"
-            dbQuest.currentInterval.started += TRANSITION_DURATION_MS
-        } else if (dbQuest.currentInterval.status === "work") {
-            dbQuest.currentInterval.status = "transitionToBreak"
-            dbQuest.currentInterval.started += getIntervalDuration(dbQuest);
-        } else if (dbQuest.currentInterval.status === "transitionToBreak") {
-            dbQuest.currentInterval.status = "break"
-            dbQuest.currentInterval.started += TRANSITION_DURATION_MS
-        } else /*if (dbQuest.currentInterval.status === "break") */ {
-            dbQuest.currentInterval.status = "transitionToWork"
-            dbQuest.currentInterval.started += getBreakDuration(breakTypeForIndex(dbQuest.currentInterval.index), dbQuest.breaks)
-            dbQuest.currentInterval.index++;
-        }
-    }
-
-    return needsUpdate;
-}
-
-function breakTypeForIndex(index: number): BreakType {
-    return index % 2 == 0 ? "short" : "long"
-}
-
-function getBreakDuration(breakType: BreakType, breaks: BreakConfig): number {
-    return breaks?.[breakType] ?? 0;
-}
-
-function saveDbQuest(quest: DbQUest) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(quest))
-}
-
-function getDbQuest(): DbQUest | null {
-    const data = localStorage.getItem(STORAGE_KEY);
-    const quest = JSON.parse(data!) as DbQUest;
-
-    if (!quest) return null;
-
-    if (fixDbQuestIfNeeded(quest)) saveDbQuest(quest)
-
-    return quest;
-}
-
-function removeQuest() {
-    localStorage.removeItem(STORAGE_KEY);
-}
-
-function getCurrentIntervalRemainingTime(dbQuest: DbQUest): number {
-    const currentIntervalTotalTime = dbQuest.currentInterval.status === 'work'
-        ? getIntervalDuration(dbQuest)
-        : dbQuest.currentInterval.status === 'break'
-            ? getBreakDuration(breakTypeForIndex(dbQuest.currentInterval.index), dbQuest.breaks)
-            : TRANSITION_DURATION_MS
-    return currentIntervalTotalTime - (Date.now() - dbQuest.currentInterval.started)
-}
-
-function getIntervalDuration(dbQuest: DbQUest): number {
-    return dbQuest.totalTimeMs / dbQuest.intervalsCount;
+    await apiClient.get("/quest/cancel");
 }

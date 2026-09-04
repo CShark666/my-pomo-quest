@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace PomoQuestApi.Auth.Middleware
+namespace PomoQuestApi.Middleware
 {
     public class ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
     {
@@ -12,6 +12,10 @@ namespace PomoQuestApi.Auth.Middleware
             try
             {
                 await _next(context);
+            }
+            catch (NotFoundException ex)
+            {
+                await HandleNotFoundAsync(context, ex);
             }
             catch (Exception ex)
             {
@@ -32,5 +36,21 @@ namespace PomoQuestApi.Auth.Middleware
                     });
             }
         }
+        private static Task HandleNotFoundAsync(HttpContext context, NotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+            return context.Response.WriteAsJsonAsync(
+                                    new ProblemDetails
+                                    {
+                                        Type = ex.GetType().Name,
+                                        Title = "Not Found",
+                                        Detail = ex.Message
+                                    });
+        }
+    }
+    public class NotFoundException(string message) : Exception(message)
+    {
     }
 }

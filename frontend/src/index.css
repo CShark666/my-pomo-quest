@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
   themes: silk --default, forest --prefersdark;
   root: ":root";
@@ -27,18 +28,4 @@
   --color-work: blue;
   --color-break: green;
   --color-active: #ffc813d8;
-}
-
-@theme {
-  --animate-drain: drain 1s linear;
-}
-
-@keyframes drain {
-  from {
-    width: 100%;
-  }
-
-  to {
-    width: 0%;
-  }
 }

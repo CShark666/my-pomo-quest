@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const apiClient = axios.create({
+const apiClient = axios.create({
     baseURL: "http://localhost:5059",
     timeout: 5000,
     withCredentials: true
@@ -19,3 +19,5 @@ apiClient.interceptors.response.use(
         throw new Error("Unknown error.", { cause: err });
     }
 );
+
+export default apiClient;

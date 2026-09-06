@@ -1,8 +1,11 @@
+import statusSprite from '../assets/HP-Bar-Sheet-v2.png';
+
+const FRAME_COUNT = 11;
+
 export function IntervalsBar({
   currentIntervalIdx,
   intervalCount,
   timerPercent,
-  isBreakMode,
 }: {
   currentIntervalIdx: number;
   intervalCount: number;
@@ -21,21 +24,47 @@ export function IntervalsBar({
             : timerPercent,
     };
   });
+
+
   return (
-    <div className="flex flex-wrap w-full gap-0.5">
+    <div className="flex flex-wrap w-full gap-0 bg-[#4d2b32] rounded-[5px] p-1.5">
       {intervals.map((interval, i) => {
         return (
-          <div key={i} className={`rounded-md ${isBreakMode ? "bg-break/20" : "bg-work/20"} text-white text-center grow shrink basis-15 min-w-8 max-w-24 h-10 relative overflow-hidden`}>
-            <div className={`rounded-md absolute bottom-0 w-full h-full 
-              ${isBreakMode ? "bg-break/50" : "bg-work/50"} 
-              ${interval.active ? "solid border-2 border-active" : ""}`}
-              style={{ width: interval.percent + "%" }}
-            >
+          <div key={i}
+            className={`min-w-8 max-w-24 aspect-2/1 grow shrink basis-15 relative overflow-hidden text-[#e7d5b3] text-center`}>
+            <div
+              className={`absolute bottom-0 w-full h-full 
+              ${interval.active ? "border-2 border-active" : ""}`}>
               {Math.floor(interval.percent) + "%"}
             </div>
+            <StatusBar percent={interval.percent} />
           </div>
         );
       })}
     </div>
+  );
+}
+
+
+function StatusBar({ percent }: { percent: number }) {
+  const frameIndex = (FRAME_COUNT - 1) - Math.round((percent / 100) * (FRAME_COUNT - 1));
+
+  const positionPercent = FRAME_COUNT > 1
+    ? (frameIndex / (FRAME_COUNT - 1)) * 100
+    : 0;
+
+  return (
+    <div
+      role="progressbar"
+      aria-valuenow={percent}
+      className="w-full max-w-md aspect-2/1"
+      style={{
+        backgroundImage: `url(${statusSprite})`,
+        backgroundSize: `${FRAME_COUNT * 100}% 100%`,
+        backgroundPosition: `${positionPercent}% 0`,
+        backgroundRepeat: 'no-repeat',
+        imageRendering: 'pixelated',
+      }}
+    />
   );
 }

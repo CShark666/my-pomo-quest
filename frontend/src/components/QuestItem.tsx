@@ -7,6 +7,7 @@ import { MessageBox } from "./MessageBox.tsx";
 import { PopupWindow } from "./PopupWindow.tsx";
 import { type ClientQuest } from "../types/types.ts";
 import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
+import timeDesk from '../assets/total-time-desk.png'
 
 
 type QuestItemProps = {
@@ -44,17 +45,14 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
           <CancelButton />
         </div>
         <div className="quest-item__content flex items-center">
-          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white`}>
-            <p>
-              {timeFormatter(
-                isBreakMode
-                  ? quest.remainingTotalTimeMs
-                  : quest.status === "InProgress"
-                    ? remainingTotal
-                    : 0,
-              )}
-            </p>
-          </div>
+          <TotalTimeDesk
+            time={timeFormatter(
+              isBreakMode
+                ? quest.remainingTotalTimeMs
+                : quest.status === "InProgress"
+                  ? remainingTotal
+                  : 0,
+            )} />
           <div>
             <div className="quest-item__meta w-full flex justify-between">
               <p>
@@ -96,4 +94,20 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
       </div>
     </>
   );
+}
+
+function TotalTimeDesk({ time }: { time: string }) {
+  return (
+    <>
+      <div className={`flex shrink-0 justify-center items-center w-62.5 aspect-19/11 text-[#e7d5b3] text-[60px] font-bold relative overflow-hidden`}>
+        <img
+          src={timeDesk}
+          className="absolute inset-0 h-full w-full object-fill"
+        />
+        <p className="absolute">
+          {time}
+        </p>
+      </div>
+    </>
+  )
 }

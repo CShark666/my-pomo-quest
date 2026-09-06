@@ -1,8 +1,9 @@
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { LoadingSpinnerLabel } from "./Loading.tsx";
 import { createQuest } from "../api.ts";
 import type { ClientQuest } from "../types/types.ts";
+import bookBg from '../assets/book-v2.png';
 
 export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
   const [isPendingCreateForm, startCreateFormTransition] = useTransition();
@@ -47,183 +48,220 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
 
   return (
     <>
-      <div className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+      <CreatingQuestBook>
 
-        {/*title*/}
-        <div className="grid gap-1">
-          <select
-            className="select select-primary text-center"
-            onChange={(e) => setCategory(e.target.value)}
-            defaultValue="Category"
-          >
-            <option value="Category" disabled>
-              Category
-            </option>
-            <option value="test">test</option>
-            <option value="work">work</option>
-            <option value="study">study</option>
-            <option value="workout">workout</option>
-            <option value="hobby">hobby</option>
-          </select>
-          <input
-            className="input input-primary"
-            type="text"
-            placeholder="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            disabled={isPendingCreateForm}
-          />
-        </div>
+        <Page position="left-[10%] top-[11%]">
+          {/*title*/}
+          <div className="grid gap-1 mt-1.5">
 
-        {/*time*/}
-        <div className="grid gap-1">
-          <div className="flex justify-between items-center">
-            <span className="text-lg">Total time</span>
-            <div className="flex">
-              <input
-                className="input validator text-right border-0 rounded-2xl rounded-r-none"
-                type="number"
-                min="0"
-                max="24"
-                value={totalTime.hours}
-                onChange={(e) => {
-                  updateTime("hours", Number(e.target.value));
-                }}
-                disabled={isPendingCreateForm}
-              />
-              <input
-                className="input validator text-left border-0 rounded-2xl rounded-l-none"
-                type="number"
-                min="0"
-                max="59"
-                value={totalTime.minutes}
-                onChange={(e) => {
-                  updateTime("minutes", Number(e.target.value));
-                }}
-                disabled={isPendingCreateForm}
-              />
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-lg">Interval duration</span>
+            <select
+              className="select select-sm text-center"
+              onChange={(e) => setCategory(e.target.value)}
+              defaultValue="Category"
+            >
+              <option value="Category" disabled>
+                Category
+              </option>
+              <option value="test">test</option>
+              <option value="work">work</option>
+              <option value="study">study</option>
+              <option value="workout">workout</option>
+              <option value="hobby">hobby</option>
+            </select>
+
             <input
-              className="input validator w-26 text-center border-0 rounded-2xl"
-              type="number"
-              min="1"
-              value={
-                (totalTime.hours * 60 + totalTime.minutes) / intervalsCount
-              }
-              onChange={(e) => {
-                setIntervalsCount(
-                  Number(
-                    (totalTime.hours * 60 + totalTime.minutes) / Number(e.target.value),
-                  ),
-                );
-              }}
-              disabled={disableField || isPendingCreateForm}
+              className="input input-primary"
+              type="text"
+              placeholder="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isPendingCreateForm}
             />
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-lg">Intervals count</span>
-            <input
-              className="input validator w-26 text-center border-0 rounded-2xl"
-              type="number"
-              min="1"
-              value={intervalsCount}
-              onChange={(e) => {
-                setIntervalsCount(Number(e.target.value));
-              }}
-              disabled={disableField || isPendingCreateForm}
-            />
-          </div>
-        </div>
-        <div className="grid">
-          <button
-            className="btn btn-sm btn-dash"
-            onClick={() => {
-              setShowBreakSettings(!showBreakSettings);
-            }}
-          >
-            Break settings
-          </button>
 
-          {/*break*/}
-          {showBreakSettings ? (
-            <div className="grid gap-1">
-              <div className="flex justify-center m-2">
-                <span className="text-md">Disable breaks:</span>
+          </div>
+
+          {/*time*/}
+          <div className="grid gap-1 mt-1.5">
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Total time</span>
+              <div className="flex">
                 <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={breaks.disabled}
-                  onChange={(e) =>
-                    setBreaks((prev) => ({
-                      ...prev,
-                      disabled: e.target.checked,
-                    }))
-                  }
+                  className="input validator text-right border-0 rounded-2xl rounded-r-none"
+                  type="number"
+                  min="0"
+                  max="24"
+                  value={totalTime.hours}
+                  onChange={(e) => {
+                    updateTime("hours", Number(e.target.value));
+                  }}
+                  disabled={isPendingCreateForm}
+                />
+                <input
+                  className="input validator text-left border-0 rounded-2xl rounded-l-none"
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={totalTime.minutes}
+                  onChange={(e) => {
+                    updateTime("minutes", Number(e.target.value));
+                  }}
                   disabled={isPendingCreateForm}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-base">Short break: </span>
-                <input
-                  className="input validator w-26 text-center border-0 rounded-2xl"
-                  type="number"
-                  value={breaks.short}
-                  disabled={breaks.disabled || isPendingCreateForm}
-                  onChange={(e) =>
-                    setBreaks((prev) => ({
-                      ...prev,
-                      short: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-              <div className="flex justify-between">
-                <span className="text-base">Long break: </span>
-                <input
-                  className="input validator w-26 text-center border-0 rounded-2xl"
-                  type="number"
-                  value={breaks.long}
-                  disabled={breaks.disabled || isPendingCreateForm}
-                  onChange={(e) =>
-                    setBreaks((prev) => ({
-                      ...prev,
-                      long: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
             </div>
-          ) : (
-            <div className="text-sm text-accent/60 flex justify-center">
-              {breaks.disabled ? (
-                "no breaks"
-              ) : (
-                <span >
-                  short: {breaks.short} m. / long: {breaks.long} m.
-                </span>
-              )}
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Interval duration</span>
+              <input
+                className="input validator w-26 text-center border-0 rounded-2xl"
+                type="number"
+                min="1"
+                value={
+                  (totalTime.hours * 60 + totalTime.minutes) / intervalsCount
+                }
+                onChange={(e) => {
+                  setIntervalsCount(
+                    Number(
+                      (totalTime.hours * 60 + totalTime.minutes) / Number(e.target.value),
+                    ),
+                  );
+                }}
+                disabled={disableField || isPendingCreateForm}
+              />
             </div>
-          )}
-        </div>
-        <div className="flex justify-center gap-5">
-          <button
-            className="btn btn-secondary disabled:btn-secondary/25"
-            onClick={() => {
-              navigate("/");
-            }}
-            disabled={isPendingCreateForm}
-          >
-            Cancel
-          </button>
-          <button className="btn btn-primary disabled:btn-primary/25" onClick={saveQuest} disabled={isPendingCreateForm}>
-            Get started
-          </button>
-        </div>
-        {isPendingCreateForm && (<div> <LoadingSpinnerLabel /> </div>)}
-      </div>
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Intervals count</span>
+              <input
+                className="input validator w-26 text-center border-0 rounded-2xl"
+                type="number"
+                min="1"
+                value={intervalsCount}
+                onChange={(e) => {
+                  setIntervalsCount(Number(e.target.value));
+                }}
+                disabled={disableField || isPendingCreateForm}
+              />
+            </div>
+          </div>
+
+          {/* buttons */}
+          <div className="flex justify-center gap-5 mt-1.5">
+            <button
+              className="btn btn-active btn-warning disabled:opacity-40"
+              onClick={() => {
+                navigate("/");
+              }}
+              disabled={isPendingCreateForm}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-active btn-success disabled:opacity-40"
+              onClick={saveQuest} disabled={isPendingCreateForm}
+            >
+              Get started
+            </button>
+          </div>
+          {isPendingCreateForm && (<div> <LoadingSpinnerLabel /> </div>)}
+        </Page>
+
+        <Page position="right-[10%] top-[11%]">
+          <div className="grid gap-2">
+            <button
+              className="btn btn-sm btn-dash"
+              onClick={() => {
+                setShowBreakSettings(!showBreakSettings);
+              }}
+            >
+              Break settings
+            </button>
+
+            {/*break*/}
+            {showBreakSettings ? (
+              <div className="grid gap-1">
+                <div className="flex justify-center m-2">
+                  <span className="text-md">Disable breaks:</span>
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={breaks.disabled}
+                    onChange={(e) =>
+                      setBreaks((prev) => ({
+                        ...prev,
+                        disabled: e.target.checked,
+                      }))
+                    }
+                    disabled={isPendingCreateForm}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-base">Short break: </span>
+                  <input
+                    className="input validator w-26 text-center border-0 rounded-2xl"
+                    type="number"
+                    value={breaks.short}
+                    disabled={breaks.disabled || isPendingCreateForm}
+                    onChange={(e) =>
+                      setBreaks((prev) => ({
+                        ...prev,
+                        short: Number(e.target.value),
+                      }))
+                    }
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-base">Long break: </span>
+                  <input
+                    className="input validator w-26 text-center border-0 rounded-2xl"
+                    type="number"
+                    value={breaks.long}
+                    disabled={breaks.disabled || isPendingCreateForm}
+                    onChange={(e) =>
+                      setBreaks((prev) => ({
+                        ...prev,
+                        long: Number(e.target.value),
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-accent/60 flex justify-center">
+                {breaks.disabled ? (
+                  "no breaks"
+                ) : (
+                  <span >
+                    short: {breaks.short} m. / long: {breaks.long} m.
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </Page>
+
+      </CreatingQuestBook>
     </>
   );
+}
+
+function Page({ children, position }: { children?: ReactNode, position: string }) {
+  return (
+    <>
+      <div className={`absolute w-63.75 h-112.5 ${position} p-1.5`}>
+        {children}
+      </div>
+    </>)
+}
+
+function CreatingQuestBook({ children }: { children?: ReactNode }) {
+  return (
+    <div
+      className="w-3xl overflow-auto" >
+      <div
+        className="relative mx-auto aspect-4/3 w-full max-w-250 overflow-hidden">
+        <img
+          className="absolute inset-0 h-full w-full object-cover" src={bookBg} alt="book-bg" />
+        {children}
+      </div>
+    </div>
+  )
 }

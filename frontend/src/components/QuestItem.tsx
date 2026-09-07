@@ -42,12 +42,12 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
 
   return (
     <>
-      <div className="quest-item flex flex-col w-full max-w-3xl min-w-2xs p-1">
+      <div className="quest-item flex flex-col w-237.5 min-w-2xs p-1">
         <div className="quest-item__cancel flex justify-end">
           <CancelButton />
         </div>
-        <div className="flex">
-          <div>
+        <div className="flex w-full">
+          <div >
             <TotalTimeDesk
               time={timeFormatter(
                 isBreakMode
@@ -58,7 +58,7 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
               )} />
             <QuestInfoScroll title={quest.title} status={quest.status} progress={`${quest.currentInterval.index}/${quest.intervalsCount}`} />
           </div>
-          <div>
+          <div className="flex-1">
             <IntervalsBar
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "TransitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}

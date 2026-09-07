@@ -3,7 +3,7 @@ import { Suspense, useContext } from "react";
 import { LoadingSpinnerLabel } from "../components/Loading";
 import { UserContext } from "../contexts/UserContext";
 
-function AuthorizationPageContext() {
+function PageContext() {
     return (
         <>
             <div className="flex flex-col gap-2.5 justify-center items-center h-screen">
@@ -20,13 +20,13 @@ function AuthorizationPageContext() {
     )
 }
 
-export function AuthorizationPage() {
+export function AuthenticationPage() {
     const userContext = useContext(UserContext);
 
     return <>
         {userContext.user
             ? <Navigate to="/" />
-            : <AuthorizationPageContext />
+            : <PageContext />
         }
     </>
 }

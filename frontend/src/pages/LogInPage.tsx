@@ -1,4 +1,4 @@
-import { LogInForm } from "../components/LogInForm";
+import { LogInForm } from "../components/AuthPage/LogInForm";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 import { getUser } from "../userApi";

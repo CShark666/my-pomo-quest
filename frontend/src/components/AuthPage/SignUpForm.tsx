@@ -1,7 +1,7 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
-import { signUpUser } from "../userApi";
-import type { SignupFormErrors, SignUpFormValues } from "../types/FormTypes";
-import { validateSignUpValues } from "../util/validation";
+import { signUpUser } from "../../userApi";
+import type { SignupFormErrors, SignUpFormValues } from "../../types/FormTypes";
+import { validateSignUpValues } from "../../util/validation";
 
 type SignUpFormProps = {
   signUpAction: () => void

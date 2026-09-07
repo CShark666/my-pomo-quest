@@ -1,5 +1,5 @@
-import { QuestItem } from "../components/QuestItem.tsx";
-import { CreatingQuestForm } from "../components/CreatingQuestForm.tsx";
+import QuestItem from "../components/QuestPage/QuestItem/QuestItem.tsx";
+import CreatingQuestForm from "../components/QuestPage/CreatingQuest/CreatingQuestForm.tsx";
 import { useContext, useEffect, useTransition } from "react";
 import { skipTransitionToBreak, getQuest, skipBreak } from '../api.ts'
 import { QuestContext } from "../contexts/QuestContext.ts";

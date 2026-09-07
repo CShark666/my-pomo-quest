@@ -28,7 +28,7 @@ export function Sidebar() {
         <label htmlFor="my-drawer-1" aria-label="close sidebar" className="drawer-overlay"></label>
 
         <ul className="menu bg-base-200 min-h-full w-60 p-4">
-          <span>{user?.login} lvl: {user?.level}</span>
+          <span>{user?.name} lvl: {user?.level}</span>
           {/* Sidebar content here */}
           <li><Link to="user">Profile</Link></li>
           <li><Link to="quest">Pomo-Quest</Link></li>

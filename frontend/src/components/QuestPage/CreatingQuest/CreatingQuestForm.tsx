@@ -1,11 +1,11 @@
-import { useEffect, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useNavigate } from "react-router";
-import { LoadingSpinnerLabel } from "./Loading.tsx";
-import { createQuest } from "../api.ts";
-import type { ClientQuest } from "../types/types.ts";
-import bookBg from '../assets/book-v2.png';
+import { LoadingSpinnerLabel } from "./../../Loading.tsx";
+import { createQuest } from "../../../api.ts";
+import type { ClientQuest } from "../../../types/types.ts";
+import { CreatingQuestBook, Page } from "./CreatingQuestBook.tsx";
 
-export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
+function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest | null) => void }) {
   const [isPendingCreateForm, startCreateFormTransition] = useTransition();
 
   const [category, setCategory] = useState("");
@@ -243,25 +243,4 @@ export function CreatingQuestForm({ setQuest }: { setQuest: (quest: ClientQuest 
   );
 }
 
-function Page({ children, position }: { children?: ReactNode, position: string }) {
-  return (
-    <>
-      <div className={`absolute w-63.75 h-112.5 ${position} p-1.5`}>
-        {children}
-      </div>
-    </>)
-}
-
-function CreatingQuestBook({ children }: { children?: ReactNode }) {
-  return (
-    <div
-      className="w-3xl overflow-auto" >
-      <div
-        className="relative mx-auto aspect-4/3 w-full max-w-250 overflow-hidden">
-        <img
-          className="absolute inset-0 h-full w-full object-cover" src={bookBg} alt="book-bg" />
-        {children}
-      </div>
-    </div>
-  )
-}
+export default CreatingQuestForm;

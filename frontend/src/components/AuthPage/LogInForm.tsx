@@ -1,6 +1,6 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
-import { loginUser } from "../userApi";
-import type { LogInFormValues } from "../types/FormTypes";
+import { loginUser } from "../../userApi";
+import type { LogInFormValues } from "../../types/FormTypes";
 
 type LogInFormProps = {
     logInAction: () => void

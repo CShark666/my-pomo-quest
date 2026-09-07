@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { HomePage } from "./pages/HomePage.tsx";
 import { QuestPage } from "./pages/QuestPage";
-import { AuthorizationPage } from "./pages/AuthorizationPage.tsx";
+import { AuthenticationPage } from "./pages/AuthenticationPage.tsx";
 import { LogInPage } from "./pages/LogInPage.tsx";
 import { SignUpPage } from "./pages/SignUpPage.tsx";
 import { UserPage } from "./pages/UserPage.tsx";
@@ -23,7 +23,7 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 
-          <Route path="authorization" element={<AuthorizationPage />}>
+          <Route path="authorization" element={<AuthenticationPage />}>
             <Route path="login" element={<LogInPage />} />
             <Route path="signup" element={<SignUpPage />} />
           </Route>

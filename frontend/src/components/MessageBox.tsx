@@ -8,7 +8,7 @@ type MessageBoxProps = {
     buttons?: Array<ButtonProp>
 }
 
-export function MessageBox({ text, buttons }: MessageBoxProps) {
+function MessageBox({ text, buttons }: MessageBoxProps) {
     return (
         <div className="grid justify-center items-center m-1.5 p-1.5">
             <span className="text-2xl font-light">{text}</span>
@@ -25,3 +25,5 @@ export function MessageBox({ text, buttons }: MessageBoxProps) {
             ))}
         </div>)
 }
+
+export default MessageBox;

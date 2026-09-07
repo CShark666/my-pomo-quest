@@ -1,5 +1,5 @@
 
-export function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolean }) {
+function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolean }) {
   const format = (ms: number) => {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60)
@@ -30,3 +30,5 @@ export function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolea
     </div >
   );
 }
+
+export default Timer;

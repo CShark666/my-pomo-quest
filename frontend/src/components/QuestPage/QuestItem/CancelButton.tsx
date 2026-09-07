@@ -1,10 +1,10 @@
 import { useContext, useTransition } from "react";
 import { useNavigate } from "react-router";
-import { cancelQuest } from "../api";
-import { LoadingSpinnerLabel } from "./Loading";
-import { QuestContext } from "../contexts/QuestContext";
+import { cancelQuest } from "../../../api";
+import { LoadingSpinnerLabel } from "../../Loading";
+import { QuestContext } from "../../../contexts/QuestContext";
 
-export function CancelButton() {
+function CancelButton() {
   const [isPending, startTransition] = useTransition();
   const setQuest = useContext(QuestContext).setQuest;
   const navigate = useNavigate();
@@ -55,3 +55,5 @@ export function CancelButton() {
     </>
   );
 }
+
+export default CancelButton;

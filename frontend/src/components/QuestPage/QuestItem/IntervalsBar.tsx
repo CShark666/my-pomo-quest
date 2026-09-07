@@ -1,8 +1,8 @@
-import statusSprite from '../assets/HP-Bar-Sheet-v2.png';
+import statusSprite from '../../../assets/HP-Bar-Sheet-v2.png';
 
 const FRAME_COUNT = 11;
 
-export function IntervalsBar({
+function IntervalsBar({
   currentIntervalIdx,
   intervalCount,
   timerPercent,
@@ -37,7 +37,7 @@ export function IntervalsBar({
               ${interval.active ? "border-2 border-active" : ""}`}>
               {Math.floor(interval.percent) + "%"}
             </div>
-            <StatusBar percent={interval.percent} />
+            <Interval percent={interval.percent} />
           </div>
         );
       })}
@@ -45,8 +45,9 @@ export function IntervalsBar({
   );
 }
 
+export default IntervalsBar;
 
-function StatusBar({ percent }: { percent: number }) {
+function Interval({ percent }: { percent: number }) {
   const frameIndex = (FRAME_COUNT - 1) - Math.round((percent / 100) * (FRAME_COUNT - 1));
 
   const positionPercent = FRAME_COUNT > 1

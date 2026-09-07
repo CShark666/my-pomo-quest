@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router";
-import { useTimer } from "../hooks/useTimer.ts";
-import { Timer } from "./Timer.tsx";
-import { CancelButton } from "./CancelButton.tsx";
-import { IntervalsBar } from "./IntervalsBar.tsx";
-import { MessageBox } from "./MessageBox.tsx";
-import { PopupWindow } from "./PopupWindow.tsx";
-import { type ClientQuest } from "../types/types.ts";
-import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
-import timeDesk from '../assets/total-time-desk.png'
-import questScroll from '../assets/quest_scroll.png'
+import { useTimer } from "../../../hooks/useTimer.ts";
+import { type ClientQuest } from "../../../types/types.ts";
+import { timeFormatter, timeFormatterSeconds } from "../../../util/timeFormatter.ts";
+import Timer from "./Timer.tsx";
+import CancelButton from "./CancelButton.tsx";
+import IntervalsBar from "./IntervalsBar.tsx";
+import MessageBox from "../../MessageBox.tsx";
+import PopupWindow from "../../PopupWindow.tsx";
+import TotalTimeDesk from "./TotalTimeDesk.tsx";
+import QuestInfoScroll from "./QuestInfoScroll.tsx";
 
 
 
@@ -19,7 +19,7 @@ type QuestItemProps = {
   isLoading: boolean
 }
 
-export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading }: QuestItemProps) {
+function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading }: QuestItemProps) {
   const { remaining: remainingTotal } = useTimer(quest.remainingTotalTimeMs);
   const { remaining: remainingCurrentInterval } = useTimer(
     quest.currentInterval.remaining,
@@ -95,61 +95,4 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
   );
 }
 
-function TotalTimeDesk({ time }: { time: string }) {
-  return (
-    <>
-      <div className={`flex shrink-0 justify-center items-center w-62.5 aspect-19/11 relative overflow-hidden`}>
-        <img
-          src={timeDesk}
-          className="absolute inset-0 h-full w-full object-fill"
-        />
-        <p className="absolute text-[#e7d5b3] text-xl md:text-3xl lg:text-5xl font-bold">
-          {time}
-        </p>
-      </div>
-    </>
-  )
-}
-
-function QuestInfoScroll({ title, status, progress }: { title: string, status: string, progress: string }) {
-  return (
-    <div className="flex justify-center">
-      <div className={`flex shrink-0 justify-center items-center w-[75%] aspect-square relative overflow-hidden`}>
-        <img
-          src={questScroll}
-          className="absolute inset-0 h-full w-full object-fill"
-        />
-        <div className="absolute shrink-0 w-[50%] aspect-3/4 left-[18%]
-        text-[#917056]  text-[14px] font-bold truncate">
-          <ul className="list-disc list-outside pl-5">
-            <li>
-              <p>
-                Quest:
-              </p>
-              <p>
-                {title}
-              </p>
-            </li>
-            <li>
-              <p>
-                Status:
-              </p>
-              <p>
-                {status}
-              </p>
-            </li>
-            <li>
-              <p>
-                Progress:
-              </p>
-              <p>
-                {progress}
-              </p>
-            </li>
-
-          </ul>
-        </div>
-      </div>
-    </div>
-  )
-}
+export default QuestItem;

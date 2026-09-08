@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import questClient from "./questClient";
 import type {
     CreateQuestRequest,
     ClientQuest,
@@ -13,7 +13,7 @@ export function delay(ms = DELAY_DURATION_MS) {
 
 export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
 
-    await apiClient.post("/quest/create", {
+    await questClient.post("/quest/create", {
         Category: request.category,
         Title: request.title,
         TotalTimeMs: request.totalTimeMs,
@@ -25,42 +25,25 @@ export async function createQuest(request: CreateQuestRequest): Promise<ClientQu
 }
 
 export async function getQuest(): Promise<ClientQuest | null> {
-    try {
-        const res = await apiClient.get("/quest/current");
-
-        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
-
-        return res.data;
-    } catch {
-        return null;
-    }
+    return await questClient
+        .get("/quest/current")
+        .then(res => res.data);
 }
 
 
 export async function skipTransitionToBreak(): Promise<ClientQuest | null> {
-    try {
-        const res = await apiClient.get("/quest/skip_transition_to_break");
-
-        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
-
-        return res.data;
-    } catch {
-        return null;
-    }
+    return await questClient
+        .get("/quest/skip_transition_to_break")
+        .then(res => res.data);
 }
 
 export async function skipBreak(): Promise<ClientQuest | null> {
-    try {
-        const res = await apiClient.get("/quest/skip_break");
-
-        console.log(`quest: ${JSON.stringify(res.data, null, 2)}`)
-
-        return res.data;
-    } catch {
-        return null;
-    }
+    return await questClient
+        .get("/quest/skip_break")
+        .then(res => res.data);
 }
 
 export async function cancelQuest() {
-    await apiClient.get("/quest/cancel");
+    await questClient
+        .get("/quest/cancel");
 }

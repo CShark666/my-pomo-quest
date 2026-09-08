@@ -12,7 +12,11 @@ questClient.interceptors.response.use(
         return response;
     },
     (err) => {
-        console.error("API Error:", err.response?.status || err.message);
+        if (err.response?.status === 404) {
+            console.error("API Error. No quest");
+        } else {
+            console.error("API Error:", err.response?.status || err.message);
+        }
         return Promise.resolve({ data: null });
     }
 );

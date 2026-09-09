@@ -49,14 +49,14 @@ GET http://localhost:5059/quest/current
 Content-Type: application/json
 
 
-### GET skip transition to break
-GET http://localhost:5059/quest/skip_transition_to_break
+### POST skip transition to break
+POST http://localhost:5059/quest/skip_transition_to_break
 Content-Type: application/json
 
-### GET skip break
-GET http://localhost:5059/quest/skip_break
+### POST skip break
+POST http://localhost:5059/quest/skip_break
 Content-Type: application/json
 
-### GET cancel quest
-GET http://localhost:5059/quest/cancel
+### POST cancel quest
+POST http://localhost:5059/quest/cancel
 Content-Type: application/json

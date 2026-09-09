@@ -38,7 +38,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("skip_transition_to_break")]
+        [HttpPost("skip_transition_to_break")]
         public async Task<IActionResult> SkipTransitionToBreak()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -50,7 +50,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("skip_break")]
+        [HttpPost("skip_break")]
         public async Task<IActionResult> SkipBreak()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -62,7 +62,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("cancel")]
+        [HttpPost("cancel")]
         public async Task<IActionResult> CancelQuest()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);

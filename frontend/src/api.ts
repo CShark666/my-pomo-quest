@@ -33,17 +33,17 @@ export async function getQuest(): Promise<ClientQuest | null> {
 
 export async function skipTransitionToBreak(): Promise<ClientQuest | null> {
     return await questClient
-        .get("/quest/skip_transition_to_break")
+        .post("/quest/skip_transition_to_break")
         .then(res => res.data);
 }
 
 export async function skipBreak(): Promise<ClientQuest | null> {
     return await questClient
-        .get("/quest/skip_break")
+        .post("/quest/skip_break")
         .then(res => res.data);
 }
 
 export async function cancelQuest() {
     await questClient
-        .get("/quest/cancel");
+        .post("/quest/cancel");
 }

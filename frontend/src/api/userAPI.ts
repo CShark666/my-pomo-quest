@@ -2,8 +2,8 @@ import type {
     ClientUser,
     UserRegistrationRequest,
     UserLoginRequest
-} from './types/types';
-import apiClient from "./apiClient";
+} from '../types/types';
+import apiClient from "./userClient";
 
 
 export async function getUser(): Promise<ClientUser | null> {

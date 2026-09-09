@@ -2,7 +2,7 @@ import questClient from "./questClient";
 import type {
     CreateQuestRequest,
     ClientQuest,
-} from "./types/types";
+} from "../types/types";
 
 const DELAY_DURATION_MS = 300
 

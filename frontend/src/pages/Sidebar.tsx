@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { logOutUser } from "../userApi";
+import { logOutUser } from "../api/userAPI";
 import icon from '../assets/sidebar-icon.png'
 
 

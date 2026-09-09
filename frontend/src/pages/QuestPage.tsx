@@ -1,7 +1,7 @@
 import QuestItem from "../components/QuestPage/QuestItem/QuestItem.tsx";
 import CreatingQuestForm from "../components/QuestPage/CreatingQuest/CreatingQuestForm.tsx";
 import { useContext, useEffect, useTransition } from "react";
-import { skipTransitionToBreak, getQuest, skipBreak } from '../api.ts'
+import { skipTransitionToBreak, getQuest, skipBreak } from '../api/questAPI.ts'
 import { QuestContext } from "../contexts/QuestContext.ts";
 
 function QuestPageContent() {

@@ -1,5 +1,5 @@
 import type { ClientUser } from "../types/types";
-import { logOutUser } from "../userApi";
+import { logOutUser } from "../api/userAPI";
 
 type UserProfileProps = {
     user: ClientUser,

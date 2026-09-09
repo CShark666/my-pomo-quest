@@ -1,6 +1,6 @@
 import { useContext, useTransition } from "react";
 import { useNavigate } from "react-router";
-import { cancelQuest } from "../../../api";
+import { cancelQuest } from "../../../api/questAPI";
 import { LoadingSpinnerLabel } from "../../Loading";
 import { QuestContext } from "../../../contexts/QuestContext";
 

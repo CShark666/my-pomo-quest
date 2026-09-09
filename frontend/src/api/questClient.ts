@@ -13,7 +13,7 @@ questClient.interceptors.response.use(
     },
     (err) => {
         if (err.response?.status === 404) {
-            console.error("API Error. No quest");
+            console.error("No current quest");
         } else {
             console.error("API Error:", err.response?.status || err.message);
         }

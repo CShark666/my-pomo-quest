@@ -1,5 +1,5 @@
 import { useState, useTransition, type ChangeEvent, type FormEvent } from "react";
-import { loginUser } from "../../userApi";
+import { loginUser } from "../../api/userAPI";
 import type { LogInFormValues } from "../../types/FormTypes";
 
 type LogInFormProps = {

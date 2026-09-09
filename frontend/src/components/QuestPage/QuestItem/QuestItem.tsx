@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import { useTimer } from "../../../hooks/useTimer.ts";
 import { type ClientQuest } from "../../../types/types.ts";
 import { timeFormatter, timeFormatterSeconds } from "../../../util/timeFormatter.ts";
 import Timer from "./Timer.tsx";
@@ -16,14 +15,12 @@ type QuestItemProps = {
   quest: ClientQuest,
   skipBreakAction: () => void,
   skipTransitionAction: () => void,
-  isLoading: boolean
+  isLoading: boolean,
+  remainingTotal: number
+  remainingCurrentInterval: number
 }
 
-function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading }: QuestItemProps) {
-  const { remaining: remainingTotal } = useTimer(quest.remainingTotalTimeMs);
-  const { remaining: remainingCurrentInterval } = useTimer(
-    quest.currentInterval.remaining,
-  );
+function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, remainingTotal, remainingCurrentInterval }: QuestItemProps) {
   const nav = useNavigate();
 
   const isStart = quest.currentInterval.status === "TransitionToWork" && quest.remainingTotalTimeMs === quest.totalTimeMs;

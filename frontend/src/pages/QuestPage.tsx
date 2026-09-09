@@ -1,42 +1,22 @@
 import QuestItem from "../components/QuestPage/QuestItem/QuestItem.tsx";
 import CreatingQuestForm from "../components/QuestPage/CreatingQuest/CreatingQuestForm.tsx";
-import { useContext, useEffect, useTransition } from "react";
-import { skipTransitionToBreak, getQuest, skipBreak } from '../api/questAPI.ts'
+import { useContext } from "react";
 import { QuestContext } from "../contexts/QuestContext.ts";
 
 function QuestPageContent() {
   const questContext = useContext(QuestContext);
-  const quest = questContext.quest;
-  const setQuest = questContext.setQuest;
-  const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    if (quest) {
-      const id = setTimeout(
-        async () => getQuest().then(setQuest),
-        quest.currentInterval.remaining,
-      );
-      return () => clearInterval(id);
-    }
-  }, [quest, setQuest]);
-
-  const skipBreakAction = () => {
-    startTransition(async () => {
-      setQuest(await skipBreak());
-    })
-  }
-
-  const skipTransitionAction = () => {
-    startTransition(async () => {
-      setQuest(await skipTransitionToBreak());
-    })
-  }
 
   return (
     <div className="flex justify-center">
-      {quest
-        ? <QuestItem quest={quest} skipBreakAction={skipBreakAction} skipTransitionAction={skipTransitionAction} isLoading={isPending} />
-        : <CreatingQuestForm setQuest={setQuest} />
+      {questContext.quest
+        ? <QuestItem
+          quest={questContext.quest}
+          skipBreakAction={questContext.skipBreakAction}
+          skipTransitionAction={questContext.skipTransitionAction}
+          isLoading={questContext.isPending}
+          remainingTotal={questContext.remainingTotal}
+          remainingCurrentInterval={questContext.remainingCurrentInterval} />
+        : <CreatingQuestForm setQuest={questContext.setQuest} />
       }
     </div>
   )

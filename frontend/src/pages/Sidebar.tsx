@@ -15,7 +15,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="drawer">
+    <div className="drawer absolute top-0 right-0">
       <input id="my-drawer-1" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
         {/* Page content here */}

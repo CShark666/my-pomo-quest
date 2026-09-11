@@ -12,17 +12,14 @@ function Timer({ time, isBreakMode }: { time: number, isBreakMode: boolean }) {
 
   return (
     <div className="timer flex items-center justify-center">
-      <div className="time flex items-center">
+      <div className="time flex items-center text-white font-press-start text-8xl">
         <div className="hours">
-          <div className={`time-card flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-l-box`}>
+          <div className={`flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"} pt-8 pb-6 pl-3 pr-1 m-1 mb-1.5 rounded-l-box outline-5 outline-[#4d2b32]`}>
             <p>{format(time).minutes}</p>
           </div>
         </div>
-
-        <p className="dots text-8xl">:</p>
-
         <div className="seconds">
-          <div className={`time-card flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white pt-11 pb-12 pl-7 pr-7 m-1.5 font-bold text-8xl rounded-r-box`}>
+          <div className={`flex justify-center items-center ${isBreakMode ? "bg-break/50" : "bg-work/50"}  pt-8 pb-6 pl-2 pr-3 m-1 mb-1.5 rounded-r-box outline-5 outline-[#4d2b32]`}>
             <p>{format(time).seconds}</p>
           </div>
         </div>

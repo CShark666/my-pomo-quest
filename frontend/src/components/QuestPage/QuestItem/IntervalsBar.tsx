@@ -31,7 +31,7 @@ function IntervalsBar({
       {intervals.map((interval, i) => {
         return (
           <div key={i}
-            className={`min-w-8 max-w-24 aspect-2/1 grow shrink basis-15 relative overflow-hidden text-[#e7d5b3] text-center`}>
+            className={`min-w-8 max-w-24 aspect-2/1 grow shrink basis-15 relative overflow-hidden text-[#e7d5b3] font-press-start text-center`}>
             <div
               className={`absolute bottom-0 w-full h-full 
               ${interval.active ? "border-2 border-active" : ""}`}>

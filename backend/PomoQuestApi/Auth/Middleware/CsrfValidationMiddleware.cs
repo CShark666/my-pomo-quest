@@ -2,12 +2,10 @@ using System.Security.Claims;
 
 namespace PomoQuestApi.Auth.Middleware
 {
-    public class CsrfValidationMiddleware
+    public class CsrfValidationMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-        private static readonly string[] SafeMethods = { "GET", "HEAD", "OPTIONS" };
-
-        public CsrfValidationMiddleware(RequestDelegate next) => _next = next;
+        private readonly RequestDelegate _next = next;
+        private static readonly string[] SafeMethods = ["GET", "HEAD", "OPTIONS"];
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -17,10 +15,9 @@ namespace PomoQuestApi.Auth.Middleware
                 return;
             }
 
-            var sessionId = context.Request.Cookies["session_id"];
             var headerToken = context.Request.Headers["XSRF-TOKEN"].FirstOrDefault();
 
-            if (sessionId is null || headerToken is null)
+            if (headerToken is null)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return;

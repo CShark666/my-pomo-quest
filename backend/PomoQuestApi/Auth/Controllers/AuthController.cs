@@ -46,17 +46,29 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                var token = await _authService.LoginAsync(request);
+                var session = await _authService.LoginAsync(request);
 
                 Response.Cookies.Append(
                     "session_id",
-                    $"{token}",
+                    $"{session.Id}",
                     new CookieOptions
                     {
                         HttpOnly = true,
                         Secure = false,
-                        SameSite = SameSiteMode.Lax ,
-                        Expires = DateTimeOffset.UtcNow.AddDays(30)
+                        SameSite = SameSiteMode.Lax,
+                        Expires = DateTimeOffset.UtcNow.AddDays(30),
+                        Path = "/"
+                    });
+
+                Response.Cookies.Append(
+                    "XSRF-TOKEN",
+                    session.CsrfToken!,
+                    new CookieOptions
+                    {
+                        HttpOnly = false,
+                        Secure = false,
+                        SameSite = SameSiteMode.Strict,
+                        Path = "/"
                     });
 
                 return Ok(new
@@ -89,6 +101,7 @@ namespace PomoQuestApi.Auth.Controllers
             await _authService.LogoutAsync(sessionId);
 
             Response.Cookies.Delete("session_id");
+            Response.Cookies.Delete("XSRF-TOKEN");
 
             return Ok(new
             {

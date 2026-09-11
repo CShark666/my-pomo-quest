@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Models;
@@ -52,7 +53,7 @@ namespace PomoQuestApi.Auth.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Guid> LoginAsync(UserLoginRequest request)
+        public async Task<Session> LoginAsync(UserLoginRequest request)
         {
             var email = request.Email.Trim().ToLowerInvariant();
 
@@ -72,11 +73,13 @@ namespace PomoQuestApi.Auth.Services
 
             var now = DateTime.UtcNow;
             var id = Guid.NewGuid();
+            var csrfToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 
             var session = new Session
             {
                 Id = id,
                 UserId = user.Id,
+                CsrfToken = csrfToken,
                 CreatedAt = now,
                 ExpiresAt = now.AddDays(30)
             };
@@ -84,7 +87,7 @@ namespace PomoQuestApi.Auth.Services
             await _context.Sessions.AddAsync(session);
             await _context.SaveChangesAsync();
 
-            return id;
+            return session;
         }
 
         public async Task LogoutAsync(Guid sessionId)

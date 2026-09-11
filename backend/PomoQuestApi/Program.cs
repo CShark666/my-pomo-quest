@@ -49,6 +49,7 @@ app.UseCors(AllowFrontendOrigins);
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseMiddleware<AuthenticationMiddleware>();
+app.UseMiddleware<CsrfValidationMiddleware>();
 app.UseMiddleware<AuthorizationMiddleware>();
 
 app.MapControllers();

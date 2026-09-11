@@ -40,7 +40,7 @@ export function QuestContextProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <QuestContext.Provider value={{ quest, setQuest, remainingTotal, remainingCurrentInterval, skipBreakAction, skipTransitionAction, isPending }}>
+        <QuestContext.Provider value={{ quest, remainingTotal, remainingCurrentInterval, skipBreakAction, skipTransitionAction, isPending }}>
             {children}
         </QuestContext.Provider>
     )

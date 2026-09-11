@@ -3,7 +3,6 @@ import type { ClientQuest } from "../types/types";
 
 interface QuestContextType {
     quest: ClientQuest | null;
-    setQuest: (quest: ClientQuest | null) => void;
     skipBreakAction: () => void;
     skipTransitionAction: () => void;
     remainingTotal: number;
@@ -13,7 +12,6 @@ interface QuestContextType {
 
 export const QuestContext = createContext<QuestContextType>({
     quest: null,
-    setQuest: () => { },
     skipBreakAction: () => { },
     skipTransitionAction: () => { },
     remainingTotal: 0,

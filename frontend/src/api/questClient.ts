@@ -1,10 +1,6 @@
-import axios from "axios";
+import apiClient from "./apiClient";
 
-const questClient = axios.create({
-    baseURL: "http://localhost:5059",
-    timeout: 5000,
-    withCredentials: true
-})
+const questClient = apiClient.create()
 
 questClient.interceptors.response.use(
     (response) => {

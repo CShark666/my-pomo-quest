@@ -4,13 +4,6 @@ import type {
     ClientQuest,
 } from "../types/types";
 
-const DELAY_DURATION_MS = 300
-
-
-export function delay(ms = DELAY_DURATION_MS) {
-    return new Promise((r) => setTimeout(r, ms));
-}
-
 export async function createQuest(request: CreateQuestRequest): Promise<ClientQuest | null> {
 
     await questClient.post("/quest/create", {

@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Services;
-using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace PomoQuestApi.Auth.Controllers
 {
@@ -46,30 +45,7 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                var session = await _authService.LoginAsync(request);
-
-                Response.Cookies.Append(
-                    "session_id",
-                    $"{session.Id}",
-                    new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = false,
-                        SameSite = SameSiteMode.Lax,
-                        Expires = DateTimeOffset.UtcNow.AddDays(30),
-                        Path = "/"
-                    });
-
-                Response.Cookies.Append(
-                    "XSRF-TOKEN",
-                    session.CsrfToken!,
-                    new CookieOptions
-                    {
-                        HttpOnly = false,
-                        Secure = false,
-                        SameSite = SameSiteMode.Strict,
-                        Path = "/"
-                    });
+                await _authService.LoginAsync(request, HttpContext);
 
                 return Ok(new
                 {

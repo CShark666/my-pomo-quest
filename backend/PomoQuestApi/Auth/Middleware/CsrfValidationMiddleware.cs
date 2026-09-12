@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using PomoQuestApi.Auth.Services;
 
 namespace PomoQuestApi.Auth.Middleware
 {
@@ -7,7 +8,7 @@ namespace PomoQuestApi.Auth.Middleware
         private readonly RequestDelegate _next = next;
         private static readonly string[] SafeMethods = ["GET", "HEAD", "OPTIONS"];
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, SessionService sessionService)
         {
             if (SafeMethods.Contains(context.Request.Method) || context.Request.Path.StartsWithSegments("/auth/login"))
             {
@@ -25,7 +26,7 @@ namespace PomoQuestApi.Auth.Middleware
 
             var expectedToken = context.User.FindFirstValue("XSRF-TOKEN");
 
-            if (expectedToken is null || headerToken != expectedToken)
+            if (expectedToken is null || !sessionService.VerifyCsrfToken(headerToken, expectedToken))
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsync("CSRF token invalid");

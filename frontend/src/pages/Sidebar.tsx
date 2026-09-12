@@ -15,9 +15,9 @@ export function Sidebar() {
   }
 
   return (
-    <div className="drawer fixed">
+    <div className="drawer">
       <input id="my-drawer-1" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
+      <div className="drawer-content fixed">
         {/* Page content here */}
         <label htmlFor="my-drawer-1">
           <img src={icon} alt="sidebar" className="w-full max-w-12 cursor-pointer" />

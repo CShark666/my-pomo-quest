@@ -7,7 +7,7 @@ function QuestPageContent() {
   const questContext = useContext(QuestContext);
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center h-full">
       {questContext.quest
         ? <QuestItem
           quest={questContext.quest}

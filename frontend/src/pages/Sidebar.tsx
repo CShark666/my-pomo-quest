@@ -31,6 +31,7 @@ export function Sidebar() {
           <span>{user?.name} lvl: {user?.level}</span>
           {/* Sidebar content here */}
           <li><Link to="user">Profile</Link></li>
+          <li><Link to="/">Home page</Link></li>
           <li><Link to="quest">Pomo-Quest</Link></li>
           <li><button className="btn btn-ghost" onClick={logOutAction}>Log out</button></li>
         </ul>

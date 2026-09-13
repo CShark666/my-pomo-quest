@@ -1,3 +1,4 @@
+import React from 'react';
 import statusSprite from '../../../assets/HP-Bar-Sheet-v2.png';
 
 const FRAME_COUNT = 11;
@@ -31,9 +32,9 @@ function IntervalsBar({
       {intervals.map((interval, i) => {
         return (
           <div key={i}
-            className={`min-w-8 max-w-24 aspect-2/1 grow shrink basis-15 relative overflow-hidden text-[#e7d5b3] font-press-start text-center`}>
+            className={`min-w-8 max-w-24 aspect-2/1 grow shrink basis-15 relative overflow-hidden text-[#e7d5b3] text-[12px] font-press-start`}>
             <div
-              className={`absolute bottom-0 w-full h-full 
+              className={`absolute bottom-0 w-full h-full flex justify-center items-center
               ${interval.active ? "border-2 border-active" : ""}`}>
               {Math.floor(interval.percent) + "%"}
             </div>
@@ -47,7 +48,7 @@ function IntervalsBar({
 
 export default IntervalsBar;
 
-function Interval({ percent }: { percent: number }) {
+const Interval = React.memo(function Interval({ percent }: { percent: number }) {
   const frameIndex = (FRAME_COUNT - 1) - Math.round((percent / 100) * (FRAME_COUNT - 1));
 
   const positionPercent = FRAME_COUNT > 1
@@ -68,4 +69,4 @@ function Interval({ percent }: { percent: number }) {
       }}
     />
   );
-}
+})

@@ -39,7 +39,7 @@ namespace PomoQuestApi.PomoQuest.Service
         {
             var quest = await db.Quests
                 .FirstOrDefaultAsync(q => q.UserId == userId && q.Status == QuestStatus.InProgress)
-                ?? throw new NotFoundException("No active quests.");
+                ?? throw new NoCurrentQuestException("No active quests.");
 
 
             if (UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();

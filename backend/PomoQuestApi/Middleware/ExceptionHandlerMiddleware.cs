@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PomoQuestApi.Middleware
 {
-    public class ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
+    public class ExceptionHandlerMiddleware(RequestDelegate next)
     {
         private readonly RequestDelegate _next = next;
-        private readonly ILogger _logger = logger;
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -13,44 +12,35 @@ namespace PomoQuestApi.Middleware
             {
                 await _next(context);
             }
-            catch (NotFoundException ex)
-            {
-                await HandleNotFoundAsync(context, ex);
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception at {Path}", context.Request.Path);
-
+                context.Response.ContentType = "application/problem+json";
                 context.Response.StatusCode = ex switch
                 {
                     ApplicationException => StatusCodes.Status400BadRequest,
+                    NoCurrentQuestException => StatusCodes.Status404NotFound,
                     _ => StatusCodes.Status500InternalServerError
                 };
 
-                await context.Response.WriteAsJsonAsync(
-                    new ProblemDetails
-                    {
-                        Type = ex.GetType().Name,
-                        Title = "An error occurred",
-                        Detail = ex.Message
-                    });
+                var problemDetails = new ProblemDetails
+                {
+                    Type = ex.GetType().Name,
+                    Title = "An error occurred",
+                    Detail = ex.Message
+                };
+
+                problemDetails.Extensions["code"] = ex switch
+                {
+                    NoCurrentQuestException => "NO_CURRENT_QUEST",
+                    ApplicationException => "BAD_REQUEST",
+                    _ => "INTERNAL_ERROR"
+                };
+
+                await context.Response.WriteAsJsonAsync(problemDetails);
             }
         }
-        private static Task HandleNotFoundAsync(HttpContext context, NotFoundException ex)
-        {
-            context.Response.ContentType = "application/problem+json";
-            context.Response.StatusCode = StatusCodes.Status404NotFound;
-
-            return context.Response.WriteAsJsonAsync(
-                                    new ProblemDetails
-                                    {
-                                        Type = ex.GetType().Name,
-                                        Title = "Not Found",
-                                        Detail = ex.Message
-                                    });
-        }
     }
-    public class NotFoundException(string message) : Exception(message)
+    public class NoCurrentQuestException(string message) : Exception(message)
     {
     }
 }

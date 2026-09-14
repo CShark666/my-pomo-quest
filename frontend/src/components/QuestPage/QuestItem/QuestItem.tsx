@@ -30,6 +30,10 @@ function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, re
     ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
     : 100;
 
+  const questItemWidth = 950;
+  const infoWidth = 250;
+  const intervalsBarWidth = questItemWidth - infoWidth;
+
   const transitionToWorkText = quest.currentInterval.index == 0
     ? `The quest will start in: ${timeFormatterSeconds(remainingCurrentInterval)}...`
     : `The break is over. The next stage will start in: ${timeFormatterSeconds(remainingCurrentInterval)}... `;
@@ -39,12 +43,12 @@ function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, re
 
   return (
     <>
-      <div className="quest-item flex flex-col w-237.5 min-w-2xs p-1">
+      <div className={`quest-item flex flex-col w-[${questItemWidth}px] min-w-2xs`}>
         <div className="quest-item__cancel flex justify-end">
           <CancelButton />
         </div>
-        <div className="flex w-full">
-          <div >
+        <div className={`flex h-87.5`}>
+          <div className={`w-[${infoWidth}px]`}>
             <TotalTimeDesk
               time={timeFormatter(
                 isBreakMode
@@ -55,12 +59,13 @@ function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, re
               )} />
             <QuestInfoScroll title={quest.title} status={quest.status} progress={`${quest.currentInterval.index}/${quest.intervalsCount}`} />
           </div>
-          <div className="flex-1">
+          <div className={`w-[${intervalsBarWidth}]`}>
             <IntervalsBar
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "TransitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
               timerPercent={quest.status === "InProgress" ? timerPercent : 0}
               isBreakMode={isBreakMode}
+              formWidth={intervalsBarWidth}
             />
           </div>
         </div>

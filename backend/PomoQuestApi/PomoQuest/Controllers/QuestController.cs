@@ -1,8 +1,8 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth;
 using PomoQuestApi.PomoQuest.DTO;
-using PomoQuestApi.PomoQuest.Models;
 using PomoQuestApi.PomoQuest.Service;
 
 namespace PomoQuestApi.PomoQuest.Controllers
@@ -74,6 +74,16 @@ namespace PomoQuestApi.PomoQuest.Controllers
             {
                 message = "Quest canceled successfully."
             });
+        }
+        
+        [RequiresAuth]
+        [HttpGet("history")]
+        public async Task<IActionResult> QuestsHistory()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var questsHistory = await questService.GetQuestsHistoryAsync(userId);
+
+            return Ok(questsHistory);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace PomoQuestApi.PomoQuest.Service
             return quest;
         }
 
-        public async Task<QuestResponse> CreateQuestResponseAsync(Quest quest)
+        public async Task<CurrentQuestResponse> CreateQuestResponseAsync(Quest quest)
         {
             var remainingIntervals = quest.IntervalsCount - quest.CurrentInterval.Index;
             var intervalDuration = GetIntervalDuration(quest.TotalTimeMs, quest.IntervalsCount);
@@ -59,7 +59,7 @@ namespace PomoQuestApi.PomoQuest.Service
                 remainingTotalTimeMs += currentIntervalRemaining;
             }
 
-            return new QuestResponse
+            return new CurrentQuestResponse
             {
                 Id = quest.Id,
                 Category = quest.Category,
@@ -82,7 +82,7 @@ namespace PomoQuestApi.PomoQuest.Service
             };
         }
 
-        public async Task<QuestResponse> SkipTransitionToBreakAsync(Quest quest)
+        public async Task<CurrentQuestResponse> SkipTransitionToBreakAsync(Quest quest)
         {
             quest.CurrentInterval.Status = IntervalStatus.Break;
             quest.CurrentInterval.Started = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -91,7 +91,7 @@ namespace PomoQuestApi.PomoQuest.Service
 
             return await CreateQuestResponseAsync(quest);
         }
-        public async Task<QuestResponse> SkipBreakAsync(Quest quest)
+        public async Task<CurrentQuestResponse> SkipBreakAsync(Quest quest)
         {
             quest.CurrentInterval.Index++;
             quest.CurrentInterval.Status = IntervalStatus.Work;
@@ -172,6 +172,27 @@ namespace PomoQuestApi.PomoQuest.Service
 
             var breakType = index % 2 == 0 ? BreakType.Short : BreakType.Long;
             return breaksConfig![breakType];
+        }
+
+        public async Task<List<QuestResponse>> GetQuestsHistoryAsync(Guid userId)
+        {
+            var quests = await db.Quests
+                .Where(q => q.UserId == userId)
+                .Select(q => new QuestResponse
+                {
+                    Id = q.Id,
+                    Category = q.Category,
+                    Title = q.Title,
+                    Status = q.Status,
+                    TotalTimeMs = q.TotalTimeMs,
+                    IntervalsCount = q.IntervalsCount,
+                    Breaks = q.BreaksConfig,
+                    CreatedAt = q.CreatedAt
+                })
+                .ToListAsync()
+                ?? throw new NoCurrentQuestException("History is empty");
+
+            return quests;
         }
     }
 }

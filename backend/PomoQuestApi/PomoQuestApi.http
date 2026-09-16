@@ -60,3 +60,7 @@ Content-Type: application/json
 ### POST cancel quest
 POST http://localhost:5059/quest/cancel
 Content-Type: application/json
+
+### GET history
+GET http://localhost:5059/quest/history
+Content-Type: application/json

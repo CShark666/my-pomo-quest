@@ -75,7 +75,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
                 message = "Quest canceled successfully."
             });
         }
-        
+
         [RequiresAuth]
         [HttpGet("history")]
         public async Task<IActionResult> QuestsHistory()
@@ -84,6 +84,17 @@ namespace PomoQuestApi.PomoQuest.Controllers
             var questsHistory = await questService.GetQuestsHistoryAsync(userId);
 
             return Ok(questsHistory);
+        }
+
+        [RequiresAuth]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> QuestsHistory(string id)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var questId = Convert.ToInt64(id);
+            QuestResponse quest = await questService.GetQuestAsync(questId, userId);
+
+            return Ok(quest);
         }
     }
 }

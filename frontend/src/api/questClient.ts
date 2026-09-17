@@ -11,9 +11,9 @@ questClient.interceptors.response.use(
         const status = err.response?.status;
         const code = err.response?.data?.code;
 
-        if (status === 404 && code === "NO_CURRENT_QUEST") {
+        if (status === 404 && code === "NO_QUEST") {
             console.error(err.response?.data?.detail || "No current quest error");
-            return Promise.resolve({ data: null });
+            return Promise.resolve({ data: null, detail: err.response?.data?.detail });
         }
         console.error("API Error:", status ?? err.message);
         throw new Error(`API Error: ${status ?? "network"}`, { cause: err });

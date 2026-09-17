@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.data;
-using PomoQuestApi.Middleware;
+using PomoQuestApi.Exceptions;
 using PomoQuestApi.PomoQuest.DTO;
 using PomoQuestApi.PomoQuest.Models;
 
@@ -39,7 +39,7 @@ namespace PomoQuestApi.PomoQuest.Service
         {
             var quest = await db.Quests
                 .FirstOrDefaultAsync(q => q.UserId == userId && q.Status == QuestStatus.InProgress)
-                ?? throw new NoCurrentQuestException("No active quests.");
+                ?? throw new QuestNotFoundException("No active quests.");
 
 
             if (UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();
@@ -107,6 +107,48 @@ namespace PomoQuestApi.PomoQuest.Service
             await db.SaveChangesAsync();
         }
 
+        public async Task<List<QuestResponse>> GetQuestsHistoryAsync(Guid userId)
+        {
+            var quests = await db.Quests
+                .Where(q => q.UserId == userId)
+                .Select(q => new QuestResponse
+                {
+                    Id = q.Id,
+                    Category = q.Category,
+                    Title = q.Title,
+                    Status = q.Status,
+                    TotalTimeMs = q.TotalTimeMs,
+                    IntervalsCount = q.IntervalsCount,
+                    Breaks = q.BreaksConfig,
+                    CreatedAt = q.CreatedAt
+                })
+                .ToListAsync()
+                ?? throw new QuestNotFoundException("History is empty");
+
+            return quests;
+        }
+        public async Task<QuestResponse> GetQuestAsync(long questId, Guid userId)
+        {
+            var quest = await db.Quests.FirstOrDefaultAsync(q => q.Id == questId && q.UserId == userId);
+
+            if (quest is null)
+            {
+                throw new QuestNotFoundException($"The user doesn't have this quest, or the quest doesn't exist.");
+            }
+
+            return new QuestResponse
+            {
+                Id = quest.Id,
+                Category = quest.Category,
+                Title = quest.Title,
+                Status = quest.Status,
+                TotalTimeMs = quest.TotalTimeMs,
+                IntervalsCount = quest.IntervalsCount,
+                Breaks = quest.BreaksConfig,
+                CreatedAt = quest.CreatedAt
+            };
+        }
+
         private bool UpdateQuestIfNeeded(Quest quest)
         {
             if (quest == null || quest.Status != QuestStatus.InProgress) return false;
@@ -149,10 +191,8 @@ namespace PomoQuestApi.PomoQuest.Service
             }
             return needsUpdate;
         }
-
         private long GetIntervalDuration(long totalTimeMs, int intervalsCount)
             => totalTimeMs / intervalsCount;
-
         private long GetCurrentIntervalRemaining(Quest quest)
         {
             var currentIntervalTotalTime = quest.CurrentInterval.Status switch
@@ -165,34 +205,12 @@ namespace PomoQuestApi.PomoQuest.Service
 
             return currentIntervalTotalTime - passedTime;
         }
-
         private long GetBreakDuration(int index, Dictionary<BreakType, long>? breaksConfig)
         {
             if (breaksConfig == null) return 0;
 
             var breakType = index % 2 == 0 ? BreakType.Short : BreakType.Long;
             return breaksConfig![breakType];
-        }
-
-        public async Task<List<QuestResponse>> GetQuestsHistoryAsync(Guid userId)
-        {
-            var quests = await db.Quests
-                .Where(q => q.UserId == userId)
-                .Select(q => new QuestResponse
-                {
-                    Id = q.Id,
-                    Category = q.Category,
-                    Title = q.Title,
-                    Status = q.Status,
-                    TotalTimeMs = q.TotalTimeMs,
-                    IntervalsCount = q.IntervalsCount,
-                    Breaks = q.BreaksConfig,
-                    CreatedAt = q.CreatedAt
-                })
-                .ToListAsync()
-                ?? throw new NoCurrentQuestException("History is empty");
-
-            return quests;
         }
     }
 }

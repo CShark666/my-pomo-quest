@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using PomoQuestApi.Exceptions;
 
 namespace PomoQuestApi.Middleware
 {
@@ -18,7 +19,7 @@ namespace PomoQuestApi.Middleware
                 context.Response.StatusCode = ex switch
                 {
                     ApplicationException => StatusCodes.Status400BadRequest,
-                    NoCurrentQuestException => StatusCodes.Status404NotFound,
+                    QuestNotFoundException => StatusCodes.Status404NotFound,
                     _ => StatusCodes.Status500InternalServerError
                 };
 
@@ -31,7 +32,7 @@ namespace PomoQuestApi.Middleware
 
                 problemDetails.Extensions["code"] = ex switch
                 {
-                    NoCurrentQuestException => "NO_CURRENT_QUEST",
+                    QuestNotFoundException => "NO_QUEST",
                     ApplicationException => "BAD_REQUEST",
                     _ => "INTERNAL_ERROR"
                 };
@@ -39,8 +40,5 @@ namespace PomoQuestApi.Middleware
                 await context.Response.WriteAsJsonAsync(problemDetails);
             }
         }
-    }
-    public class NoCurrentQuestException(string message) : Exception(message)
-    {
     }
 }

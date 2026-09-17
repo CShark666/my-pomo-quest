@@ -64,3 +64,7 @@ Content-Type: application/json
 ### GET history
 GET http://localhost:5059/quest/history
 Content-Type: application/json
+
+### GET by id
+GET http://localhost:5059/quest/96
+Content-Type: application/json

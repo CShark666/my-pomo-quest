@@ -23,7 +23,7 @@ export type CreateQuestRequest = {
     breaks: BreakConfig,
 }
 
-export type DbQUest = {
+export type QuestResponse = {
     id: number,
     category: string
     title: string,
@@ -32,11 +32,9 @@ export type DbQUest = {
     intervalsCount: number,
     breaks: BreakConfig,
     createdAt: string,
-
-    currentInterval: IntervalState
 }
 
-export type ClientQuest = DbQUest & {
+export type CurrentQuest = QuestResponse & {
     intervalDurationMs: number,
     remainingTotalTimeMs: number,
     currentInterval: IntervalStateFull

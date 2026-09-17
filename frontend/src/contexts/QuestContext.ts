@@ -1,9 +1,9 @@
 import { createContext } from "react";
-import type { ClientQuest } from "../types/types";
+import type { CurrentQuest } from "../types/types";
 
 interface QuestContextType {
-    quest: ClientQuest | null;
-    setQuest: (quest: ClientQuest | null) => void;
+    quest: CurrentQuest | null;
+    setQuest: (quest: CurrentQuest | null) => void;
     skipBreakAction: () => void;
     skipTransitionAction: () => void;
     remainingTotal: number;

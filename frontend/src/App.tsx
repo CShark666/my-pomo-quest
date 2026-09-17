@@ -9,6 +9,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import './App.css';
 import { ContextProvider } from "./contexts/ContextProvider.tsx";
 import { WelcomePage } from "./pages/WelcomePage.tsx";
+import QuestsHistoryPage from "./pages/QuestsHistoryPage.tsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<HomePage />} >
             <Route path="/" element={<WelcomePage />} />
             <Route path="quest" element={<QuestPage />} />
+            <Route path="questsHistory" element={<QuestsHistoryPage />} />
             <Route path="user" element={<UserPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

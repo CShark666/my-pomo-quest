@@ -1,11 +1,11 @@
 import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { QuestContext } from "./QuestContext";
-import type { ClientQuest } from "../types/types";
+import type { CurrentQuest } from "../types/types";
 import { getQuest, skipBreak, skipTransitionToBreak } from "../api/questAPI";
 import { useTimer } from "../hooks/useTimer";
 
 export function QuestContextProvider({ children }: { children: ReactNode }) {
-    const [quest, setQuest] = useState<ClientQuest | null>(null);
+    const [quest, setQuest] = useState<CurrentQuest | null>(null);
     const [isPending, startTransition] = useTransition();
 
 

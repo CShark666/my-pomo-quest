@@ -33,6 +33,7 @@ export function Sidebar() {
           <li><Link to="user">Profile</Link></li>
           <li><Link to="/">Home page</Link></li>
           <li><Link to="quest">Pomo-Quest</Link></li>
+          <li><Link to="questsHistory">Quests history</Link></li>
           <li><button className="btn btn-ghost" onClick={logOutAction}>Log out</button></li>
         </ul>
       </div>

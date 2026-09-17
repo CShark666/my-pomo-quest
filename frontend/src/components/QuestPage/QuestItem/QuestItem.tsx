@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { type ClientQuest } from "../../../types/types.ts";
+import { type CurrentQuest } from "../../../types/types.ts";
 import { timeFormatter, timeFormatterSeconds } from "../../../util/timeFormatter.ts";
 import Timer from "./Timer.tsx";
 import CancelButton from "./CancelButton.tsx";
@@ -12,7 +12,7 @@ import QuestInfoScroll from "./QuestInfoScroll.tsx";
 
 
 type QuestItemProps = {
-  quest: ClientQuest,
+  quest: CurrentQuest,
   skipBreakAction: () => void,
   skipTransitionAction: () => void,
   isLoading: boolean,

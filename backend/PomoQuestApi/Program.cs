@@ -31,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<QuestService>();
 builder.Services.AddScoped<SessionService>();
 

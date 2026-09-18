@@ -1,6 +1,4 @@
 using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Models;
@@ -147,7 +145,6 @@ namespace PomoQuestApi.Auth.Services
 
         private Task<bool> IsEmailUsedAsync(string email) =>
             _context.Users.AnyAsync(u => u.Email == email);
-
         private bool VerifyCredentials(User user, string requestPassword)
         {
             if (user == null)

@@ -7,10 +7,10 @@ namespace PomoQuestApi.Auth.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController(AuthenticationService authenticationService) : ControllerBase
+    public class AuthController(AuthenticationService authenticationService, UserService userService) : ControllerBase
     {
         private readonly AuthenticationService _authService = authenticationService;
-
+        private readonly UserService _userService = userService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterRequest request)
@@ -89,16 +89,15 @@ namespace PomoQuestApi.Auth.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetUser()
         {
-            // var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var profileId = long.Parse(User.FindFirstValue("profile_id")!);
-            var email = User.FindFirstValue(ClaimTypes.Email)!;
-            var name = User.FindFirstValue(ClaimTypes.Name)!;
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userProfile = await _userService.GetProfileAsync(userId);
 
             return Ok(new UserProfileResponse
             {
-                Id = profileId,
-                Email = email,
-                Name = name
+                Id = userProfile.Id,
+                Email = userProfile.Email,
+                Name = userProfile.Name,
+                Experience = userProfile.Experience
             });
         }
     }

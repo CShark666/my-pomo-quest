@@ -38,6 +38,7 @@ namespace PomoQuestApi.PomoQuest.Service
         public async Task<Quest> GetCurrentQuestAsync(Guid userId)
         {
             var quest = await db.Quests
+                .Include(q => q.User)
                 .FirstOrDefaultAsync(q => q.UserId == userId && q.Status == QuestStatus.InProgress)
                 ?? throw new QuestNotFoundException("No active quests.");
 
@@ -162,6 +163,7 @@ namespace PomoQuestApi.PomoQuest.Service
                 if (quest.CurrentInterval.Index == quest.IntervalsCount - 1)
                 {
                     quest.Status = QuestStatus.Finished;
+                    quest.User.Profile.Experience = quest.User.Profile.Experience + (quest.TotalTimeMs / 1000 / 60);
                     break;
                 }
 

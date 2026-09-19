@@ -90,14 +90,18 @@ namespace PomoQuestApi.Auth.Controllers
         public async Task<IActionResult> GetUser()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
             var userProfile = await _userService.GetProfileAsync(userId);
+            int level = _userService.CalculateLevel(userProfile.Experience);
+            int currentExperience = _userService.CalculateCurrentExp(userProfile.Experience);
 
             return Ok(new UserProfileResponse
             {
                 Id = userProfile.Id,
                 Email = userProfile.Email,
                 Name = userProfile.Name,
-                Experience = userProfile.Experience
+                CurrentExperience = currentExperience,
+                Level = level
             });
         }
     }

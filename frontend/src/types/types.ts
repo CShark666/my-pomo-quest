@@ -54,19 +54,10 @@ export type UserLoginRequest = {
     password: string
 }
 
-export type UserCredential = {
-    login: string,
-    password: string,
-    id: number
-}
-
-export type UserData = {
+export type ClientUser = {
     id: number,
     name: string,
-    experience: number,
-    completedQuests: number
-}
-
-export type ClientUser = UserData & {
-    level: number
+    email: string,
+    level: number,
+    currentExperience: number
 }

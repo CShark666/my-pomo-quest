@@ -13,6 +13,8 @@ namespace PomoQuestApi.Auth.Services
             var level = gameService.CalculateLevel(profile!.Experience);
             var currentExperience = gameService.CalculateCurrentExp(profile.Experience);
 
+            await gameService.VerifyYesterdayStreakAsync(userId);
+
             return new UserProfileResponse
             {
                 Id = profile.Id,

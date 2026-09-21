@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using PomoQuestApi.data;
 using PomoQuestApi.Exceptions;
+using PomoQuestApi.PomoQuest.Controllers;
 using PomoQuestApi.PomoQuest.DTO;
 using PomoQuestApi.PomoQuest.Models;
 
 namespace PomoQuestApi.PomoQuest.Service
 {
-    public class QuestService(AppDbContext db)
+    public class QuestService(AppDbContext db, GameService gameService)
     {
         public const int TRANSITION_DURATION_MS = 5000;
         public async Task CreateQuestAsync(QuestRequest request, Guid userId)
@@ -43,7 +44,7 @@ namespace PomoQuestApi.PomoQuest.Service
                 ?? throw new QuestNotFoundException("No active quests.");
 
 
-            if (UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();
+            if (await UpdateQuestIfNeeded(quest)) await db.SaveChangesAsync();
 
             return quest;
         }
@@ -150,7 +151,7 @@ namespace PomoQuestApi.PomoQuest.Service
             };
         }
 
-        private bool UpdateQuestIfNeeded(Quest quest)
+        private async Task<bool> UpdateQuestIfNeeded(Quest quest)
         {
             if (quest == null || quest.Status != QuestStatus.InProgress) return false;
 
@@ -164,6 +165,7 @@ namespace PomoQuestApi.PomoQuest.Service
                 {
                     quest.Status = QuestStatus.Finished;
                     quest.User.Profile.Experience = quest.User.Profile.Experience + (quest.TotalTimeMs / 1000 / 60);
+                    await gameService.VerifyTodayStreak(quest.UserId);
                     break;
                 }
 

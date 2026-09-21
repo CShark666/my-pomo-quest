@@ -7,5 +7,6 @@ namespace PomoQuestApi.Auth.DTO
         public string Name { get; set; } = null!;
         public int CurrentExperience { get; set; } = 0;
         public int Level { get; set; } = 1;
+        public int Streak { get; set; } = 0;
     }
 }

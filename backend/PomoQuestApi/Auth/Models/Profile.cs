@@ -7,6 +7,7 @@ namespace PomoQuestApi.Auth.Models
         public string Email { get; set; } = null!;
         public string Name { get; set; } = null!;
         public long Experience { get; set; } = 0;
+        public int Streak { get; set; } = 0;
         public User User { get; set; } = null!;
     }
 }

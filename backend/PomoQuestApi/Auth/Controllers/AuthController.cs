@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Services;
+using PomoQuestApi.PomoQuest.Controllers;
 
 namespace PomoQuestApi.Auth.Controllers
 {
@@ -90,19 +91,9 @@ namespace PomoQuestApi.Auth.Controllers
         public async Task<IActionResult> GetUser()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
             var userProfile = await _userService.GetProfileAsync(userId);
-            int level = _userService.CalculateLevel(userProfile.Experience);
-            int currentExperience = _userService.CalculateCurrentExp(userProfile.Experience);
 
-            return Ok(new UserProfileResponse
-            {
-                Id = userProfile.Id,
-                Email = userProfile.Email,
-                Name = userProfile.Name,
-                CurrentExperience = currentExperience,
-                Level = level
-            });
+            return Ok(userProfile);
         }
     }
 }

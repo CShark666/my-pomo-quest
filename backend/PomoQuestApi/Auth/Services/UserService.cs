@@ -1,26 +1,26 @@
 using Microsoft.EntityFrameworkCore;
-using PomoQuestApi.Auth.Models;
+using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.data;
+using PomoQuestApi.PomoQuest.Controllers;
 
 namespace PomoQuestApi.Auth.Services
 {
-    public class UserService(AppDbContext db)
+    public class UserService(AppDbContext db, GameService gameService)
     {
-        public const int ONE_LEVEL_EXP = 240;
-        public async Task<Profile> GetProfileAsync(Guid userId)
+        public async Task<UserProfileResponse> GetProfileAsync(Guid userId)
         {
             var profile = await db.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
-            return profile!;
-        }
+            var level = gameService.CalculateLevel(profile!.Experience);
+            var currentExperience = gameService.CalculateCurrentExp(profile.Experience);
 
-        public int CalculateCurrentExp(long experience)
-        {
-            return Convert.ToInt32(experience % ONE_LEVEL_EXP);
-        }
-
-        public int CalculateLevel(long experience)
-        {
-            return Math.Max(Convert.ToInt32(experience / ONE_LEVEL_EXP), 1);
+            return new UserProfileResponse
+            {
+                Id = profile.Id,
+                Email = profile.Email,
+                Name = profile.Name,
+                CurrentExperience = currentExperience,
+                Level = level
+            };
         }
     }
 }

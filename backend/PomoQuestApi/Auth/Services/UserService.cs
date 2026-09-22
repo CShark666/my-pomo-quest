@@ -9,11 +9,13 @@ namespace PomoQuestApi.Auth.Services
     {
         public async Task<UserProfileResponse> GetProfileAsync(Guid userId)
         {
+            await gameService.VerifyYesterdayStreakAsync(userId);
+
             var profile = await db.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
+
             var level = gameService.CalculateLevel(profile!.Experience);
             var currentExperience = gameService.CalculateCurrentExp(profile.Experience);
 
-            await gameService.VerifyYesterdayStreakAsync(userId);
 
             return new UserProfileResponse
             {
@@ -21,7 +23,8 @@ namespace PomoQuestApi.Auth.Services
                 Email = profile.Email,
                 Name = profile.Name,
                 CurrentExperience = currentExperience,
-                Level = level
+                Level = level,
+                Streak = profile.Streak
             };
         }
     }

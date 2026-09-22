@@ -7,7 +7,7 @@ import icon from '../assets/sidebar-icon.png'
 
 export function Sidebar() {
   const userContext = useContext(UserContext);
-  const user = userContext.user;
+  const user = userContext.user!;
 
   const logOutAction = async () => {
     await logOutUser();
@@ -29,10 +29,19 @@ export function Sidebar() {
 
         <ul className="menu bg-base-200 min-h-full w-60 p-4">
 
-          <div className="grid outline-1 rounded-2xl p-1">
-            <span>{user?.name}</span>
-            <span>Lvl: {user?.level}</span>
-            <span>Exp:{user?.currentExperience}/240</span>
+          <div className="flex justify-between outline-1 rounded-2xl p-1">
+            {user && (
+              <>
+                <div className="grid">
+                  <span>{user.name}</span>
+                  <span>Lvl: {user.level}</span>
+                  <span>Exp:{user.currentExperience}/240</span>
+                </div>
+                <div>
+                  <span>{user!.streak > 0 && `streaks: ${user.streak}`}</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Sidebar content here */}

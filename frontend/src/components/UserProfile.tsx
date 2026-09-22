@@ -25,9 +25,16 @@ export function UserProfile({ user, logOutAction }: UserProfileProps) {
                         <img src="/user_pic.jpg" alt="profile-pic" className="rounded-full size-36" />
                     </div>
 
-                    <div className="flex flex-2 justify-between">
-                        <p>{user.name}</p>
-                        <p>{user.level}</p>
+                    <div className="flex-2">
+                        <div className="flex justify-between p-1">
+                            <div>
+                                <span>{user.name}</span>
+                            </div>
+                            <div className="grid text-right">
+                                <span> Streak: {user.streak} Lvl: {user.level}</span>
+                                <span className="opacity-50">Exp: {user.currentExperience} / 240</span>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

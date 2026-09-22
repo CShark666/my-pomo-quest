@@ -59,5 +59,6 @@ export type ClientUser = {
     name: string,
     email: string,
     level: number,
-    currentExperience: number
+    currentExperience: number,
+    streak: number
 }

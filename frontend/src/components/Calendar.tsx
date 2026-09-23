@@ -26,7 +26,7 @@ function Calendar({ monthWithHistory }: { monthWithHistory?: Array<CalendarHisto
     })
 
     return <>
-        <div className="w-full bg-[#d7b594] p-2.5 rounded-md outline-8 outline-[#c09473]">
+        <div className="w-full bg-[#d7b594] p-2.5 rounded-md outline-8 outline-[#c09473] font-press-start">
             <div className="text-4xl font-bold">
                 <h2>{currentMonthName} {today.getFullYear()}</h2>
             </div>
@@ -63,9 +63,10 @@ function Calendar({ monthWithHistory }: { monthWithHistory?: Array<CalendarHisto
                             ${isToday && "bg-amber-400"} 
                             ${isCorrectMoth ? "opacity-25" : isPast ? "opacity-75" : ""}
                             ${day.activity && "bg-[#85ff7a86]"}
-                            aspect-square outline-2 rounded-md flex justify-center items-center`}
+                            aspect-square outline-4 outline-[#c09473] rounded-md flex justify-center items-center
+                            `}
                         >
-                            {day.date.getMonth() + 1}/{day.date.getDate()}
+                            {day.date.getDate()}
                         </div>
                     )
                 })}

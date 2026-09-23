@@ -3,7 +3,7 @@ import { timeFormatter } from "../../util/timeFormatter";
 
 function QuestsHistoryTable({ questsHistory }: { questsHistory: Array<QuestResponse> }) {
     return <>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bg-[#d7b594] outline-[#c09473] outline-8 rounded-md">
             <table className="table table-x">
                 <thead>
                     <tr>

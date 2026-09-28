@@ -26,6 +26,8 @@ namespace PomoQuestApi.Auth.Middleware
 
                         new Claim("session_id",session.Id.ToString()),
 
+                        new Claim("XSRF-TOKEN", session.CsrfTokenHash!),
+
                         new Claim( "profile_id", session.User.Profile.Id.ToString()),
 
                         new Claim( ClaimTypes.Email, session.User.Profile.Email),

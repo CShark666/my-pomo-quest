@@ -2,16 +2,16 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth.DTO;
 using PomoQuestApi.Auth.Services;
-using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
+using PomoQuestApi.PomoQuest.Controllers;
 
 namespace PomoQuestApi.Auth.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController(AuthenticationService authenticationService) : ControllerBase
+    public class AuthController(AuthenticationService authenticationService, UserService userService) : ControllerBase
     {
         private readonly AuthenticationService _authService = authenticationService;
-
+        private readonly UserService _userService = userService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterRequest request)
@@ -46,18 +46,7 @@ namespace PomoQuestApi.Auth.Controllers
         {
             try
             {
-                var token = await _authService.LoginAsync(request);
-
-                Response.Cookies.Append(
-                    "session_id",
-                    $"{token}",
-                    new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = false,
-                        SameSite = SameSiteMode.Lax ,
-                        Expires = DateTimeOffset.UtcNow.AddDays(30)
-                    });
+                await _authService.LoginAsync(request, HttpContext);
 
                 return Ok(new
                 {
@@ -89,6 +78,7 @@ namespace PomoQuestApi.Auth.Controllers
             await _authService.LogoutAsync(sessionId);
 
             Response.Cookies.Delete("session_id");
+            Response.Cookies.Delete("XSRF-TOKEN");
 
             return Ok(new
             {
@@ -100,17 +90,10 @@ namespace PomoQuestApi.Auth.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> GetUser()
         {
-            // var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var profileId = long.Parse(User.FindFirstValue("profile_id")!);
-            var email = User.FindFirstValue(ClaimTypes.Email)!;
-            var name = User.FindFirstValue(ClaimTypes.Name)!;
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var userProfile = await _userService.GetProfileAsync(userId);
 
-            return Ok(new UserProfileResponse
-            {
-                Id = profileId,
-                Email = email,
-                Name = name
-            });
+            return Ok(userProfile);
         }
     }
 }

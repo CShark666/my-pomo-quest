@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PomoQuestApi.data;
 
@@ -10,9 +11,11 @@ using PomoQuestApi.data;
 namespace PomoQuestApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260911174928_CSRFSessioTokens")]
+    partial class CSRFSessioTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -27,15 +30,9 @@ namespace PomoQuestApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("Experience")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Streak")
-                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
@@ -57,7 +54,7 @@ namespace PomoQuestApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("CsrfTokenHash")
+                    b.Property<string>("CsrfToken")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ExpiresAt")

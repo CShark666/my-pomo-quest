@@ -6,10 +6,11 @@ using PomoQuestApi.data;
 
 namespace PomoQuestApi.Auth.Services
 {
-    public class AuthenticationService(AppDbContext context, PasswordService passwordService)
+    public class AuthenticationService(AppDbContext context, PasswordService passwordService, SessionService sessionService)
     {
         private readonly AppDbContext _context = context;
         private readonly PasswordService _passwordService = passwordService;
+        private readonly SessionService _sessionService = sessionService;
 
         public async Task RegisterAsync(UserRegisterRequest request)
         {
@@ -52,39 +53,48 @@ namespace PomoQuestApi.Auth.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Guid> LoginAsync(UserLoginRequest request)
+        public async Task LoginAsync(UserLoginRequest request, HttpContext context)
         {
             var email = request.Email.Trim().ToLowerInvariant();
 
             var user = await _context.Users
                 .SingleOrDefaultAsync(u => u.Email == email);
 
-            if (user == null)
-                throw new ArgumentException("Invalid email or password.");
-
-            if (!user.IsActive)
-                throw new InvalidOperationException("User is inactive.");
-
-            if (!_passwordService.VerifyPassword(request.Password, user.PasswordHash))
-            {
-                throw new ArgumentException("Invalid email or password.");
-            }
+            if (!VerifyCredentials(user!, request.Password))
+                return;
 
             var now = DateTime.UtcNow;
             var id = Guid.NewGuid();
+            var csrfToken = _sessionService.GenerateCsrfToken();
+            var tokenHash = _sessionService.HashCsrfToken(csrfToken);
 
-            var session = new Session
-            {
-                Id = id,
-                UserId = user.Id,
-                CreatedAt = now,
-                ExpiresAt = now.AddDays(30)
-            };
+            var session = new Session(id, user!.Id, tokenHash, now, now.AddDays(30));
 
             await _context.Sessions.AddAsync(session);
             await _context.SaveChangesAsync();
 
-            return id;
+            context.Response.Cookies.Append(
+                    "session_id",
+                    $"{session.Id}",
+                    new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = false,
+                        SameSite = SameSiteMode.Lax,
+                        Expires = DateTimeOffset.UtcNow.AddDays(30),
+                        Path = "/"
+                    });
+
+            context.Response.Cookies.Append(
+                "XSRF-TOKEN",
+                csrfToken,
+                new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = false,
+                    SameSite = SameSiteMode.Strict,
+                    Path = "/"
+                });
         }
 
         public async Task LogoutAsync(Guid sessionId)
@@ -135,5 +145,20 @@ namespace PomoQuestApi.Auth.Services
 
         private Task<bool> IsEmailUsedAsync(string email) =>
             _context.Users.AnyAsync(u => u.Email == email);
+        private bool VerifyCredentials(User user, string requestPassword)
+        {
+            if (user == null)
+                throw new ArgumentException("Invalid email or password.");
+
+            if (!user.IsActive)
+                throw new InvalidOperationException("User is inactive.");
+
+            if (!_passwordService.VerifyPassword(requestPassword, user.PasswordHash))
+            {
+                throw new ArgumentException("Invalid email or password.");
+            }
+
+            return true;
+        }
     }
 }

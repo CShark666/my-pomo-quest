@@ -10,7 +10,7 @@ type PopupWindowProps = {
     buttons?: Array<ButtonProp>
 }
 
-export function PopupWindow({ title, description, buttons }: PopupWindowProps) {
+function PopupWindow({ title, description, buttons }: PopupWindowProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     const close = () => setIsOpen(false);
@@ -50,3 +50,5 @@ export function PopupWindow({ title, description, buttons }: PopupWindowProps) {
         </>
     );
 }
+
+export default PopupWindow;

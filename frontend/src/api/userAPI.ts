@@ -2,7 +2,7 @@ import type {
     ClientUser,
     UserRegistrationRequest,
     UserLoginRequest
-} from './types/types';
+} from '../types/types';
 import apiClient from "./apiClient";
 
 
@@ -10,7 +10,7 @@ export async function getUser(): Promise<ClientUser | null> {
     try {
         const res = await apiClient.get("/auth/me");
 
-        return { ...res.data, level: 1 }
+        return res.data
     } catch {
         return null;
     }

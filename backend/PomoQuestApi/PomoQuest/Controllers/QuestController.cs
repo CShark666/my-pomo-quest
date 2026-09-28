@@ -1,8 +1,8 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using PomoQuestApi.Auth;
 using PomoQuestApi.PomoQuest.DTO;
-using PomoQuestApi.PomoQuest.Models;
 using PomoQuestApi.PomoQuest.Service;
 
 namespace PomoQuestApi.PomoQuest.Controllers
@@ -38,7 +38,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("skip_transition_to_break")]
+        [HttpPost("skip_transition_to_break")]
         public async Task<IActionResult> SkipTransitionToBreak()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -50,7 +50,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("skip_break")]
+        [HttpPost("skip_break")]
         public async Task<IActionResult> SkipBreak()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -62,7 +62,7 @@ namespace PomoQuestApi.PomoQuest.Controllers
         }
 
         [RequiresAuth]
-        [HttpGet("cancel")]
+        [HttpPost("cancel")]
         public async Task<IActionResult> CancelQuest()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -74,6 +74,27 @@ namespace PomoQuestApi.PomoQuest.Controllers
             {
                 message = "Quest canceled successfully."
             });
+        }
+
+        [RequiresAuth]
+        [HttpGet("history")]
+        public async Task<IActionResult> QuestsHistory()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var questsHistory = await questService.GetQuestsHistoryAsync(userId);
+
+            return Ok(questsHistory);
+        }
+
+        [RequiresAuth]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> QuestsHistory(string id)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var questId = Convert.ToInt64(id);
+            QuestResponse quest = await questService.GetQuestAsync(questId, userId);
+
+            return Ok(quest);
         }
     }
 }

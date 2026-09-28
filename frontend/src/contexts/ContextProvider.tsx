@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { UserContext } from "./UserContext";
 import type { ClientUser } from "../types/types";
-import { getUser } from "../userApi";
+import { getUser } from "../api/userAPI";
 import { LoadingSpinnerLabel } from "../components/Loading";
 import { QuestContextProvider } from "./QuestContextProvider";
 

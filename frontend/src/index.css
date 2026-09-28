@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import "tailwindcss";
 
 @plugin "daisyui" {
@@ -12,6 +13,7 @@
   --color-work: red;
   --color-break: green;
   --color-active: #ffc813d8;
+  --font-press-start: "Press Start 2P", system-ui;
 }
 
 @plugin "daisyui/theme" {

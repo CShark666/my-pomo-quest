@@ -1,26 +1,26 @@
 import { useNavigate } from "react-router";
-import { useTimer } from "../hooks/useTimer.ts";
-import { Timer } from "./Timer.tsx";
-import { CancelButton } from "./CancelButton.tsx";
-import { IntervalsBar } from "./IntervalsBar.tsx";
-import { MessageBox } from "./MessageBox.tsx";
-import { PopupWindow } from "./PopupWindow.tsx";
-import { type ClientQuest } from "../types/types.ts";
-import { timeFormatter, timeFormatterSeconds } from "../util/timeFormatter.ts";
+import { type CurrentQuest } from "../../../types/types.ts";
+import { timeFormatter, timeFormatterSeconds } from "../../../util/timeFormatter.ts";
+import Timer from "./Timer.tsx";
+import CancelButton from "./CancelButton.tsx";
+import IntervalsBar from "./IntervalsBar.tsx";
+import MessageBox from "../../MessageBox.tsx";
+import PopupWindow from "../../PopupWindow.tsx";
+import TotalTimeDesk from "./TotalTimeDesk.tsx";
+import QuestInfoScroll from "./QuestInfoScroll.tsx";
+
 
 
 type QuestItemProps = {
-  quest: ClientQuest,
+  quest: CurrentQuest,
   skipBreakAction: () => void,
   skipTransitionAction: () => void,
-  isLoading: boolean
+  isLoading: boolean,
+  remainingTotal: number
+  remainingCurrentInterval: number
 }
 
-export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading }: QuestItemProps) {
-  const { remaining: remainingTotal } = useTimer(quest.remainingTotalTimeMs);
-  const { remaining: remainingCurrentInterval } = useTimer(
-    quest.currentInterval.remaining,
-  );
+function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, remainingTotal, remainingCurrentInterval }: QuestItemProps) {
   const nav = useNavigate();
 
   const isStart = quest.currentInterval.status === "TransitionToWork" && quest.remainingTotalTimeMs === quest.totalTimeMs;
@@ -29,6 +29,10 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
   const timerPercent: number = !isBreakMode
     ? Math.round((remainingCurrentInterval / quest.intervalDurationMs) * 100)
     : 100;
+
+  const questItemWidth = 950;
+  const infoWidth = 250;
+  const intervalsBarWidth = questItemWidth - infoWidth;
 
   const transitionToWorkText = quest.currentInterval.index == 0
     ? `The quest will start in: ${timeFormatterSeconds(remainingCurrentInterval)}...`
@@ -39,34 +43,29 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
 
   return (
     <>
-      <div className="quest-item flex flex-col w-full max-w-3xl min-w-2xs p-1">
+      <div className={`quest-item flex flex-col w-[${questItemWidth}px] min-w-2xs`}>
         <div className="quest-item__cancel flex justify-end">
           <CancelButton />
         </div>
-        <div className="quest-item__content flex items-center">
-          <div className={`quest-item__total-time flex shrink-0 justify-center items-center w-28 h-28 rounded-full ${isBreakMode ? "bg-break/50" : "bg-work/50"} text-white`}>
-            <p>
-              {timeFormatter(
+        <div className={`flex h-87.5`}>
+          <div className={`w-[${infoWidth}px]`}>
+            <TotalTimeDesk
+              time={timeFormatter(
                 isBreakMode
                   ? quest.remainingTotalTimeMs
                   : quest.status === "InProgress"
                     ? remainingTotal
                     : 0,
-              )}
-            </p>
+              )} />
+            <QuestInfoScroll title={quest.title} status={quest.status} progress={`${quest.currentInterval.index}/${quest.intervalsCount}`} />
           </div>
-          <div>
-            <div className="quest-item__meta w-full flex justify-between">
-              <p>
-                #{quest.id} {quest.title}
-              </p>
-              <p>Status: {quest.currentInterval.status}</p>
-            </div>
+          <div className={`w-[${intervalsBarWidth}]`}>
             <IntervalsBar
               currentIntervalIdx={quest.currentInterval.index + (isBreakMode && quest.currentInterval.status != "TransitionToWork" ? 1 : 0)}
               intervalCount={quest.intervalsCount}
               timerPercent={quest.status === "InProgress" ? timerPercent : 0}
               isBreakMode={isBreakMode}
+              formWidth={intervalsBarWidth}
             />
           </div>
         </div>
@@ -97,3 +96,5 @@ export function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoad
     </>
   );
 }
+
+export default QuestItem;

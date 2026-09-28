@@ -4,6 +4,7 @@ using PomoQuestApi.Middleware;
 using PomoQuestApi.Auth.Services;
 using PomoQuestApi.data;
 using PomoQuestApi.PomoQuest.Service;
+using PomoQuestApi.PomoQuest.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 var AllowFrontendOrigins = "AllowFrontendOrigins";
@@ -31,7 +32,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<QuestService>();
+builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<GameService>();
+
 
 var app = builder.Build();
 
@@ -49,6 +54,7 @@ app.UseCors(AllowFrontendOrigins);
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseMiddleware<AuthenticationMiddleware>();
+app.UseMiddleware<CsrfValidationMiddleware>();
 app.UseMiddleware<AuthorizationMiddleware>();
 
 app.MapControllers();

@@ -13,6 +13,7 @@ function QuestPageContent() {
           quest={questContext.quest}
           skipBreakAction={questContext.skipBreakAction}
           skipTransitionAction={questContext.skipTransitionAction}
+          finishQuestAction={questContext.finishQuestAction}
           isLoading={questContext.isPending}
           remainingTotal={questContext.remainingTotal}
           remainingCurrentInterval={questContext.remainingCurrentInterval} />

@@ -61,10 +61,9 @@ export function Sidebar() {
             </div>
           )}
 
-          <ul className="menu p-4 h-full">
 
+          <ul className="menu p-4 h-full w-full">
             {/* Sidebar content here */}
-            <li>Pages:</li>
             <li><Link to="/">Home page</Link></li>
             <li><Link to="quest">Pomo-Quest</Link></li>
             <li><Link to="questsHistory">Quests history</Link></li>

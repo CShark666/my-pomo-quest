@@ -15,14 +15,19 @@ export function QuestContextProvider({ children }: { children: ReactNode }) {
     }, [])
 
     useEffect(() => {
-        if (quest) {
-            const id = setTimeout(
-                async () => getQuest().then(setQuest),
-                quest.currentInterval.remaining,
-            );
-            return () => clearInterval(id);
+        if (!quest) return;
+
+        if (quest.status === "Finished") {
+            return;
         }
-    }, [quest, setQuest]);
+
+        const id = setTimeout(async () => {
+            const newQuest = await getQuest();
+            setQuest(newQuest);
+        }, quest.currentInterval.remaining);
+
+        return () => clearTimeout(id);
+    }, [quest]);
 
     const { remaining: remainingTotal } = useTimer(quest ? quest.remainingTotalTimeMs : 0);
     const { remaining: remainingCurrentInterval } = useTimer(quest ? quest.currentInterval.remaining : 0);
@@ -39,8 +44,21 @@ export function QuestContextProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    const dismissFinishedQuestAction = () => {
+        setQuest(null);
+    };
+
     return (
-        <QuestContext.Provider value={{ quest, setQuest, remainingTotal, remainingCurrentInterval, skipBreakAction, skipTransitionAction, isPending }}>
+        <QuestContext.Provider value={{
+            quest,
+            setQuest,
+            remainingTotal,
+            remainingCurrentInterval,
+            skipBreakAction,
+            skipTransitionAction,
+            finishQuestAction: dismissFinishedQuestAction,
+            isPending
+        }}>
             {children}
         </QuestContext.Provider>
     )

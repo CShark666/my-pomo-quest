@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router";
 import { type CurrentQuest } from "../../../types/types.ts";
 import { timeFormatter, timeFormatterSeconds } from "../../../util/timeFormatter.ts";
 import Timer from "./Timer.tsx";
@@ -15,14 +14,13 @@ type QuestItemProps = {
   quest: CurrentQuest,
   skipBreakAction: () => void,
   skipTransitionAction: () => void,
+  finishQuestAction: () => void,
   isLoading: boolean,
   remainingTotal: number
   remainingCurrentInterval: number
 }
 
-function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, remainingTotal, remainingCurrentInterval }: QuestItemProps) {
-  const nav = useNavigate();
-
+function QuestItem({ quest, skipBreakAction, skipTransitionAction, finishQuestAction , isLoading, remainingTotal, remainingCurrentInterval }: QuestItemProps) {
   const isStart = quest.currentInterval.status === "TransitionToWork" && quest.remainingTotalTimeMs === quest.totalTimeMs;
   const isBreakMode = quest.currentInterval.status !== "Work";
   const isTransitionMode = quest.currentInterval.status == "TransitionToWork" || quest.currentInterval.status == "TransitionToBreak";
@@ -77,7 +75,7 @@ function QuestItem({ quest, skipBreakAction, skipTransitionAction, isLoading, re
               case 'TransitionToBreak':
                 return <MessageBox text={transitionToBreakText} buttons={isLoading ? undefined : [{ text: "Skip break", onClick: skipTransitionAction }]} />;
               case 'Finished':
-                return <MessageBox text={finishText} buttons={isLoading ? undefined : [{ text: "Back to home page", onClick: () => { nav("/") } }]} />;
+                return <MessageBox text={finishText} buttons={isLoading ? undefined : [{ text: "Back to home page", onClick: finishQuestAction }]} />;
               default:
                 return <Timer time={remainingCurrentInterval} isBreakMode={isBreakMode} />;
             }

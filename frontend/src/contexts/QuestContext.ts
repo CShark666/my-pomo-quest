@@ -6,6 +6,7 @@ interface QuestContextType {
     setQuest: (quest: CurrentQuest | null) => void;
     skipBreakAction: () => void;
     skipTransitionAction: () => void;
+    finishQuestAction: () => void;
     remainingTotal: number;
     remainingCurrentInterval: number;
     isPending: boolean;
@@ -16,6 +17,7 @@ export const QuestContext = createContext<QuestContextType>({
     setQuest: () => { },
     skipBreakAction: () => { },
     skipTransitionAction: () => { },
+    finishQuestAction: () => { },
     remainingTotal: 0,
     remainingCurrentInterval: 0,
     isPending: false

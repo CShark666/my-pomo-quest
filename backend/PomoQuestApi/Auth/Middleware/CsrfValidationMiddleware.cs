@@ -10,7 +10,7 @@ namespace PomoQuestApi.Auth.Middleware
 
         public async Task InvokeAsync(HttpContext context, SessionService sessionService)
         {
-            if (SafeMethods.Contains(context.Request.Method) || context.Request.Path.StartsWithSegments("/auth/login"))
+            if (SafeMethods.Contains(context.Request.Method) || NotRequiresCsrfValidation(context))
             {
                 await _next(context);
                 return;
@@ -34,6 +34,12 @@ namespace PomoQuestApi.Auth.Middleware
             }
 
             await _next(context);
+        }
+        private static bool NotRequiresCsrfValidation(HttpContext context)
+        {
+            return context.GetEndpoint()?
+                .Metadata
+                .GetMetadata<NotRequiresCsrfValidation>() is not null;
         }
     }
 }

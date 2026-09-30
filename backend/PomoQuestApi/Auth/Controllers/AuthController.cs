@@ -13,6 +13,7 @@ namespace PomoQuestApi.Auth.Controllers
         private readonly AuthenticationService _authService = authenticationService;
         private readonly UserService _userService = userService;
 
+        [NotRequiresCsrfValidation]
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterRequest request)
         {
@@ -41,6 +42,7 @@ namespace PomoQuestApi.Auth.Controllers
             }
         }
 
+        [NotRequiresCsrfValidation]
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginRequest request)
         {
